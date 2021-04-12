@@ -4,7 +4,7 @@ export const httpRequest = async (url, method, data) => {
 	return axios({
 		url: url,
 		method: method,
-		data: { mode: 'no-cors', ...data },
+		data: data,
 	})
 		.then(res => res.data)
 		.catch(err => console.error(err));

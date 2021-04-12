@@ -6,7 +6,6 @@ import { API } from '../../scripts/routes';
 import GetTradesTable from '../General/GetTradesTable';
 
 const ThirdPage = props => {
-
 	const [tableData, setTableData] = useState({
 		totalRecordsNumber: null,
 		properties: [],
@@ -58,6 +57,7 @@ const ThirdPage = props => {
 	useEffect(() => {
 		var tableProperties = [];
 		httpRequest(API.trades, 'get').then(res => {
+			if (res.length === 0) return;
 			Object.keys(res[0]).map(property => {
 				tableProperties.push(property);
 			});
@@ -67,17 +67,12 @@ const ThirdPage = props => {
 				properties: tableProperties,
 				totalRecords: res,
 				count: res.length,
-				displayedRecords: res.slice(
-					(tableData.page - 1) * tableData.pageSize,
-					tableData.page * tableData.pageSize,
-				),
+				displayedRecords: res.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
 			});
 		});
 	}, []);
 
-	useEffect(() => {
-		
-	}, [tableData]);
+	useEffect(() => {}, [tableData]);
 
 	return tableData.totalRecords.length === 0 ? null : (
 		<div>

@@ -10,7 +10,6 @@ const SecondPage = props => {
 
 	const forceMethod = record => {
 		httpRequest(API.trades, 'post', record).then(res => {
-			console.log(res);
 		});
 	};
 	useEffect(() => {
