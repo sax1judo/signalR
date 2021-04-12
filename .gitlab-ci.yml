@@ -1,0 +1,16 @@
+image: node:13.3.0-alpine3.10
+
+stages:
+  - build
+
+build:
+  before_script:
+    - npm install
+    - node rmdir.js
+    - npm run webpack-build
+    - node merger.js
+
+  stage: build
+  script:
+    - chmod +x ./build.bat
+    - ./build.bat

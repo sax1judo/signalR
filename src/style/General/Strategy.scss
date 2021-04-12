@@ -1,0 +1,30 @@
+.strategyWrapper {
+	border: 2px solid silver;
+	margin: 1rem;
+	display: flex;
+	justify-content: space-evenly;
+	flex-direction: column;
+	box-shadow: 1px 1px 12px 11px rgba(0, 0, 0, 0.7);
+	margin: 6rem;
+
+	.singleStrategyParameter {
+		font-size: 1.5rem;
+		display: flex;
+		flex-direction: column;
+		margin-left: 1rem;
+		.strategyHeader {
+			text-transform: uppercase;
+			font-weight: bold;
+			font-size: 1.5rem;
+			display: flex;
+			justify-content: space-between;
+		}
+		.strategyParametersWrapper {
+			margin-left: 2rem;
+			.strategyParameterName {
+			}
+			.strategyParameterValue {
+			}
+		}
+	}
+}

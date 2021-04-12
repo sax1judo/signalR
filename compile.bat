@@ -1,0 +1,1 @@
+node rmdir.js && npm run webpack-compile && node merger.js
