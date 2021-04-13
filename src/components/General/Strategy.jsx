@@ -156,14 +156,14 @@ const Strategy = props => {
 				</button>
 				<div className="header">Limits</div>
 				<div>
-					Limit per day:
+					Limit per day: 
 					<input
 						value={strategyAditionalInfo.limitPerDay}
 						onChange={e => setStrategyAditionalinfo({ ...strategyAditionalInfo, limitPerDay: e.target.value })}
 					/>
 				</div>
 				<div>
-					Limit pre Info:
+					Limit per Order: 
 					<input
 						value={strategyAditionalInfo.limitPerOrder}
 						onChange={e => setStrategyAditionalinfo({ ...strategyAditionalInfo, limitPerOrder: e.target.value })}
