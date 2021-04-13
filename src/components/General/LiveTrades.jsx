@@ -56,6 +56,9 @@ const Table = props => {
 										<input value={record.stop} onChange={e => handleRecordEdit(e, index, 'stop')} />
 									</td>
 									<td>
+										<input value={record.price} onChange={e => handleRecordEdit(e, index, 'price')} />
+									</td>
+									<td>
 										<button onClick={() => props.forceMethod(record)}>FORCE</button>
 									</td>
 								</tr>
