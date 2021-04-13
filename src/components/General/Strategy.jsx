@@ -137,7 +137,7 @@ const Strategy = props => {
 												value={param.value}
 												onChange={e => {
 													handleSellBuyParamsChange(
-														strategyParams[key].includes('SELL') ? 'sell' : 'buy',
+														key.includes('SELL') ? 'sell' : 'buy',
 														param.key,
 														e,
 													);
