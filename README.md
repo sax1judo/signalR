@@ -1,6 +1,3 @@
-# multigame-platform
-Client solution for multi-game platform
-
 ## Available scripts
 
 To compile project run:
