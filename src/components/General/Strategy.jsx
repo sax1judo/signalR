@@ -53,46 +53,30 @@ const Strategy = props => {
 		}
 	};
 	const handleSellBuyParamsChange = (type, key, event) => {
-		if (type === 'sell') {
-			let updatedParams = strategyParams.SELL_PARAMETERS;
-			for (let param of updatedParams) {
-				if (key === param.key) {
-					param.value = event.target.value;
-				}
-				setStrategyParams({ ...strategyParams, SELL_PARAMETERS: updatedParams });
+		let updatedParams = strategyParams[type];
+		for (let param of updatedParams) {
+			if (key === param.key) {
+				param.value = event.target.value;
 			}
+		}
+		if (type.includes('Sell')) {
+			setStrategyParams({ ...strategyParams, Sell_Parameters: updatedParams });
+		} else if (type.includes('Buy')) {
+			setStrategyParams({ ...strategyParams, Buy_Parameters: updatedParams });
 		} else {
-			let updatedParams = strategyParams.BUY_PARAMETERS;
-			for (let param of updatedParams) {
-				if (key === param.key) {
-					param.value = event.target.value;
-				}
-				setStrategyParams({ ...strategyParams, BUY_PARAMETERS: updatedParams });
-			}
+			setStrategyParams({ ...strategyParams, Parameters: updatedParams });
 		}
 	};
 	const updateParameteres = type => {
-		if (type === 'sell') {
-			let parsedObj = {};
-			strategyParams.SELL_PARAMETERS.forEach(item => {
-				parsedObj[item.key] = item.value;
-			});
-			httpRequest(
-				API.updateStrategiesParametersSell + `${props.strategy.strategy_id}`,
-				'put',
-				parsedObj,
-			).then(res => {});
-		} else {
-			let parsedObj = {};
-			strategyParams.BUY_PARAMETERS.forEach(item => {
-				parsedObj[item.key] = item.value;
-			});
-			httpRequest(
-				API.updateStrategiesParametersBuy + `${props.strategy.strategy_id}`,
-				'put',
-				parsedObj,
-			).then(res => {});
-		}
+		let parsedObj = {};
+		strategyParams[type].forEach(item => {
+			parsedObj[item.key] = item.value;
+		});
+		httpRequest(
+			API.updateStrategiesParameters + `${props.strategy.strategy_id}` + '/' + type,
+			'put',
+			parsedObj,
+		).then(res => {});
 	};
 	const updateLimits = () => {
 		httpRequest(API.strategiesLimits + `${props.strategy.strategy_id}`, 'put', strategyAditionalInfo).then(res => {});
@@ -122,10 +106,7 @@ const Strategy = props => {
 				: Object.keys(strategyParams).map(key => {
 						return (
 							<div className="editableWrapper">
-								<button
-									className="updateLimitsButton"
-									onClick={() => updateParameteres(key.includes('SELL') ? 'sell' : 'buy')}
-								>
+								<button className="updateLimitsButton" onClick={() => updateParameteres(key)}>
 									Update
 								</button>
 								<div className="header">{key}</div>
@@ -136,11 +117,7 @@ const Strategy = props => {
 											<input
 												value={param.value}
 												onChange={e => {
-													handleSellBuyParamsChange(
-														key.includes('SELL') ? 'sell' : 'buy',
-														param.key,
-														e,
-													);
+													handleSellBuyParamsChange(key, param.key, e);
 												}}
 											/>
 										</div>
@@ -156,14 +133,14 @@ const Strategy = props => {
 				</button>
 				<div className="header">Limits</div>
 				<div>
-					Limit per day: 
+					Limit per day:
 					<input
 						value={strategyAditionalInfo.limitPerDay}
 						onChange={e => setStrategyAditionalinfo({ ...strategyAditionalInfo, limitPerDay: e.target.value })}
 					/>
 				</div>
 				<div>
-					Limit per Order: 
+					Limit per Order:
 					<input
 						value={strategyAditionalInfo.limitPerOrder}
 						onChange={e => setStrategyAditionalinfo({ ...strategyAditionalInfo, limitPerOrder: e.target.value })}

@@ -19,7 +19,8 @@ const Table = props => {
 
 	const handleRecordEdit = (e, index, property) => {
 		let newData = data.tableData;
-		newData[index][property] = e.target.value;
+		if (e.target.value === '') newData[index][property] = null;
+		else newData[index][property] = e.target.value;
 		setData({ tableData: newData });
 	};
 	return (
