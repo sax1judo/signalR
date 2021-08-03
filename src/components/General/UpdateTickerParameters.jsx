@@ -53,7 +53,7 @@ const UpdateTickerParameters = props => {
 		setSpreadPrices({ ...spreadPrices });
 	};
 
-	const updateSpreadPricesNew = (key) => {
+	const updateSpreadPricesNew = key => {
 		let data = spreadPricesNew;
 		data[key].active = !data[key].active;
 
@@ -71,7 +71,7 @@ const UpdateTickerParameters = props => {
 				<div className="tickerUpdateParamsCol">
 					{Object.keys(prices).map(key => {
 						return (
-							<div key={key} style={{ display: 'flex',marginTop:'1rem' }}>
+							<div key={key} style={{ display: 'flex', marginTop: '1rem' }}>
 								{key}
 								<input value={prices[key]} onChange={e => handlePricesChange(e, key)} />
 							</div>
@@ -99,7 +99,11 @@ const UpdateTickerParameters = props => {
 					<div>
 						<div className="startStopWrapper">
 							<p>buyES</p>
-							<input value={spreadPricesNew.buyES.value} onChange={e => handleSpreadPricesNewChange(e, 'buyES')} />
+							<input
+								type="number"
+								value={spreadPricesNew.buyES.value}
+								onChange={e => handleSpreadPricesNewChange(e, 'buyES')}
+							/>
 							<button className="startStopButton" onClick={() => updateSpreadPricesNew('buyES')}>
 								{spreadPricesNew.buyES.active === true ? 'stop' : 'start'}
 							</button>
@@ -108,7 +112,11 @@ const UpdateTickerParameters = props => {
 					<div>
 						<div className="startStopWrapper">
 							<p>sellES</p>
-							<input value={spreadPricesNew.sellES.value} onChange={e => handleSpreadPricesNewChange(e, 'sellES')} />
+							<input
+								type="number"
+								value={spreadPricesNew.sellES.value}
+								onChange={e => handleSpreadPricesNewChange(e, 'sellES')}
+							/>
 							<button className="startStopButton" onClick={() => updateSpreadPricesNew('sellES')}>
 								{spreadPricesNew.sellES.active === true ? 'stop' : 'start'}
 							</button>
@@ -119,7 +127,11 @@ const UpdateTickerParameters = props => {
 					<div>
 						<div className="startStopWrapper">
 							<p>buyISP</p>
-							<input value={spreadPricesNew.buyISP.value} onChange={e => handleSpreadPricesNewChange(e, 'buyISP')} />
+							<input
+								type="number"
+								value={spreadPricesNew.buyISP.value}
+								onChange={e => handleSpreadPricesNewChange(e, 'buyISP')}
+							/>
 							<button className="startStopButton" onClick={() => updateSpreadPricesNew('buyISP')}>
 								{spreadPricesNew.buyISP.active === true ? 'stop' : 'start'}
 							</button>
@@ -128,7 +140,11 @@ const UpdateTickerParameters = props => {
 					<div>
 						<div className="startStopWrapper">
 							<p>sellISP</p>
-							<input value={spreadPricesNew.sellISP.value} onChange={e => handleSpreadPricesNewChange(e, 'sellISP')} />
+							<input
+								type="number"
+								value={spreadPricesNew.sellISP.value}
+								onChange={e => handleSpreadPricesNewChange(e, 'sellISP')}
+							/>
 							<button className="startStopButton" onClick={() => updateSpreadPricesNew('sellISP')}>
 								{spreadPricesNew.sellISP.active === true ? 'stop' : 'start'}
 							</button>
