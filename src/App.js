@@ -1,8 +1,10 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Link, NavLink } from 'react-router-dom';
 import FirstPage from './components/Pages/FirstPage';
+import FourthPage from './components/Pages/FourthPage';
 import SecondPage from './components/Pages/SecondPage';
 import ThirdPage from './components/Pages/ThirdPage';
+import FifthPage from './components/Pages/FifthPage';
 
 const App = () => {
 	return (
@@ -10,13 +12,29 @@ const App = () => {
 			<div>
 				<ul className="navigationLinks">
 					<li>
-						<Link to="/">Strategy States</Link>
+						<NavLink activeClassName="is-active" exact to="/">
+							Strategy States
+						</NavLink>
 					</li>
 					<li>
-						<Link to="/liveTrades">Trades Over Limit</Link>
+						<NavLink activeClassName="is-active" to="/liveTrades">
+							Trades Over Limit
+						</NavLink>
 					</li>
 					<li>
-						<Link to="/trades">Get Trades</Link>
+						<NavLink activeClassName="is-active" to="/trades">
+							Get Trades
+						</NavLink>
+					</li>
+					<li>
+						<NavLink activeClassName="is-active" to="/arbitrage">
+							Arbitrage
+						</NavLink>
+					</li>
+					<li>
+						<NavLink activeClassName="is-active" to="/logs">
+							Logs
+						</NavLink>
 					</li>
 				</ul>
 
@@ -29,6 +47,12 @@ const App = () => {
 					</Route>
 					<Route path="/trades">
 						<ThirdPage />
+					</Route>
+					<Route path="/arbitrage">
+						<FourthPage />
+					</Route>
+					<Route path="/logs">
+						<FifthPage />
 					</Route>
 				</Switch>
 			</div>

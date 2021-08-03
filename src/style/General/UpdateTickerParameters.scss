@@ -1,0 +1,28 @@
+.tickerUpdateParamsWrapper {
+	display: flex;
+	.tickerUpdateParamsCol {
+		position: relative;
+		flex: 0.5;
+		border: 1px solid;
+		margin: 1rem;
+		padding: 1rem;
+		.updateButton {
+			bottom: 2%;
+			border: 1px solid;
+			margin-top: 11%;
+			float: right;
+		}
+		.startStopWrapper {
+			display: flex;
+			flex-direction: row;
+			margin-top: 1rem;
+		}
+		.startStopButton {
+			position: relative;
+			margin-left: 2rem;
+		}
+		input {
+			margin-left: 1rem;
+		}
+	}
+}

@@ -72,11 +72,9 @@ const Strategy = props => {
 		strategyParams[type].forEach(item => {
 			parsedObj[item.key] = item.value;
 		});
-		httpRequest(
-			API.updateStrategiesParameters + `${props.strategy.strategy_id}` + '/' + type,
-			'put',
-			parsedObj,
-		).then(res => {});
+		httpRequest(API.updateStrategiesParameters + `${props.strategy.strategy_id}` + '/' + type, 'put', parsedObj).then(
+			res => {},
+		);
 	};
 	const updateLimits = () => {
 		httpRequest(API.strategiesLimits + `${props.strategy.strategy_id}`, 'put', strategyAditionalInfo).then(res => {});
@@ -105,7 +103,7 @@ const Strategy = props => {
 				? null
 				: Object.keys(strategyParams).map(key => {
 						return (
-							<div className="editableWrapper">
+							<div key={key + 'key'} className="editableWrapper">
 								<button className="updateLimitsButton" onClick={() => updateParameteres(key)}>
 									Update
 								</button>
@@ -140,12 +138,22 @@ const Strategy = props => {
 					/>
 				</div>
 				<div>
-					Limit per Order:
+					Limit per order:
 					<input
 						value={strategyAditionalInfo.limitPerOrder}
 						onChange={e => setStrategyAditionalinfo({ ...strategyAditionalInfo, limitPerOrder: e.target.value })}
 					/>
 				</div>
+				{strategyAditionalInfo.consumerSinkNumber !== undefined  ? 
+					<div>
+						Consumer sink number:
+						<input
+							value={strategyAditionalInfo.consumerSinkNumber}
+							onChange={e => setStrategyAditionalinfo({ ...strategyAditionalInfo, consumerSinkNumber: e.target.value })}
+						/>
+					</div>
+				 : null
+				 }
 			</div>
 		</div>
 	);
