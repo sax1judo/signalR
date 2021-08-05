@@ -152,7 +152,13 @@ const UpdateTickerParameters = props => {
 					</div>
 				</div>
 			</div>
-			Points Away:{spreadPricesNew.pointsAway}
+			Points Away:
+			<input
+				type="number"
+				value={spreadPricesNew.pointsAway}
+				onChange={e => handleSpreadPricesNewChange(e, 'pointsAway')}
+			/>
+			
 		</div>
 	) : null;
 };
