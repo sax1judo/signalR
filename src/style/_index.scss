@@ -1,8 +1,6 @@
 #root {
 	width: 100%;
-	height: 100%;
-	margin: auto;
-	margin-top: 2%;
+	height: -webkit-fill-available;
 	background: #31373f;
 	color: white;
 	font-family: Verdana;
@@ -11,6 +9,6 @@
 		width: 90%;
 		height: auto;
 		margin: auto;
-		top: 5%;
+		margin-top: 2rem;
 	}
 }

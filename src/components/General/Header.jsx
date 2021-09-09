@@ -12,7 +12,7 @@ const Header = () => {
 					</NavLink>
 				</li>
 				<li>
-					<NavLink activeClassName="is-active" to="/liveTrades">
+					<NavLink activeClassName="is-active" to="/arbitrageMonitoring">
 						Arbitrage Monitoring
 					</NavLink>
 				</li>
