@@ -1,68 +1,55 @@
 import React, { useEffect, useState } from 'react';
-import { HubConnectionBuilder } from '@microsoft/signalr';
-import Strategy from '../General/Strategy';
-import { API } from '../../scripts/routes';
+import '../../style/Pages/FirstPage.scss';
+import TableFieldDropDown from '../General/TableFieldDropDown';
 
 const FirstPage = props => {
-	const [data, setData] = useState({ strategies: [] });
-	const [connection, setConnection] = useState(null);
-
-	useEffect(() => {
-		const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
-
-		setConnection(newConnection);
-		return () => {
-			setConnection(null);
-		};
-	}, []);
-
-	useEffect(() => {
-		if (connection) {
-			connection
-				.start()
-				.then(result => {
-					console.log('Connected!');
-
-					connection.on('StrategyStates', message => {
-						let newData = data.strategies;
-						let newMessage = JSON.parse(message);
-						let swapped = false;
-
-						if (newData.length === 0) {
-							newData.push(newMessage);
-						} else {
-							for (let startegy in newData) {
-								if (newData[startegy].strategy_id === newMessage.strategy_id) {
-									newData[startegy] = newMessage;
-									swapped = true;
-									break;
-								}
-							}
-							if (!swapped) {
-								newData.push(newMessage);
-							}
-						}
-
-						setData({ strategies: newData });
-					});
-				})
-				.catch(e => console.log('Connection failed: ', e));
-		}
-		return () => {
-			setConnection(null);
-		};
-	}, [connection]);
-
+	const exchangeDropdw = ['IB', 'TT'];
+	const ticekrDropdw = ['ISP U21', 'ES U21'];
 	return (
-		<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
-			{data.strategies.map((strategy, index) => {
-				return (
-					<div key={index}>
-						<Strategy key={index} strategy={strategy} />
-					</div>
-				);
-			})}
-		</div>
+		<>
+			<div className="setupStrategyWrapper">
+				<div className="addStrategyTable">
+					<table>
+						<tbody>
+							{/* table columns  */}
+							<tr className="tableDateCentered">
+								<th colSpan="4">Database</th>
+							</tr>
+							<tr>
+								<th></th>
+								<th className="tableDateCentered">Leg 1</th>
+								<th></th>
+								<th className="tableDateCentered">Leg 2 </th>
+							</tr>
+							{/* table columns  */}
+							{/* table data */}
+							<tr>
+								<td>Exchange</td>
+								<td>
+									<TableFieldDropDown options={exchangeDropdw} />
+								</td>
+								<td>Exchange</td>
+								<td>
+									<TableFieldDropDown options={exchangeDropdw} />
+								</td>
+							</tr>
+							<tr>
+								<td>Ticker</td>
+								<td>
+									<TableFieldDropDown options={ticekrDropdw} />
+								</td>
+								<td>Ticker</td>
+								<td>
+									<TableFieldDropDown options={ticekrDropdw} />
+								</td>
+							</tr>
+
+							{/* table data */}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</>
 	);
 };
 export default FirstPage;

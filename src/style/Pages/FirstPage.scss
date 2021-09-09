@@ -1,0 +1,25 @@
+.setupStrategyWrapper {
+	width: 90%;
+	margin: auto;
+	.addStrategyTable {
+		table {
+			background: #212529;
+			color: white;
+			border-spacing: 0;
+			border-collapse: collapse;
+			border-style: hidden;
+
+			width: 100%;
+			max-width: 100%;
+		}
+
+		th,
+		td {
+			padding: 10px;
+			border: 1px solid #3c3c3c;
+		}
+	}
+	.tableDateCentered {
+		text-align: center;
+	}
+}
