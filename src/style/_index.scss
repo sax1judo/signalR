@@ -1,9 +1,12 @@
+html,
+body {
+	background-color: #31373f;
+}
 #root {
 	width: 100%;
-	height: -webkit-fill-available;
-	background: #31373f;
 	color: white;
 	font-family: Verdana;
+	background-color: #31373f;
 	.contentSection {
 		position: relative;
 		width: 90%;
