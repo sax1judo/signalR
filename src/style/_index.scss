@@ -1,6 +1,6 @@
 html,
 body {
-	background-color: #31373f;
+	background-color: #31373f!important;
 }
 #root {
 	width: 100%;
@@ -10,8 +10,10 @@ body {
 	.contentSection {
 		position: relative;
 		width: 90%;
+		height: 100%;
 		height: auto;
 		margin: auto;
 		margin-top: 2rem;
+		margin-bottom: 3rem;
 	}
 }
