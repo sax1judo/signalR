@@ -1,8 +1,13 @@
 import React from 'react';
 import '../../style/General/ModifyStrategyModal.scss';
 import { NavLink } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 const ModifyStrategyModal = props => {
+	let history = useHistory();
+	const goToPreviousPath = () => {
+		history.goBack();
+	};
 	return (
 		<div className="modifyStrategyWrapper ">
 			<div className="setUpParametersTable">
@@ -46,15 +51,11 @@ const ModifyStrategyModal = props => {
 					</tbody>
 				</table>
 				<div className="modifyStrategyButtonsWrapper">
-					<button type="button" className="btn confirm">
-						<NavLink activeClassName="is-active" to="/">
-							Confirm Modification
-						</NavLink>
+					<button type="button" className="btn confirm" onClick={goToPreviousPath}>
+						Confirm Modification
 					</button>
-					<button type="button" className="btn skip ">
-						<NavLink activeClassName="is-active" to="/arbitrageMonitoring">
-							Skip Modification
-						</NavLink>
+					<button type="button" className="btn skip " onClick={goToPreviousPath}>
+						Skip Modification
 					</button>
 				</div>
 			</div>
