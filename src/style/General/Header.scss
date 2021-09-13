@@ -1,6 +1,17 @@
 .header {
 	width: 100%;
 	font-size: 1.2rem;
+	position: relative;
+	.logo {
+		position: absolute;
+		float: left;
+		background: url('../../assets/trussinvLogo.png');
+		background-size: contain;
+		width: 10%;
+		background-repeat: no-repeat;
+		height: 100%;
+		background-position: center;
+	}
 	.navigationLinks {
 		list-style-type: none;
 		margin: 0;
@@ -9,7 +20,7 @@
 		background-color: #1c2026;
 		display: flex;
 		justify-content: center;
- 
+
 		li {
 			float: left;
 			position: relative;

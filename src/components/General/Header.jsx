@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom';
 const Header = () => {
 	return (
 		<div className="header">
+			<div className="logo"> </div>
 			<ul className="navigationLinks">
 				<li>
 					<NavLink activeClassName="is-active" exact to="/">
@@ -16,7 +17,6 @@ const Header = () => {
 						Arbitrage Monitoring
 					</NavLink>
 				</li>
-				
 			</ul>
 		</div>
 	);
