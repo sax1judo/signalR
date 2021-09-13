@@ -7,12 +7,12 @@ const DatebaseTable = props => {
 	const ticekrDropdw = ['ISP U21', 'ES U21'];
 
 	return (
-		<div className="setUpAddStrategyTable">
+		<div className="setUpDatabaseTable">
 			<table>
 				<tbody className="tableDateCentered">
 					{/* table columns  */}
 					<tr>
-						<th colSpan="4">Database</th>
+						<th colSpan="4" className="tableHeaderColor">Database</th>
 					</tr>
 					<tr>
 						<th></th>

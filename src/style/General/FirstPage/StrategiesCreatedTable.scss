@@ -1,4 +1,4 @@
-.setUpParametersTable {
+.setUpAddStrategyTable {
 	table {
 		background: #212529;
 		color: white;
@@ -15,6 +15,9 @@
 	td {
 		padding: 10px;
 		border: 1px solid #3c3c3c;
+	}
+	.tableHeaderColor {
+		background: #1c2026;
 	}
 	input {
 		background: #1c2026;

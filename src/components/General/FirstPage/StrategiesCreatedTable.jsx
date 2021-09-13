@@ -7,10 +7,10 @@ const StrategiesCreatedTable = props => {
 			<table>
 				<tbody className="tableDateCentered">
 					{/* table columns  */}
-					<tr>
-						<th colSpan="4">Strategies Created</th>
+					<tr className="tableHeaderColor">
+						<th colSpan="6">Strategies Created</th>
 					</tr>
-					<tr>
+					<tr className="tableHeaderColor">
 						<th>Strategy Name</th>
 						<th>Exchange</th>
 						<th>Leg 1 Ticker</th>
@@ -20,7 +20,39 @@ const StrategiesCreatedTable = props => {
 					</tr>
 					{/* table columns  */}
 					{/* table data */}
-					<tr></tr>
+
+					<tr>
+						<td>Strategy </td>
+						<td>Edasdage</td>
+						<td>Leg Ticker</td>
+						<td>das</td>
+						<td>Ledas2 Ticker</td>
+						<td>Sprasdad</td>
+					</tr>
+					<tr>
+						<td>Strategy </td>
+						<td>Edasdage</td>
+						<td>Leg Ticker</td>
+						<td>das</td>
+						<td>Ledas2 Ticker</td>
+						<td>Sprasdad</td>
+					</tr>
+					<tr>
+						<td>Strategy </td>
+						<td>Edasdage</td>
+						<td>Leg Ticker</td>
+						<td>das</td>
+						<td>Ledas2 Ticker</td>
+						<td>Sprasdad</td>
+					</tr>
+					<tr>
+						<td>Strategy </td>
+						<td>Edasdage</td>
+						<td>Leg Ticker</td>
+						<td>das</td>
+						<td>Ledas2 Ticker</td>
+						<td>Sprasdad</td>
+					</tr>
 
 					{/* table data */}
 				</tbody>

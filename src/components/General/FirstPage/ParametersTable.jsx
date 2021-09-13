@@ -10,7 +10,7 @@ const ParametersTable = props => {
 			<table>
 				<tbody className="tableDateCentered">
 					<tr>
-						<th colSpan="4">Parameters</th>
+						<th colSpan="4" className="tableHeaderColor">Parameters</th>
 					</tr>
 
 					<tr>
