@@ -1,60 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../../style/General/FirstPage/StrategiesCreatedTable.scss';
 
 const StrategiesCreatedTable = props => {
+	
+	const [selectedStrategy, setSelectedStrategy] = useState('');
+	useEffect(() => {
+		
+	}, [selectedStrategy])
 	return (
 		<div className="setUpAddStrategyTable">
 			<table>
 				<tbody className="tableDateCentered">
-					{/* table columns  */}
 					<tr className="tableHeaderColor">
 						<th colSpan="6">Strategies Created</th>
 					</tr>
 					<tr className="tableHeaderColor">
-						<th>Strategy Name</th>
-						<th>Exchange</th>
-						<th>Leg 1 Ticker</th>
-						<th>Exchange</th>
-						<th>Leg 2 Ticker</th>
-						<th>Spread</th>
+						{Object.keys(props.mockData[0]).map((strategy, id) => {
+							let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
+							return <td key={id}>{title}</td>;
+						})}
 					</tr>
-					{/* table columns  */}
-					{/* table data */}
-
-					<tr>
-						<td>Strategy </td>
-						<td>Edasdage</td>
-						<td>Leg Ticker</td>
-						<td>das</td>
-						<td>Ledas2 Ticker</td>
-						<td>Sprasdad</td>
-					</tr>
-					<tr>
-						<td>Strategy </td>
-						<td>Edasdage</td>
-						<td>Leg Ticker</td>
-						<td>das</td>
-						<td>Ledas2 Ticker</td>
-						<td>Sprasdad</td>
-					</tr>
-					<tr>
-						<td>Strategy </td>
-						<td>Edasdage</td>
-						<td>Leg Ticker</td>
-						<td>das</td>
-						<td>Ledas2 Ticker</td>
-						<td>Sprasdad</td>
-					</tr>
-					<tr>
-						<td>Strategy </td>
-						<td>Edasdage</td>
-						<td>Leg Ticker</td>
-						<td>das</td>
-						<td>Ledas2 Ticker</td>
-						<td>Sprasdad</td>
-					</tr>
-
-					{/* table data */}
+					{props.mockData.map((strategy, id) => {
+						return (
+							<tr
+								key={strategy.strategyName}
+								className={selectedStrategy !== strategy.strategyName ? 'tableData' : 'tableData activeRow'}
+								onClick={() =>selectedStrategy===strategy.strategyName? 
+								setSelectedStrategy(''):setSelectedStrategy(strategy.strategyName)}
+							>
+								{Object.keys(strategy).map((data, id) => {
+									return <td key={id}>{strategy[data]}</td>;
+								})}
+							</tr>
+						);
+					})}
 				</tbody>
 			</table>
 		</div>
