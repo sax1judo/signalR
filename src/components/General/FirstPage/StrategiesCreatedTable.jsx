@@ -1,12 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import '../../../style/General/FirstPage/StrategiesCreatedTable.scss';
+import { NavLink } from 'react-router-dom';
 
 const StrategiesCreatedTable = props => {
-	
-	const [selectedStrategy, setSelectedStrategy] = useState('');
+	const [selectedStrategies, setSelectedStrategies] = useState([]);
 	useEffect(() => {
-		
-	}, [selectedStrategy])
+		console.log(selectedStrategies);
+	}, [selectedStrategies]);
+
+	const selectStrategy = strategy => {
+		let strategies = [];
+		for (let i = 0; i < selectedStrategies.length; i++) {
+			strategies.push(selectedStrategies[i]);
+		}
+
+		if (strategies.includes(strategy)) {
+			strategies = selectedStrategies.filter(strategies => strategies !== strategy);
+			setSelectedStrategies(strategies);
+		} else {
+			strategies.push(strategy);
+			setSelectedStrategies(strategies);
+		}
+	};
 	return (
 		<div className="setUpAddStrategyTable">
 			<table>
@@ -24,9 +39,8 @@ const StrategiesCreatedTable = props => {
 						return (
 							<tr
 								key={strategy.strategyName}
-								className={selectedStrategy !== strategy.strategyName ? 'tableData' : 'tableData activeRow'}
-								onClick={() =>selectedStrategy===strategy.strategyName? 
-								setSelectedStrategy(''):setSelectedStrategy(strategy.strategyName)}
+								className={selectedStrategies.includes(strategy.strategyName) ? 'tableData activeRow' : 'tableData '}
+								onClick={() => selectStrategy(strategy.strategyName)}
 							>
 								{Object.keys(strategy).map((data, id) => {
 									return <td key={id}>{strategy[data]}</td>;
@@ -36,6 +50,25 @@ const StrategiesCreatedTable = props => {
 					})}
 				</tbody>
 			</table>
+			<div className="buttonsActionsWrapper">
+				<button type="button" className="btn ">
+					<NavLink activeClassName="is-active" to="/modifyStrategy">
+						Modify
+					</NavLink>
+				</button>
+				<button type="button" className="btn ">
+					Load Strategy
+				</button>
+				<button type="button" className="btn  ">
+					Delete Strategy
+				</button>
+				<button type="button" className="btn  ">
+					Load All Strategy
+				</button>
+				<button type="button" className="btn  ">
+					Delete All Strategy
+				</button>
+			</div>
 		</div>
 	);
 };

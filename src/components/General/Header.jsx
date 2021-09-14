@@ -5,7 +5,9 @@ import { NavLink } from 'react-router-dom';
 const Header = () => {
 	return (
 		<div className="header">
-			<div className="logo"> </div>
+			<div className="logo">
+				<NavLink exact to="/"></NavLink>
+			</div>
 			<ul className="navigationLinks">
 				<li>
 					<NavLink activeClassName="is-active" exact to="/">

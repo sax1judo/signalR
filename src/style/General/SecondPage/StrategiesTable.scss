@@ -1,7 +1,4 @@
-
-
-
-.setUpAddStrategyTable {
+.secondPageStrategyTable {
 	table {
 		background: #212529;
 		color: white;
@@ -13,7 +10,9 @@
 		width: 100%;
 		max-width: 100%;
 	}
-
+	.tableDateCentered {
+		text-align: center;
+	}
 	th,
 	td {
 		padding: 10px;
@@ -42,5 +41,12 @@
 			background-color: #242830;
 			border-color: #6d6d6d;
 		}
+	}
+	.buttonsActionsWrapper {
+		display: grid;
+		grid-template-columns: repeat(5, 1fr);
+		gap: 10px;
+		grid-auto-rows: minmax(auto, auto);
+		margin-top: 2rem;
 	}
 }
