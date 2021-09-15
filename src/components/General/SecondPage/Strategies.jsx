@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../../../style/General/SecondPage/StrategiesTable.scss';
 import { NavLink } from 'react-router-dom';
+import ComponentWrapper from '../../General/ComponentWrapper';
 
 const StrategiesTable = props => {
 	const [selectedStrategies, setSelectedStrategies] = useState([]);
@@ -19,12 +20,17 @@ const StrategiesTable = props => {
 			setSelectedStrategies(strategies);
 		}
 	};
+	const showTickerTable = name => {
+		let ticker = document.getElementById(name + 'ticker');
+		ticker.classList.toggle('expanded');
+		ticker.classList.toggle('collapsed');
+	};
 	return (
 		<div className="secondPageStrategyTable">
 			<table>
 				<tbody className="tableDateCentered">
 					<tr className="tableHeaderColor">
-						<th colSpan="11">Strategies</th>
+						<th colSpan="12">Strategies</th>
 					</tr>
 					<tr className="tableHeaderColor">
 						{Object.keys(props.mockData[0]).map((strategy, id) => {
@@ -34,21 +40,69 @@ const StrategiesTable = props => {
 					</tr>
 					{props.mockData.map((strategy, id) => {
 						return (
-							<tr
-								key={strategy.strategyName}
-								className={selectedStrategies.includes(strategy.strategyName) ? 'tableData activeRow' : 'tableData '}
-								onClick={() => selectStrategy(strategy.strategyName)}
-							>
-								{Object.keys(strategy).map((data, id) => {
-									return <td key={id}>{strategy[data]}</td>;
-								})}
-							</tr>
+							<ComponentWrapper>
+								<tr
+									key={strategy.strategyName}
+									className={selectedStrategies.includes(strategy.strategyName) ? 'tableData activeRow' : 'tableData '}
+									onClick={() => selectStrategy(strategy.strategyName)}
+								>
+									{Object.keys(strategy).map((key, id) => {
+										return key !== 'tickers' ? (
+											<td key={id}>{strategy[key]}</td>
+										) : (
+											<td>
+												<button
+													onClick={e => {
+														e.stopPropagation();
+														showTickerTable(strategy.strategyName);
+													}}
+													type="button"
+													className="btn  addStrategyButton"
+												>
+													Details
+												</button>
+											</td>
+										);
+									})}
+								</tr>
+								{/* Tickers collapsed table */}
+								{strategy.tickers.length === 0 ? null : (
+									<tr className="expandedContainer" style={{ pointerEvents: 'none' }}>
+										<td colSpan={Object.keys(strategy).length}>
+											<table id={strategy.strategyName + 'ticker'} className="tickerTableWrapper collapsed">
+												<tbody>
+													<tr>
+														<th colSpan={8} className="tableDateCentered">
+															Tickers
+														</th>
+													</tr>
+
+													{strategy.tickers.map((ticker, id) => {
+														return (
+															<tr id={'ticker' + id} key={id}>
+																{Object.keys(ticker).map((key, id) => {
+																	return (
+																		<ComponentWrapper>
+																			<td key={id + 'tickerKey'}>{key}:</td>
+																			<td key={id + 'tickerValue'}>{ticker[key]}</td>
+																		</ComponentWrapper>
+																	);
+																})}
+															</tr>
+														);
+													})}
+												</tbody>
+											</table>
+										</td>
+									</tr>
+								)}
+								{/* Tickers collapsed table */}
+							</ComponentWrapper>
 						);
 					})}
 				</tbody>
 			</table>
 			<div className="buttonsActionsWrapper">
-				
 				<button type="button" className="btn  addStrategyButton">
 					Select All
 				</button>

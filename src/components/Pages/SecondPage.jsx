@@ -16,6 +16,10 @@ const SecondPage = props => {
 			quantityLegTwo: 3,
 			spreadSet: 2,
 			spreadMkt: 1.75,
+			tickers: [
+				{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+				{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+			],
 		},
 		{
 			satus: 'connected',
@@ -29,6 +33,10 @@ const SecondPage = props => {
 			quantityLegTwo: 3,
 			spreadSet: 2,
 			spreadMkt: 1.75,
+			tickers: [
+				{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+				{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+			],
 		},
 		{
 			satus: 'disconneted',
@@ -42,6 +50,10 @@ const SecondPage = props => {
 			quantityLegTwo: 3,
 			spreadSet: 2,
 			spreadMkt: 1.75,
+			tickers: [
+				{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+				{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+			],
 		},
 		{
 			satus: 'connected',
@@ -55,6 +67,10 @@ const SecondPage = props => {
 			quantityLegTwo: 3,
 			spreadSet: 2,
 			spreadMkt: 1.75,
+			tickers: [
+				{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+				{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+			],
 		},
 		{
 			satus: 'disconnected',
@@ -68,11 +84,15 @@ const SecondPage = props => {
 			quantityLegTwo: 3,
 			spreadSet: 2,
 			spreadMkt: 1.75,
+			tickers: [
+				{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+				{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+			],
 		},
 	];
 	return (
 		<div className="strategiesSecondPageWrapper">
-			<div className='futurresArbitrageStrategies'>
+			<div className="futurresArbitrageStrategies">
 				<h4 style={{ textAlign: 'center' }}>Futures Arbitrage Monitoring</h4>
 				<div>
 					<StrategiesTable mockData={createdStrategies} />
