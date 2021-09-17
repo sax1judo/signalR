@@ -57,9 +57,10 @@ const UpdateTickerParameters = props => {
 		let data = spreadPricesNew;
 		data[key].active = !data[key].active;
 
-		httpRequest(API.getPricesSpreadNew, 'put', data).then(res => {
+		httpRequest(API.getPricesSpreadNew + key, 'put', data).then(res => {
 			console.log(res);
 		});
+		//Check here for updating params
 		setSpreadPrices({ ...spreadPricesNew });
 	};
 
@@ -158,7 +159,6 @@ const UpdateTickerParameters = props => {
 				value={spreadPricesNew.pointsAway}
 				onChange={e => handleSpreadPricesNewChange(e, 'pointsAway')}
 			/>
-			
 		</div>
 	) : null;
 };

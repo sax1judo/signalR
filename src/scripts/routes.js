@@ -9,7 +9,7 @@ export const API = {
 	signalRChannel: 'http://35.225.80.47:8080/strategyState',
 	getTrades: 'http://35.225.80.47:8080/strategyState',
 	getPricesSpread: 'http://35.225.80.47:8080/prices/spread',
-	getPricesSpreadNew: 'http://35.225.80.47:8080/prices/newspread',
+	getPricesSpreadNew: 'http://35.225.80.47:8080/prices/newspread/',
 	getPrices: 'http://35.225.80.47:8080/prices/ticker/',
 	pricesConnect: 'http://35.225.80.47:8080/prices/ib/connect',
 	pricesDisconnect: 'http://35.225.80.47:8080/prices/ib/disconnect',
