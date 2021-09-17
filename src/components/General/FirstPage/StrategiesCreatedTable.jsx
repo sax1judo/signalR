@@ -5,24 +5,33 @@ import MyVerticallyCenteredModal from '../MyVerticallyCenteredModal';
 
 const StrategiesCreatedTable = props => {
 	const [selectedStrategies, setSelectedStrategies] = useState([]);
+	const [selectedStrategiesObject, setSelectedStrategiesObject] = useState([]);
 	const [modalShow, setModalShow] = useState(false);
 
 	useEffect(() => {
 		console.log(selectedStrategies);
 	}, [selectedStrategies]);
 
-	const selectStrategy = strategy => {
+	const selectStrategy = (strategy, strategyObject) => {
 		let strategies = [];
+		let strategiesObject = [];
 		for (let i = 0; i < selectedStrategies.length; i++) {
 			strategies.push(selectedStrategies[i]);
+		}
+		for (let i = 0; i < selectedStrategiesObject.length; i++) {
+			strategiesObject.push(selectedStrategiesObject[i]);
 		}
 
 		if (strategies.includes(strategy)) {
 			strategies = selectedStrategies.filter(strategies => strategies !== strategy);
+			strategiesObject = selectedStrategiesObject.filter(strategies => strategies.strategyName !== strategy);
 			setSelectedStrategies(strategies);
+			setSelectedStrategiesObject(strategiesObject);
 		} else {
 			strategies.push(strategy);
+			strategiesObject.push(strategyObject);
 			setSelectedStrategies(strategies);
+			setSelectedStrategiesObject(strategiesObject);
 		}
 	};
 	return (
@@ -43,7 +52,7 @@ const StrategiesCreatedTable = props => {
 							<tr
 								key={strategy.strategyName}
 								className={selectedStrategies.includes(strategy.strategyName) ? 'tableData activeRow' : 'tableData '}
-								onClick={() => selectStrategy(strategy.strategyName)}
+								onClick={() => selectStrategy(strategy.strategyName, strategy)}
 							>
 								{Object.keys(strategy).map((data, id) => {
 									return <td key={id}>{strategy[data]}</td>;
@@ -64,7 +73,7 @@ const StrategiesCreatedTable = props => {
 						activeClassName="is-active"
 						to={{
 							pathname: '/modifyStrategy',
-							strategy: selectedStrategies,
+							strategy: selectedStrategiesObject,
 						}}
 					>
 						Modify

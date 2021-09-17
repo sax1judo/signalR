@@ -6,22 +6,33 @@ import MyVerticallyCenteredModal from '../MyVerticallyCenteredModal';
 
 const StrategiesTable = props => {
 	const [selectedStrategies, setSelectedStrategies] = useState([]);
+	const [selectedStrategiesObject, setSelectedStrategiesObject] = useState([]);
 	const [modalShow, setModalShow] = useState(false);
 
-	useEffect(() => {}, [selectedStrategies]);
+	useEffect(() => {
+		console.log(selectedStrategiesObject)
+	}, [selectedStrategies,selectedStrategiesObject]);
 
 	const selectStrategy = (strategy, strategyObject) => {
 		let strategies = [];
+		let strategiesObject = [];
 		for (let i = 0; i < selectedStrategies.length; i++) {
 			strategies.push(selectedStrategies[i]);
+		}
+		for (let i = 0; i < selectedStrategiesObject.length; i++) {
+			strategiesObject.push(selectedStrategiesObject[i]);
 		}
 
 		if (strategies.includes(strategy)) {
 			strategies = selectedStrategies.filter(strategies => strategies !== strategy);
+			strategiesObject = selectedStrategiesObject.filter(strategies => strategies.strategyName !== strategy);
 			setSelectedStrategies(strategies);
+			setSelectedStrategiesObject(strategiesObject);
 		} else {
 			strategies.push(strategy);
+			strategiesObject.push(strategyObject);
 			setSelectedStrategies(strategies);
+			setSelectedStrategiesObject(strategiesObject);
 		}
 	};
 	const showTickerTable = name => {
@@ -158,7 +169,7 @@ const StrategiesTable = props => {
 						activeClassName="is-active"
 						to={{
 							pathname: '/modifyStrategy',
-							strategy: selectedStrategies,
+							strategy: selectedStrategiesObject,
 						}}
 					>
 						Modify
