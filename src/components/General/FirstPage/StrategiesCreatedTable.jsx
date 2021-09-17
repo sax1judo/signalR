@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import '../../../style/General/FirstPage/StrategiesCreatedTable.scss';
 import { NavLink } from 'react-router-dom';
+import MyVerticallyCenteredModal from '../MyVerticallyCenteredModal';
 
 const StrategiesCreatedTable = props => {
 	const [selectedStrategies, setSelectedStrategies] = useState([]);
+	const [modalShow, setModalShow] = useState(false);
+
 	useEffect(() => {
 		console.log(selectedStrategies);
 	}, [selectedStrategies]);
@@ -51,24 +54,53 @@ const StrategiesCreatedTable = props => {
 				</tbody>
 			</table>
 			<div className="buttonsActionsWrapper">
-				<button type="button" className="btn ">
-					<NavLink activeClassName="is-active" to="/modifyStrategy">
+				<button
+					type="button"
+					className="btn linkButton"
+					disabled={selectedStrategies.length === 1 ? false : true}
+					style={selectedStrategies.length === 1 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
+				>
+					<NavLink
+						activeClassName="is-active"
+						to={{
+							pathname: '/modifyStrategy',
+							strategy: selectedStrategies,
+						}}
+					>
 						Modify
 					</NavLink>
 				</button>
-				<button type="button" className="btn ">
+				<button
+					type="button"
+					className="btn "
+					disabled={selectedStrategies.length === 0 ? true : false}
+					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+				>
 					Load Strategy
 				</button>
-				<button type="button" className="btn  ">
+				<button
+					type="button"
+					className="btn"
+					onClick={() => setModalShow(true)}
+					disabled={selectedStrategies.length === 0 ? true : false}
+					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+				>
 					Delete Strategy
 				</button>
 				<button type="button" className="btn  ">
-					Load All Strategy
+					Load All Strategies
 				</button>
-				<button type="button" className="btn  ">
-					Delete All Strategy
+				<button type="button" className="btn" onClick={() => setModalShow(true)}>
+					Delete All Strategies
 				</button>
 			</div>
+			<MyVerticallyCenteredModal
+				show={modalShow}
+				onHide={param => {
+					setModalShow(false);
+					console.log(param);
+				}}
+			/>
 		</div>
 	);
 };

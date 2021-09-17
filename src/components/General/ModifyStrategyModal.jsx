@@ -1,13 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../style/General/ModifyStrategyModal.scss';
 import { NavLink } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 const ModifyStrategyModal = props => {
+	const [formData, setFormData] = useState(null);
+	
 	let history = useHistory();
+	let location = useLocation();
+
 	const goToPreviousPath = () => {
 		history.goBack();
 	};
+	
+	useEffect(() => {
+		setFormData(location.strategy);
+	}, []);
 	return (
 		<div className="modifyStrategyWrapper ">
 			<div className="setUpParametersTable">

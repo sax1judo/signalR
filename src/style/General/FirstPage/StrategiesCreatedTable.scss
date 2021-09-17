@@ -47,6 +47,17 @@
 		gap: 10px;
 		grid-auto-rows: minmax(auto, auto);
 		margin-top: 2rem;
-		
+		.linkButton {
+			display: flex;
+			padding: 0;
+			justify-content: center;
+			align-items: center;
+			vertical-align: middle;
+			a {
+				display: flex;
+				flex: 1;
+				justify-content: center;
+			}
+		}
 	}
 }

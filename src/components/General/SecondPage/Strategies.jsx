@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import '../../../style/General/SecondPage/StrategiesTable.scss';
 import { NavLink } from 'react-router-dom';
 import ComponentWrapper from '../../General/ComponentWrapper';
+import MyVerticallyCenteredModal from '../MyVerticallyCenteredModal';
 
 const StrategiesTable = props => {
 	const [selectedStrategies, setSelectedStrategies] = useState([]);
+	const [modalShow, setModalShow] = useState(false);
+
 	useEffect(() => {}, [selectedStrategies]);
-	const selectStrategy = strategy => {
+
+	const selectStrategy = (strategy, strategyObject) => {
 		let strategies = [];
 		for (let i = 0; i < selectedStrategies.length; i++) {
 			strategies.push(selectedStrategies[i]);
@@ -44,7 +48,7 @@ const StrategiesTable = props => {
 								<tr
 									key={strategy.strategyName}
 									className={selectedStrategies.includes(strategy.strategyName) ? 'tableData activeRow' : 'tableData '}
-									onClick={() => selectStrategy(strategy.strategyName)}
+									onClick={() => selectStrategy(strategy.strategyName, strategy)}
 								>
 									{Object.keys(strategy).map((key, id) => {
 										return key !== 'tickers' ? (
@@ -57,7 +61,8 @@ const StrategiesTable = props => {
 														showTickerTable(strategy.strategyName);
 													}}
 													type="button"
-													className="btn  addStrategyButton"
+													className="btn addStrategyButton"
+													disabled={strategy.tickers.length === 0 ? true : false}
 												>
 													Details
 												</button>
@@ -115,21 +120,58 @@ const StrategiesTable = props => {
 				<button type="button" className="btn  addStrategyButton">
 					Select All Sells
 				</button>
-				<button type="button" className="btn  addStrategyButton">
+				<button
+					type="button"
+					className="btn  addStrategyButton"
+					onClick={() => setModalShow(true)}
+					disabled={selectedStrategies.length === 0 ? true : false}
+					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+				>
 					Delete Strategy
 				</button>
-				<button type="button" className="btn  addStrategyButton">
+				<button
+					type="button"
+					className="btn  addStrategyButton"
+					disabled={selectedStrategies.length === 0 ? true : false}
+					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+				>
 					Start Strategy
 				</button>
-				<button type="button" className="btn  addStrategyButton">
+				<button
+					type="button"
+					className="btn  addStrategyButton"
+					disabled={selectedStrategies.length === 0 ? true : false}
+					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+				>
 					Stop Strategy
 				</button>
-				<button type="button" className="btn  addStrategyButton">
-					<NavLink activeClassName="is-active" to="/modifyStrategy">
+				<button type="button" className="btn  addStrategyButton" onClick={() => setModalShow(true)}>
+					Stop All Strategy
+				</button>
+				<button
+					type="button"
+					className="btn  addStrategyButton"
+					disabled={selectedStrategies.length === 1 ? false : true}
+					style={selectedStrategies.length === 1 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
+				>
+					<NavLink
+						activeClassName="is-active"
+						to={{
+							pathname: '/modifyStrategy',
+							strategy: selectedStrategies,
+						}}
+					>
 						Modify
 					</NavLink>
 				</button>
 			</div>
+			<MyVerticallyCenteredModal
+				show={modalShow}
+				onHide={param => {
+					setModalShow(false);
+					console.log(param);
+				}}
+			/>
 		</div>
 	);
 };

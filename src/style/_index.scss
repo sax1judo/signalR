@@ -1,6 +1,6 @@
 html,
 body {
-	background-color: #31373f!important;
+	background-color: #31373f !important;
 }
 #root {
 	width: 100%;
@@ -15,5 +15,18 @@ body {
 		margin: auto;
 		margin-top: 2rem;
 		margin-bottom: 3rem;
+	}
+}
+.modal-content {
+	border-radius: 12px!important;
+	background: #2d3238!important;
+	.modal-body {
+		color: white;
+		text-align: center;
+		background: #2d3238;
+		border-radius: 8px;
+		button{
+			width: 30%;
+		}
 	}
 }

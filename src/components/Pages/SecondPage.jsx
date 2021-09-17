@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import StrategiesTable from '../General/SecondPage/Strategies';
 import '../../style/Pages/SecondPage.scss';
+import LiveOrders from '../General/SecondPage/LiveOrders';
 
 const SecondPage = props => {
 	const createdStrategies = [
@@ -16,10 +17,7 @@ const SecondPage = props => {
 			quantityLegTwo: 3,
 			spreadSet: 2,
 			spreadMkt: 1.75,
-			tickers: [
-				{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-				{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-			],
+			tickers: [],
 		},
 		{
 			satus: 'connected',
@@ -90,12 +88,64 @@ const SecondPage = props => {
 			],
 		},
 	];
+	const liveOrders = [
+		{
+			time: '11:40:01',
+			status: 'Live',
+			type: 'Buy',
+			strategyName: 'Buy ISP',
+			ticker: 'ES U21',
+			quantity: 2,
+			quantityFilled: 0,
+			price: 4250.00,
+			averagePrice: 2,
+		},
+		{
+			time: '11:40:01',
+			status: 'Live',
+			type: 'Buy',
+			strategyName: 'sell ISP',
+			ticker: 'ES U21',
+			quantity: 2,
+			quantityFilled: 0,
+			price: 4250.00,
+			averagePrice: 2,
+		},
+		{
+			time: '11:40:01',
+			status: 'Live',
+			type: 'Buy',
+			strategyName: 'Buyy ISP',
+			ticker: 'ES U21',
+			quantity: 2,
+			quantityFilled: 0,
+			price: 4250.00,
+			averagePrice: 2,
+		},
+		{
+			time: '11:40:01',
+			status: 'Live',
+			type: 'Buy',
+			strategyName: 'Sell ISP',
+			ticker: 'ES U21',
+			quantity: 2,
+			quantityFilled: 0,
+			price: 4250.00,
+			averagePrice: 2,
+		},
+	];
 	return (
 		<div className="strategiesSecondPageWrapper">
-			<div className="futurresArbitrageStrategies">
+			<div className="futuresArbitrageStrategies">
 				<h4 style={{ textAlign: 'center' }}>Futures Arbitrage Monitoring</h4>
 				<div>
 					<StrategiesTable mockData={createdStrategies} />
+				</div>
+			</div>
+			<div className="liveOrdersWrapper">
+				<h4 style={{ textAlign: 'center' }}>Live Orders</h4>
+				<div>
+					<LiveOrders  mockData={liveOrders}/>
 				</div>
 			</div>
 		</div>
