@@ -1,0 +1,38 @@
+.connectionMonitoringWrapper {
+	display: flex;
+	flex-direction: row;
+	width: 25%;
+	table {
+		background: #212529;
+		color: white;
+		font-size: 0.8rem;
+		border-spacing: 0;
+		border-collapse: collapse;
+		border-style: hidden;
+		text-align: center;
+		width: 100%;
+		max-width: 100%;
+        table-layout: fixed;
+	}
+	.tableDateCentered {
+		text-align: center;
+	}
+	th,
+	td {
+		padding: 10px;
+		border: 1px solid #3c3c3c;
+		text-transform: capitalize;
+	}
+	.tableHeaderColor {
+		background: #1c2026;
+	}
+	.connectionInfoData {
+		display: flex;
+		justify-content: center;
+	}
+	.connectionInfoIcon {
+		background-repeat: no-repeat;
+		background-position: center;
+		flex: 0.2;
+	}
+}

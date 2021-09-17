@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import StrategiesTable from '../General/SecondPage/Strategies';
 import '../../style/Pages/SecondPage.scss';
 import LiveOrders from '../General/SecondPage/LiveOrders';
+import ConnectionMonitoring from '../General/SecondPage/ConnectionMonitoring';
 
 const SecondPage = props => {
 	const createdStrategies = [
 		{
-			satus: 'connected',
+			satus: 'running',
 			strategyName: 'Buy ISP',
 			type: 'sell',
 			legOneTicker: 'ISP U21',
@@ -20,7 +21,7 @@ const SecondPage = props => {
 			tickers: [],
 		},
 		{
-			satus: 'connected',
+			satus: 'running',
 			strategyName: 'sell ISP',
 			type: 'Buy',
 			legOneTicker: 'ISP U21',
@@ -37,7 +38,7 @@ const SecondPage = props => {
 			],
 		},
 		{
-			satus: 'disconneted',
+			satus: 'paused',
 			strategyName: 'Buy ISsP',
 			type: 'Buy',
 			legOneTicker: 'ISP U21',
@@ -54,7 +55,7 @@ const SecondPage = props => {
 			],
 		},
 		{
-			satus: 'connected',
+			satus: 'paused',
 			strategyName: 'Buy ISPr',
 			type: 'Buy',
 			legOneTicker: 'ISP U21',
@@ -71,7 +72,7 @@ const SecondPage = props => {
 			],
 		},
 		{
-			satus: 'disconnected',
+			satus: 'stoped',
 			strategyName: 'SELL ISP',
 			type: 'Buy',
 			legOneTicker: 'ISP U21',
@@ -97,7 +98,7 @@ const SecondPage = props => {
 			ticker: 'ES U21',
 			quantity: 2,
 			quantityFilled: 0,
-			price: 4250.00,
+			price: 4250.0,
 			averagePrice: 2,
 		},
 		{
@@ -108,7 +109,7 @@ const SecondPage = props => {
 			ticker: 'ES U21',
 			quantity: 2,
 			quantityFilled: 0,
-			price: 4250.00,
+			price: 4250.0,
 			averagePrice: 2,
 		},
 		{
@@ -119,7 +120,7 @@ const SecondPage = props => {
 			ticker: 'ES U21',
 			quantity: 2,
 			quantityFilled: 0,
-			price: 4250.00,
+			price: 4250.0,
 			averagePrice: 2,
 		},
 		{
@@ -130,7 +131,7 @@ const SecondPage = props => {
 			ticker: 'ES U21',
 			quantity: 2,
 			quantityFilled: 0,
-			price: 4250.00,
+			price: 4250.0,
 			averagePrice: 2,
 		},
 	];
@@ -138,6 +139,7 @@ const SecondPage = props => {
 		<div className="strategiesSecondPageWrapper">
 			<div className="futuresArbitrageStrategies">
 				<h4 style={{ textAlign: 'center' }}>Futures Arbitrage Monitoring</h4>
+				<ConnectionMonitoring />
 				<div>
 					<StrategiesTable mockData={createdStrategies} />
 				</div>
@@ -145,7 +147,7 @@ const SecondPage = props => {
 			<div className="liveOrdersWrapper">
 				<h4 style={{ textAlign: 'center' }}>Live Orders</h4>
 				<div>
-					<LiveOrders  mockData={liveOrders}/>
+					<LiveOrders mockData={liveOrders} />
 				</div>
 			</div>
 		</div>
