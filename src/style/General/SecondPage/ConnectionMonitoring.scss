@@ -12,7 +12,7 @@
 		text-align: center;
 		width: 100%;
 		max-width: 100%;
-        table-layout: fixed;
+		table-layout: fixed;
 	}
 	.tableDateCentered {
 		text-align: center;
@@ -28,11 +28,18 @@
 	}
 	.connectionInfoData {
 		display: flex;
-		justify-content: center;
+		justify-content: space-between;
+		position: relative;
 	}
 	.connectionInfoIcon {
 		background-repeat: no-repeat;
 		background-position: center;
-		flex: 0.2;
+		background-size: contain;
+		position: absolute;
+		right: 0;
+		top: 16%;
+		height: 70%;
+		width: 30%;
+		margin: auto;
 	}
 }

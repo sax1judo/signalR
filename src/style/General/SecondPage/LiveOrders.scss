@@ -1,4 +1,10 @@
 .setUpAddStrategyTable{
+    th,
+	td {
+		padding: 14px;
+		border: 1px solid #3c3c3c;
+		text-transform: capitalize;
+	}
     .tableDateCentered{
         text-align: center;
     }

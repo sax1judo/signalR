@@ -10,8 +10,8 @@ const StrategiesTable = props => {
 	const [modalShow, setModalShow] = useState(false);
 
 	useEffect(() => {
-		console.log(selectedStrategiesObject)
-	}, [selectedStrategies,selectedStrategiesObject]);
+		console.log(selectedStrategiesObject);
+	}, [selectedStrategies, selectedStrategiesObject]);
 
 	const selectStrategy = (strategy, strategyObject) => {
 		let strategies = [];
@@ -83,7 +83,11 @@ const StrategiesTable = props => {
 								</tr>
 								{/* Tickers collapsed table */}
 								{strategy.tickers.length === 0 ? null : (
-									<tr className="expandedContainer" style={{ pointerEvents: 'none' }}>
+									<tr
+										key={strategy.strategyName + 'tickers'}
+										className="expandedContainer"
+										style={{ pointerEvents: 'none' }}
+									>
 										<td colSpan={Object.keys(strategy).length}>
 											<table id={strategy.strategyName + 'ticker'} className="tickerTableWrapper collapsed">
 												<tbody>
@@ -157,7 +161,7 @@ const StrategiesTable = props => {
 					Stop Strategy
 				</button>
 				<button type="button" className="btn  addStrategyButton" onClick={() => setModalShow(true)}>
-					Stop All Strategy
+					Stop All Strategies
 				</button>
 				<button
 					type="button"

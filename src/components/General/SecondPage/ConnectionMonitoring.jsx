@@ -3,7 +3,7 @@ import '../../../style/General/SecondPage/ConnectionMonitoring.scss';
 
 const ConnectionMonitoring = props => {
 	const connectionEnum = ['connected', 'unstable', 'disconnected'];
-	const connectionInfo = { IB: 'connected', TT: 'unstable' };
+	const connectionInfo = { IB: 'disconnected', TT: 'connected' };
 
 	return (
 		<div className="connectionMonitoringWrapper">
