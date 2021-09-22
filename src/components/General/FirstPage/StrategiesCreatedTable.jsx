@@ -2,8 +2,56 @@ import React, { useEffect, useState } from 'react';
 import '../../../style/General/FirstPage/StrategiesCreatedTable.scss';
 import { NavLink } from 'react-router-dom';
 import MyVerticallyCenteredModal from '../MyVerticallyCenteredModal';
+import sortIcon from '../../../assets/sortIcon.png';
+import sortAscIcon from '../../../assets/sortIconAsc.png';
 
 const StrategiesCreatedTable = props => {
+	const [data, setData] = useState({
+		mockData: [
+			{
+				strategyName: 'Buy ISP',
+				exchangeOne: 'TT',
+				legOneTicker: 'ISP U21',
+				exchangeTwo: 'IB',
+				legTwoTicker: 'ES U21',
+				spread: 2,
+			},
+			{
+				strategyName: 'SEeLL ISP',
+				exchangeOne: 'IB',
+				legOneTicker: 'ISP U21',
+				exchangeTwo: 'IB',
+				legTwoTicker: 'ES U21',
+				spread: 7,
+			},
+			{
+				strategyName: 'SEL ISP',
+				exchangeOne: 'TT',
+				legOneTicker: 'ISP U21',
+				exchangeTwo: 'IB',
+				legTwoTicker: 'ES U21',
+				spread: 9,
+			},
+			{
+				strategyName: 'BUuY ISP',
+				exchangeOne: 'TT',
+				legOneTicker: 'ISP U21',
+				exchangeTwo: 'IB',
+				legTwoTicker: 'ES U21',
+				spread: 3,
+			},
+			{
+				strategyName: 'SELLl ISP',
+				exchangeOne: 'TT',
+				legOneTicker: 'ISP U21',
+				exchangeTwo: 'IB',
+				legTwoTicker: 'ES U21',
+				spread: 4,
+			},
+		],
+	});
+	const [sortField, setSortField] = useState('');
+	const [sortOrder, setSortOrder] = useState('dsc');
 	const [selectedStrategies, setSelectedStrategies] = useState([]);
 	const [selectedStrategiesObject, setSelectedStrategiesObject] = useState([]);
 	const [modalShow, setModalShow] = useState(false);
@@ -34,6 +82,22 @@ const StrategiesCreatedTable = props => {
 			setSelectedStrategiesObject(strategiesObject);
 		}
 	};
+	const compareBy = key => {
+		let reverse = sortOrder === 'asc' ? 1 : -1;
+		sortOrder === 'asc' ? setSortOrder('desc') : setSortOrder('asc');
+		return function (a, b) {
+			if (a[key] < b[key]) return -1 * reverse;
+			if (a[key] > b[key]) return 1 * reverse;
+			return 0;
+		};
+	};
+
+	const sortBy = key => {
+		let arrayCopy = [...data.mockData];
+		arrayCopy.sort(compareBy(key));
+		setData({ mockData: arrayCopy });
+		setSortField(key);
+	};
 	return (
 		<div className="setUpAddStrategyTable">
 			<table>
@@ -42,12 +106,28 @@ const StrategiesCreatedTable = props => {
 						<th colSpan="6">Strategies Created</th>
 					</tr>
 					<tr className="tableHeaderColor">
-						{Object.keys(props.mockData[0]).map((strategy, id) => {
+						{Object.keys(data.mockData[0]).map((strategy, id) => {
 							let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
-							return <td key={id}>{title}</td>;
+							return (
+								<td onClick={() => sortBy(strategy)} key={id}>
+									{title}
+									{sortField === strategy ? (
+										<img
+											style={
+												sortOrder === 'asc'
+													? { height: '1.2rem', float: 'right', transform: 'rotate(180deg)' }
+													: { height: '1.2rem', float: 'right' }
+											}
+											src={sortAscIcon}
+										></img>
+									) : (
+										<img style={{ height: '1.2rem', float: 'right' }} src={sortIcon}></img>
+									)}
+								</td>
+							);
 						})}
 					</tr>
-					{props.mockData.map((strategy, id) => {
+					{data.mockData.map((strategy, id) => {
 						return (
 							<tr
 								key={strategy.strategyName}
