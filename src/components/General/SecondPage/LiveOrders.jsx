@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import '../../../style/General/SecondPage/LiveOrders.scss';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import { API } from '../../../scripts/routes';
@@ -10,11 +10,10 @@ const LiveOrders = props => {
 	const [connection, setConnection] = useState(null);
 	const [data, setData] = useState({ liveOrders: [] });
 	const [sortField, setSortField] = useState('');
-	const [sortOrder, setSortOrder] = useState('dsc');
+	const sortOrder = useRef('dsc');
 
-	const compareBy = key => {
-		let reverse = sortOrder === 'asc' ? 1 : -1;
-		sortOrder === 'asc' ? setSortOrder('desc') : setSortOrder('asc');
+	const compareBy = (key, direction) => {
+		let reverse = direction === 'asc' ? 1 : -1;
 		return function (a, b) {
 			if (a[key] < b[key]) return -1 * reverse;
 			if (a[key] > b[key]) return 1 * reverse;
@@ -22,11 +21,11 @@ const LiveOrders = props => {
 		};
 	};
 
-	const sortBy = key => {
-		let arrayCopy = [...data.liveOrders];
-		arrayCopy.sort(compareBy(key));
-		setData({ liveOrders: arrayCopy });
+	const sortBy = (data, key, direction) => {
+		let arrayCopy = data;
+		arrayCopy.sort(compareBy(key, direction));
 		setSortField(key);
+		return arrayCopy;
 	};
 
 	useEffect(() => {
@@ -60,12 +59,17 @@ const LiveOrders = props => {
 								}
 							}
 							if (!swapped) {
-								newData.push(newMessage);
+								if (sortOrder.current === 'asc') newData.push(newMessage);
+								else newData.unshift(newMessage);
 							}
 						}
-
-						setSortField('');
-						setData({ liveOrders: newData });
+						if (sortOrder.current === 'asc') {
+							let sortedData = sortBy(newData, 'timestamp', 'asc');
+							setData({ liveOrders: sortedData });
+						} else {
+							let sortedData = sortBy(newData, 'timestamp', 'dsc');
+							setData({ liveOrders: sortedData });
+						}
 					});
 				})
 				.catch(e => console.log('Connection failed: ', e));
@@ -87,12 +91,23 @@ const LiveOrders = props => {
 							{Object.keys(data.liveOrders[0]).map((liveOrders, id) => {
 								let title = liveOrders.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
 								return (
-									<th onClick={() => sortBy(liveOrders)} key={id}>
+									<th
+										onClick={() => {
+											if (sortOrder.current === 'dsc') {
+												sortOrder.current = 'asc';
+											} else {
+												sortOrder.current = 'dsc';
+											}
+											let sortedData = sortBy(data.liveOrders, liveOrders, sortOrder.current);
+											setData({ liveOrders: sortedData });
+										}}
+										key={id}
+									>
 										{title}
 										{sortField === liveOrders ? (
 											<img
 												style={
-													sortOrder === 'asc'
+													sortOrder.current === 'asc'
 														? { height: '1.2rem', float: 'right', transform: 'rotate(180deg)' }
 														: { height: '1.2rem', float: 'right' }
 												}
