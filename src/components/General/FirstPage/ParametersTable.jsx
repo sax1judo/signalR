@@ -139,13 +139,15 @@ const ParametersTable = props => {
 									}
 								/>
 								{state.parameters.clip !== '' ? (
-									Number.isInteger(parseFloat(state.parameters.clip)) ? (
+									parseFloat(state.parameters.clip) > 0 && Number.isInteger(parseFloat(state.parameters.clip)) ? (
 										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
 											Looks good!
 										</div>
 									) : (
 										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											Please type integer value.
+											{parseFloat(state.parameters.clip) > 0
+												? 'Please type integer value.'
+												: 'Please type greater than zero.'}
 										</div>
 									)
 								) : null}
@@ -190,13 +192,16 @@ const ParametersTable = props => {
 									}
 								/>
 								{state.parameters.limitBuy !== '' ? (
+									parseFloat(state.parameters.limitBuy) > 0 &&
 									Number.isInteger(parseFloat(state.parameters.limitBuy)) ? (
 										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
 											Looks good!
 										</div>
 									) : (
 										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											Please type integer value.
+											{parseFloat(state.parameters.limitBuy) > 0
+												? 'Please type integer value.'
+												: 'Please type greater than zero.'}
 										</div>
 									)
 								) : null}
@@ -240,13 +245,16 @@ const ParametersTable = props => {
 									}
 								/>
 								{state.parameters.limitSell !== '' ? (
+									parseFloat(state.parameters.limitSell) > 0 &&
 									Number.isInteger(parseFloat(state.parameters.limitSell)) ? (
 										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
 											Looks good!
 										</div>
 									) : (
 										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											Please type integer value.
+											{parseFloat(state.parameters.limitSell) > 0
+												? 'Please type integer value.'
+												: 'Please type greater than zero.'}
 										</div>
 									)
 								) : null}
