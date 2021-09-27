@@ -43,3 +43,17 @@
 		margin: auto;
 	}
 }
+@media screen and (max-width: 1500px) {
+	.connectionMonitoringWrapper {
+		width: 50%;
+	}
+}
+@media screen and (max-width: 1000px) {
+	.connectionMonitoringWrapper {
+		width: 90%;
+		margin: auto;
+		table{
+			font-size: 0.6rem;
+		}
+	}
+}

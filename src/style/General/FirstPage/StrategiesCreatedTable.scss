@@ -79,3 +79,12 @@
 		}
 	}
 }
+@media screen and (max-width: 730px) {
+	.setUpAddStrategyTable {
+		overflow-x: scroll;
+		table{
+			font-size: 0.5rem;
+		}
+	}
+	
+}

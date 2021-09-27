@@ -13,8 +13,9 @@
 
 	th,
 	td {
-		padding: 10px;
+		padding: 14px;
 		border: 1px solid #3c3c3c;
+		position: relative;
 	}
 	.tableHeaderColor {
 		background: #1c2026;
@@ -74,4 +75,46 @@
 	// 		opacity: 1;
 	// 	}
 	// }
+}
+.setUpDatabaseTable {
+	table {
+		background: #212529;
+		color: white;
+		font-size: 0.8rem;
+		border-spacing: 0;
+		border-collapse: collapse;
+		border-style: hidden;
+
+		width: 100%;
+		max-width: 100%;
+	}
+
+	th,
+	td {
+		padding: 14px;
+		border: 1px solid #3c3c3c;
+	}
+	.tableHeaderColor {
+		background: #1c2026;
+	}
+	input {
+		background: #1c2026;
+		border: 1px solid #3c3c3c;
+		color: WHITE;
+		padding: 0.3em 1.4em 0.4em 0.9em;
+		width: -webkit-fill-available;
+		&:hover {
+			background-color: #242830;
+			border-color: #6d6d6d;
+		}
+	}
+}
+@media screen and (max-width: 730px) {
+	.setUpDatabaseTable,.setUpParametersTable {
+		overflow-x: scroll;
+		table{
+			font-size: 0.5rem;
+		}
+	}
+	
 }
