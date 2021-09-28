@@ -36,7 +36,7 @@ const ParametersTable = props => {
 	};
 
 	useEffect(() => {
-		console.log(state);
+		// console.log(state);
 	}, [state]);
 
 	return (

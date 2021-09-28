@@ -4,51 +4,12 @@ import { NavLink } from 'react-router-dom';
 import MyVerticallyCenteredModal from '../MyVerticallyCenteredModal';
 import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
+import { httpRequest } from '../../../scripts/http';
+import { API } from '../../../scripts/routes';
 
 const StrategiesCreatedTable = props => {
 	const [data, setData] = useState({
-		mockData: [
-			{
-				strategyName: 'Buy ISP',
-				exchangeOne: 'TT',
-				legOneTicker: 'ISP U21',
-				exchangeTwo: 'IB',
-				legTwoTicker: 'ES U21',
-				spread: 2,
-			},
-			{
-				strategyName: 'SEeLL ISP',
-				exchangeOne: 'IB',
-				legOneTicker: 'ISP U21',
-				exchangeTwo: 'IB',
-				legTwoTicker: 'ES U21',
-				spread: 7,
-			},
-			{
-				strategyName: 'SEL ISP',
-				exchangeOne: 'TT',
-				legOneTicker: 'ISP U21',
-				exchangeTwo: 'IB',
-				legTwoTicker: 'ES U21',
-				spread: 9,
-			},
-			{
-				strategyName: 'BUuY ISP',
-				exchangeOne: 'TT',
-				legOneTicker: 'ISP U21',
-				exchangeTwo: 'IB',
-				legTwoTicker: 'ES U21',
-				spread: 3,
-			},
-			{
-				strategyName: 'SELLl ISP',
-				exchangeOne: 'TT',
-				legOneTicker: 'ISP U21',
-				exchangeTwo: 'IB',
-				legTwoTicker: 'ES U21',
-				spread: 4,
-			},
-		],
+		realData: [{}],
 	});
 	const [sortField, setSortField] = useState('');
 	const [sortOrder, setSortOrder] = useState('dsc');
@@ -56,10 +17,21 @@ const StrategiesCreatedTable = props => {
 	const [selectedStrategiesObject, setSelectedStrategiesObject] = useState([]);
 	const [modalShow, setModalShow] = useState(false);
 
-	useEffect(() => {
-		console.log(selectedStrategies);
-	}, [selectedStrategies]);
-
+	const getArbitrageStrategies = () => {
+		httpRequest(API.arbitrageStrategies, 'get').then(res => {
+			var modifyResponse = [];
+			Object.keys(res.data).map(strategyKey => {
+				let obj = res.data[strategyKey];
+				let { clip, leg1LimitBuy, leg1LimitSell, pointsAway, ...exclObj } = obj;
+				for (let strategy in exclObj) {
+					let strategyName = exclObj[strategy].leg1Action + exclObj[strategy].leg1Ticker;
+					exclObj[strategy] = { strategyName, ...exclObj[strategy] };
+					modifyResponse.push(exclObj[strategy]);
+				}
+			});
+			setData({ realData: modifyResponse });
+		});
+	};
 	const selectStrategy = (strategy, strategyObject) => {
 		let strategies = [];
 		let strategiesObject = [];
@@ -91,22 +63,47 @@ const StrategiesCreatedTable = props => {
 			return 0;
 		};
 	};
-
 	const sortBy = key => {
-		let arrayCopy = [...data.mockData];
+		let arrayCopy = [...data.realData];
 		arrayCopy.sort(compareBy(key));
-		setData({ mockData: arrayCopy });
+		setData({ realData: arrayCopy });
 		setSortField(key);
 	};
+	const startStopStrategy = () => {
+		let data = (({ active, spread }) => ({ active, spread }))(selectedStrategiesObject[0]);
+		data.active = !data.active;
+		console.log(data);
+		httpRequest(API.arbitrageStrategies + `/${selectedStrategiesObject[0].strategyName}`, 'put', data).then(res => {
+			if (res.status === 200) {
+				getArbitrageStrategies();
+			}
+		});
+	};
+
+	useEffect(() => {
+		httpRequest(API.arbitrageStrategies, 'get').then(res => {
+			var modifyResponse = [];
+			Object.keys(res.data).map(strategyKey => {
+				let obj = res.data[strategyKey];
+				let { clip, leg1LimitBuy, leg1LimitSell, pointsAway, ...exclObj } = obj;
+				for (let strategy in exclObj) {
+					let strategyName = exclObj[strategy].leg1Action + exclObj[strategy].leg1Ticker;
+					exclObj[strategy] = { strategyName, ...exclObj[strategy] };
+					modifyResponse.push(exclObj[strategy]);
+				}
+			});
+			setData({ realData: modifyResponse });
+		});
+	}, []);
 	return (
 		<div className="setUpAddStrategyTable">
 			<table>
 				<tbody className="tableDateCentered">
 					<tr className="tableHeaderColor">
-						<th colSpan="6">Strategies Created</th>
+						<th colSpan={Object.keys(data.realData[0]).length}>Strategies Created</th>
 					</tr>
 					<tr className="tableHeaderColor">
-						{Object.keys(data.mockData[0]).map((strategy, id) => {
+						{Object.keys(data.realData[0]).map((strategy, id) => {
 							let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
 							return (
 								<td onClick={() => sortBy(strategy)} key={id}>
@@ -127,7 +124,7 @@ const StrategiesCreatedTable = props => {
 							);
 						})}
 					</tr>
-					{data.mockData.map((strategy, id) => {
+					{data.realData.map((strategy, id) => {
 						return (
 							<tr
 								key={strategy.strategyName}
@@ -135,7 +132,12 @@ const StrategiesCreatedTable = props => {
 								onClick={() => selectStrategy(strategy.strategyName, strategy)}
 							>
 								{Object.keys(strategy).map((data, id) => {
-									return <td key={id}>{strategy[data]}</td>;
+									let tableData = strategy[data];
+									if (data === 'active') {
+										if (tableData) tableData = 'true';
+										else tableData = 'false';
+									}
+									return <td key={id}>{tableData}</td>;
 								})}
 							</tr>
 						);
@@ -162,6 +164,24 @@ const StrategiesCreatedTable = props => {
 				<button
 					type="button"
 					className="btn "
+					disabled={selectedStrategies.length === 1 && !selectedStrategiesObject[0].active ? false : true}
+					style={selectedStrategies.length === 1 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
+					onClick={() => startStopStrategy()}
+				>
+					Start Strategy
+				</button>
+				<button
+					type="button"
+					className="btn "
+					disabled={selectedStrategies.length === 1 && selectedStrategiesObject[0].active ? false : true}
+					style={selectedStrategies.length === 1 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
+					onClick={() => startStopStrategy()}
+				>
+					Stop Strategy
+				</button>
+				{/* <button
+					type="button"
+					className="btn "
 					disabled={selectedStrategies.length === 0 ? true : false}
 					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
 				>
@@ -181,8 +201,9 @@ const StrategiesCreatedTable = props => {
 				</button>
 				<button type="button" className="btn" onClick={() => setModalShow(true)}>
 					Delete All Strategies
-				</button>
+				</button> */}
 			</div>
+
 			<MyVerticallyCenteredModal
 				show={modalShow}
 				onHide={param => {

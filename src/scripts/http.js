@@ -6,7 +6,7 @@ export const httpRequest = async (url, method, data) => {
 		method: method,
 		data: data,
 	})
-		.then(res => res.data)
+		.then(res => res)
 		.catch(err => console.error(err));
 };
 export const exportExcelHttp = async url => {
