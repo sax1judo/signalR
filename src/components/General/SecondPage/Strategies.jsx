@@ -5,10 +5,166 @@ import ComponentWrapper from '../../General/ComponentWrapper';
 import MyVerticallyCenteredModal from '../MyVerticallyCenteredModal';
 import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
+import Pagination from '../Pagination';
+import DropDown from '../DropDown';
 
 const StrategiesTable = props => {
-	const [data, setData] = useState({
-		mockData: [
+	const [tableData, setTableData] = useState({
+		totalRecordsNumber: null,
+		properties: [],
+		totalRecords: [
+			{
+				satus: 'running',
+				strategyName: 'buys ISP',
+				type: 'sell',
+				legOneTicker: 'ISP U21',
+				exchangeOne: 'TT',
+				legTwoTicker: 'ES U21',
+				exchangeTwo: 'IB',
+				quantityLegOne: 12,
+				quantityLegTwo: 33,
+				spreadSet: 12,
+				spreadMkt: 1.75,
+				tickers: [
+					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+				],
+			},
+			{
+				satus: 'running',
+				strategyName: 'sell ISP',
+				type: 'buy',
+				legOneTicker: 'ISP U21',
+				exchangeOne: 'TT',
+				legTwoTicker: 'ES U21',
+				exchangeTwo: 'IB',
+				quantityLegOne: 2,
+				quantityLegTwo: 3,
+				spreadSet: 2,
+				spreadMkt: 1.75,
+				tickers: [
+					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+				],
+			},
+			{
+				satus: 'running',
+				strategyName: 'selll ISP',
+				type: 'buy',
+				legOneTicker: 'ISP U21',
+				exchangeOne: 'TT',
+				legTwoTicker: 'ES U21',
+				exchangeTwo: 'IB',
+				quantityLegOne: 2,
+				quantityLegTwo: 3,
+				spreadSet: 2,
+				spreadMkt: 1.75,
+				tickers: [
+					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+				],
+			},
+			{
+				satus: 'running',
+				strategyName: 'sqell ISP',
+				type: 'buy',
+				legOneTicker: 'ISP U21',
+				exchangeOne: 'TT',
+				legTwoTicker: 'ES U21',
+				exchangeTwo: 'IB',
+				quantityLegOne: 2,
+				quantityLegTwo: 3,
+				spreadSet: 2,
+				spreadMkt: 1.75,
+				tickers: [
+					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+				],
+			},
+			{
+				satus: 'running',
+				strategyName: 'sell ISPP',
+				type: 'buy',
+				legOneTicker: 'ISP U21',
+				exchangeOne: 'TT',
+				legTwoTicker: 'ES U21',
+				exchangeTwo: 'IB',
+				quantityLegOne: 2,
+				quantityLegTwo: 3,
+				spreadSet: 2,
+				spreadMkt: 1.75,
+				tickers: [
+					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+				],
+			},
+			{
+				satus: 'running',
+				strategyName: 'sell ISPL',
+				type: 'buy',
+				legOneTicker: 'ISP U21',
+				exchangeOne: 'TT',
+				legTwoTicker: 'ES U21',
+				exchangeTwo: 'IB',
+				quantityLegOne: 2,
+				quantityLegTwo: 3,
+				spreadSet: 2,
+				spreadMkt: 1.75,
+				tickers: [
+					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+				],
+			},
+			{
+				satus: 'paused',
+				strategyName: 'Buy ISssP',
+				type: 'sell',
+				legOneTicker: 'ISP U21',
+				exchangeOne: 'TT',
+				legTwoTicker: 'ES U21',
+				exchangeTwo: 'IB',
+				quantityLegOne: 28,
+				quantityLegTwo: 37,
+				spreadSet: 62,
+				spreadMkt: 1.75,
+				tickers: [
+					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+				],
+			},
+			{
+				satus: 'paused',
+				strategyName: 'Buy ISPrr',
+				type: 'buy',
+				legOneTicker: 'ISP U21',
+				exchangeOne: 'IB',
+				legTwoTicker: 'ES U21',
+				exchangeTwo: 'IB',
+				quantityLegOne: 29,
+				quantityLegTwo: 13,
+				spreadSet: 12,
+				spreadMkt: 21.75,
+				tickers: [
+					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+				],
+			},
+			{
+				satus: 'stoped',
+				strategyName: 'SELL ISPP',
+				type: 'buy',
+				legOneTicker: 'ISP U21',
+				exchangeOne: 'TT',
+				legTwoTicker: 'ES U21',
+				exchangeTwo: 'IB',
+				quantityLegOne: 2,
+				quantityLegTwo: 3,
+				spreadSet: 2,
+				spreadMkt: 3.75,
+				tickers: [],
+			},
+		],
+		displayedRecords: [
 			{
 				satus: 'running',
 				strategyName: 'buy ISP',
@@ -44,42 +200,8 @@ const StrategiesTable = props => {
 				],
 			},
 			{
-				satus: 'paused',
-				strategyName: 'Buy ISsP',
-				type: 'sell',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 28,
-				quantityLegTwo: 37,
-				spreadSet: 62,
-				spreadMkt: 1.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'paused',
-				strategyName: 'Buy ISPr',
-				type: 'buy',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'IB',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 29,
-				quantityLegTwo: 13,
-				spreadSet: 12,
-				spreadMkt: 21.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'stoped',
-				strategyName: 'SELL ISP',
+				satus: 'running',
+				strategyName: 'sell ISP',
 				type: 'buy',
 				legOneTicker: 'ISP U21',
 				exchangeOne: 'TT',
@@ -88,10 +210,50 @@ const StrategiesTable = props => {
 				quantityLegOne: 2,
 				quantityLegTwo: 3,
 				spreadSet: 2,
-				spreadMkt: 3.75,
-				tickers: [],
+				spreadMkt: 1.75,
+				tickers: [
+					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+				],
+			},
+			{
+				satus: 'running',
+				strategyName: 'sell ISP',
+				type: 'buy',
+				legOneTicker: 'ISP U21',
+				exchangeOne: 'TT',
+				legTwoTicker: 'ES U21',
+				exchangeTwo: 'IB',
+				quantityLegOne: 2,
+				quantityLegTwo: 3,
+				spreadSet: 2,
+				spreadMkt: 1.75,
+				tickers: [
+					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+				],
+			},
+			{
+				satus: 'running',
+				strategyName: 'sell ISP',
+				type: 'buy',
+				legOneTicker: 'ISP U21',
+				exchangeOne: 'TT',
+				legTwoTicker: 'ES U21',
+				exchangeTwo: 'IB',
+				quantityLegOne: 2,
+				quantityLegTwo: 3,
+				spreadSet: 2,
+				spreadMkt: 1.75,
+				tickers: [
+					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
+					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
+				],
 			},
 		],
+		pageSize: 5,
+		page: 1,
+		count: 9, //hardcoded and it should be totalRecords.length
 	});
 	const [selectedStrategies, setSelectedStrategies] = useState([]);
 	const [selectedStrategiesObject, setSelectedStrategiesObject] = useState([]);
@@ -99,20 +261,54 @@ const StrategiesTable = props => {
 	const [sortField, setSortField] = useState('');
 	const [sortOrder, setSortOrder] = useState('dsc');
 
-	useEffect(() => {
-		console.log(selectedStrategiesObject);
-	}, [selectedStrategies, selectedStrategiesObject]);
-
+	const setPostPerPage = pageSize => {
+		setTableData({
+			...tableData,
+			pageSize: parseFloat(pageSize),
+			page: 1,
+			displayedRecords: tableData.totalRecords.slice((1 - 1) * parseFloat(pageSize), 1 * parseFloat(pageSize)),
+		});
+	};
+	const paginate = pageNumber => {
+		if (pageNumber === 'next') {
+			setTableData({
+				...tableData,
+				page: tableData.page + 1,
+				displayedRecords: tableData.totalRecords.slice(
+					(tableData.page + 1 - 1) * tableData.pageSize,
+					(tableData.page + 1) * tableData.pageSize,
+				),
+			});
+		} else if (pageNumber === 'previous') {
+			setTableData({
+				...tableData,
+				page: tableData.page - 1,
+				displayedRecords: tableData.totalRecords.slice(
+					(tableData.page - 1 - 1) * tableData.pageSize,
+					(tableData.page - 1) * tableData.pageSize,
+				),
+			});
+		} else {
+			setTableData({
+				...tableData,
+				page: pageNumber,
+				displayedRecords: tableData.totalRecords.slice(
+					(pageNumber - 1) * tableData.pageSize,
+					pageNumber * tableData.pageSize,
+				),
+			});
+		}
+	};
 	const selectByType = type => {
 		let allStrategies = [];
-		for (let strategy of data.mockData) {
+		for (let strategy of tableData.totalRecords) {
 			if (strategy.type === type) allStrategies.push(strategy.strategyName);
 		}
 		setSelectedStrategies(allStrategies);
 	};
 	const selectAllStrategies = () => {
 		let allStrategies = [];
-		for (let strategy of data.mockData) {
+		for (let strategy of tableData.totalRecords) {
 			allStrategies.push(strategy.strategyName);
 		}
 		setSelectedStrategies(allStrategies);
@@ -154,11 +350,28 @@ const StrategiesTable = props => {
 		};
 	};
 	const sortBy = key => {
-		let arrayCopy = [...data.mockData];
+		let arrayCopy = [...tableData.totalRecords];
 		arrayCopy.sort(compareBy(key));
-		setData({ mockData: arrayCopy });
+		setTableData({
+			...tableData,
+			totalRecords: arrayCopy,
+			displayedRecords: arrayCopy.slice((1 - 1) * parseFloat(tableData.pageSize), 1 * parseFloat(tableData.pageSize)),
+		});
 		setSortField(key);
 	};
+	useEffect(() => {
+		setTableData({
+			...tableData,
+			displayedRecords: tableData.totalRecords.slice(
+				(tableData.page - 1) * tableData.pageSize,
+				tableData.page * tableData.pageSize,
+			),
+		});
+	}, []);
+	useEffect(() => {
+		console.log(selectedStrategiesObject);
+	}, [selectedStrategies, selectedStrategiesObject]);
+
 	return (
 		<div className="secondPageStrategyTable">
 			<table>
@@ -167,7 +380,7 @@ const StrategiesTable = props => {
 						<th colSpan="12">Strategies</th>
 					</tr>
 					<tr className="tableHeaderColor">
-						{Object.keys(data.mockData[0]).map((strategy, id) => {
+						{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
 							let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
 							return (
 								<td onClick={() => sortBy(strategy)} key={id}>
@@ -188,7 +401,7 @@ const StrategiesTable = props => {
 							);
 						})}
 					</tr>
-					{data.mockData.map((strategy, id) => {
+					{tableData.displayedRecords.map((strategy, id) => {
 						return (
 							<ComponentWrapper>
 								<tr
@@ -257,6 +470,16 @@ const StrategiesTable = props => {
 					})}
 				</tbody>
 			</table>
+			<div className="paginationWrapper">
+				<DropDown postsPerPage={tableData.pageSize} setPostsPerPage={setPostPerPage} />
+				<Pagination
+					postsPerPage={tableData.pageSize}
+					totalPosts={tableData.count}
+					paginate={paginate}
+					activePage={tableData.page}
+					setPostsPerPage={setPostPerPage}
+				/>
+			</div>
 			<div className="buttonsActionsWrapper">
 				<button type="button" className="btn addStrategyButton" onClick={() => selectAllStrategies()}>
 					Select All

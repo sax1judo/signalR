@@ -40,15 +40,15 @@ const Header = () => {
 				</div>
 			) : (
 				<div className="headerMobile">
-					<nav class="navbar navbar-dark ">
+					<nav className="navbar navbar-dark ">
 						<div className="logo">
 							<NavLink exact to="/"></NavLink>
 						</div>
 						<button
-							class="navbar-toggler"
+							className="navbar-toggler"
 							onClick={() => document.getElementById('mobileNavigationWrapper').classList.toggle('visible')}
 						>
-							<span class="navbar-toggler-icon"></span>
+							<span className="navbar-toggler-icon"></span>
 						</button>
 					</nav>
 					<div id="mobileNavigationWrapper" className="mobileNavigationWrapper">

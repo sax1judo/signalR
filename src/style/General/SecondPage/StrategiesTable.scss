@@ -119,6 +119,11 @@
 			}
 		}
 	}
+	.paginationWrapper{
+		display: flex;
+		justify-content: space-between;
+		margin-top: 1rem;
+	}
 }
 @media screen and (max-width: 1140px) {
 	.secondPageStrategyTable {
