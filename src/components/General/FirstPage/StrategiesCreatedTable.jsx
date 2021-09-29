@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 import MyVerticallyCenteredModal from '../MyVerticallyCenteredModal';
 import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
-import { httpRequest } from '../../../scripts/http';
+import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http';
 import { API } from '../../../scripts/routes';
 
 const StrategiesCreatedTable = props => {
@@ -22,10 +22,17 @@ const StrategiesCreatedTable = props => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];
-				let { clip, leg1LimitBuy, leg1LimitSell, pointsAway, ...exclObj } = obj;
+				let { clip, LimitBuy, LimitSell, pointsAway, ...exclObj } = obj;
 				for (let strategy in exclObj) {
 					let strategyName = exclObj[strategy].leg1Action + exclObj[strategy].leg1Ticker;
-					exclObj[strategy] = { strategyName, ...exclObj[strategy] };
+					let additionalInfo = (({ clip, LimitBuy, LimitSell, pointsAway }) => ({
+						clip,
+						LimitBuy,
+						LimitSell,
+						pointsAway,
+					}))(obj);
+					exclObj[strategy] = { strategyName, additionalInfo, ...exclObj[strategy] };
+
 					modifyResponse.push(exclObj[strategy]);
 				}
 			});
@@ -70,31 +77,23 @@ const StrategiesCreatedTable = props => {
 		setSortField(key);
 	};
 	const startStopStrategy = () => {
-		let data = (({ active, spread }) => ({ active, spread }))(selectedStrategiesObject[0]);
-		data.active = !data.active;
-		console.log(data);
-		httpRequest(API.arbitrageStrategies + `/${selectedStrategiesObject[0].strategyName}`, 'put', data).then(res => {
+		httpRequestStartStopStrategy(
+			API.startStopStrategy + `${selectedStrategiesObject[0].strategyName}`,
+			'put',
+			selectedStrategiesObject[0].active?'false':'true',
+		).then(res => {
 			if (res.status === 200) {
+				setSelectedStrategies([]);
+				setSelectedStrategiesObject([]);
 				getArbitrageStrategies();
 			}
 		});
 	};
 
 	useEffect(() => {
-		httpRequest(API.arbitrageStrategies, 'get').then(res => {
-			var modifyResponse = [];
-			Object.keys(res.data).map(strategyKey => {
-				let obj = res.data[strategyKey];
-				let { clip, leg1LimitBuy, leg1LimitSell, pointsAway, ...exclObj } = obj;
-				for (let strategy in exclObj) {
-					let strategyName = exclObj[strategy].leg1Action + exclObj[strategy].leg1Ticker;
-					exclObj[strategy] = { strategyName, ...exclObj[strategy] };
-					modifyResponse.push(exclObj[strategy]);
-				}
-			});
-			setData({ realData: modifyResponse });
-		});
+		getArbitrageStrategies();
 	}, []);
+
 	return (
 		<div className="setUpAddStrategyTable">
 			<table>
@@ -105,7 +104,7 @@ const StrategiesCreatedTable = props => {
 					<tr className="tableHeaderColor">
 						{Object.keys(data.realData[0]).map((strategy, id) => {
 							let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
-							return (
+							return strategy !== 'additionalInfo' ? (
 								<td onClick={() => sortBy(strategy)} key={id}>
 									{title}
 									{sortField === strategy ? (
@@ -121,7 +120,7 @@ const StrategiesCreatedTable = props => {
 										<img style={{ height: '1.2rem', float: 'right' }} src={sortIcon}></img>
 									)}
 								</td>
-							);
+							) : null;
 						})}
 					</tr>
 					{data.realData.map((strategy, id) => {
@@ -137,7 +136,7 @@ const StrategiesCreatedTable = props => {
 										if (tableData) tableData = 'true';
 										else tableData = 'false';
 									}
-									return <td key={id}>{tableData}</td>;
+									return data !== 'additionalInfo' ? <td key={id}>{tableData}</td> : null;
 								})}
 							</tr>
 						);

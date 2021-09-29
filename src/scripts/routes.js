@@ -15,6 +15,7 @@ export const API = {
 	pricesDisconnect: 'http://35.225.80.47:8080/prices/ib/disconnect',
 	getLogs: 'http://35.225.80.47:8080/arbitrage/logs',
 	arbitrageStrategies: 'http://35.225.80.47:8080/arbitrage/strategies',
+	startStopStrategy: 'http://35.225.80.47:8080/arbitrage/strategies/active/',
 
 	//LOCAL ENVIRONMENT
 	// trades: 'http://localhost:5000/trades',

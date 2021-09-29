@@ -8,13 +8,10 @@ import { API } from '../../scripts/routes';
 const ModifyStrategyModal = props => {
 	const [formData, setFormData] = useState({
 		clip: '',
-		limitBuy: '',
-		limitSell: '',
-		legOneAction: '',
+		LimitBuy: '',
+		LimitSell: '',
 		spread: '',
-		slippage: '',
 		pointsAway: '',
-		strategyName: '',
 	});
 	let history = useHistory();
 	let location = useLocation();
@@ -23,7 +20,14 @@ const ModifyStrategyModal = props => {
 		history.goBack();
 	};
 	const modifyStrategy = () => {
-		let data = (({ active, spread }) => ({ active, spread }))(formData);
+		let data = (({ clip, LimitBuy, LimitSell, spread, pointsAway }) => ({
+			clip,
+			LimitBuy,
+			LimitSell,
+			spread,
+			pointsAway,
+		}))(formData);
+		console.log(data);
 		httpRequest(API.arbitrageStrategies + `/${formData.strategyName}`, 'put', data).then(res => {
 			if (res.status === 200) {
 				goToPreviousPath();
@@ -37,6 +41,10 @@ const ModifyStrategyModal = props => {
 			spread: location.strategy[0].spread,
 			strategyName: location.strategy[0].strategyName,
 			active: location.strategy[0].active,
+			LimitBuy: location.strategy[0].additionalInfo.LimitBuy,
+			LimitSell: location.strategy[0].additionalInfo.LimitSell,
+			pointsAway: location.strategy[0].additionalInfo.pointsAway,
+			clip: location.strategy[0].additionalInfo.clip,
 		});
 	}, []);
 	useEffect(() => {
@@ -55,7 +63,16 @@ const ModifyStrategyModal = props => {
 						<tr>
 							<td>Clip:</td>
 							<td>
-								<input />
+								<input
+									type="number"
+									value={formData.clip}
+									onChange={e =>
+										setFormData({
+											...formData,
+											clip: parseFloat(e.target.value),
+										})
+									}
+								/>
 							</td>
 							<td>Strategy Spread:</td>
 							<td>
@@ -75,21 +92,48 @@ const ModifyStrategyModal = props => {
 						<tr>
 							<td>Limit Buy:</td>
 							<td>
-								<input />
+								<input
+									type="number"
+									value={formData.LimitBuy}
+									onChange={e =>
+										setFormData({
+											...formData,
+											LimitBuy: parseFloat(e.target.value),
+										})
+									}
+								/>
 							</td>
 							<td>Slippage:</td>
 							<td>
-								<input />
+								<input disabled />
 							</td>
 						</tr>
 						<tr>
 							<td>Limit Sell:</td>
 							<td>
-								<input />
+								<input
+									type="number"
+									value={formData.LimitSell}
+									onChange={e =>
+										setFormData({
+											...formData,
+											LimitSell: parseFloat(e.target.value),
+										})
+									}
+								/>
 							</td>
 							<td>Points Away:</td>
 							<td>
-								<input />
+								<input
+									type="number"
+									value={formData.pointsAway}
+									onChange={e =>
+										setFormData({
+											...formData,
+											pointsAway: parseFloat(e.target.value),
+										})
+									}
+								/>
 							</td>
 						</tr>
 					</tbody>
