@@ -58,7 +58,11 @@
 			border-color: #6d6d6d;
 		}
 	}
-
+	.paginationWrapper {
+		display: flex;
+		justify-content: space-between;
+		margin-top: 1rem;
+	}
 	.buttonsActionsWrapper {
 		display: grid;
 		grid-template-columns: repeat(5, 1fr);
@@ -82,9 +86,8 @@
 @media screen and (max-width: 730px) {
 	.setUpAddStrategyTable {
 		overflow-x: scroll;
-		table{
+		table {
 			font-size: 0.5rem;
 		}
 	}
-	
 }

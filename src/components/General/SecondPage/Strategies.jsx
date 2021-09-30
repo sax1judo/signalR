@@ -10,7 +10,6 @@ import DropDown from '../DropDown';
 
 const StrategiesTable = props => {
 	const [tableData, setTableData] = useState({
-		totalRecordsNumber: null,
 		properties: [],
 		totalRecords: [
 			{

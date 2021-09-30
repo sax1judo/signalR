@@ -6,10 +6,20 @@ import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
 import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http';
 import { API } from '../../../scripts/routes';
+import Pagination from '../Pagination';
+import DropDown from '../DropDown';
 
 const StrategiesCreatedTable = props => {
 	const [data, setData] = useState({
 		realData: [{}],
+	});
+	const [tableData, setTableData] = useState({
+		totalRecordsNumber: null,
+		properties: [],
+		totalRecords: [],
+		displayedRecords: [{}],
+		pageSize: 5,
+		page: 1,
 	});
 	const [sortField, setSortField] = useState('');
 	const [sortOrder, setSortOrder] = useState('dsc');
@@ -37,6 +47,15 @@ const StrategiesCreatedTable = props => {
 				}
 			});
 			setData({ realData: modifyResponse });
+			setTableData({
+				...tableData,
+				count: modifyResponse.length,
+				totalRecords: modifyResponse,
+				displayedRecords: modifyResponse.slice(
+					(tableData.page - 1) * tableData.pageSize,
+					tableData.page * tableData.pageSize,
+				),
+			});
 		});
 	};
 	const selectStrategy = (strategy, strategyObject) => {
@@ -71,16 +90,20 @@ const StrategiesCreatedTable = props => {
 		};
 	};
 	const sortBy = key => {
-		let arrayCopy = [...data.realData];
+		let arrayCopy = [...tableData.totalRecords];
 		arrayCopy.sort(compareBy(key));
-		setData({ realData: arrayCopy });
+		setTableData({
+			...tableData,
+			totalRecords: arrayCopy,
+			displayedRecords: arrayCopy.slice((1 - 1) * parseFloat(tableData.pageSize), 1 * parseFloat(tableData.pageSize)),
+		});
 		setSortField(key);
 	};
 	const startStopStrategy = () => {
 		httpRequestStartStopStrategy(
 			API.startStopStrategy + `${selectedStrategiesObject[0].strategyName}`,
 			'put',
-			selectedStrategiesObject[0].active?'false':'true',
+			selectedStrategiesObject[0].active ? 'false' : 'true',
 		).then(res => {
 			if (res.status === 200) {
 				setSelectedStrategies([]);
@@ -89,7 +112,44 @@ const StrategiesCreatedTable = props => {
 			}
 		});
 	};
-
+	const setPostPerPage = pageSize => {
+		setTableData({
+			...tableData,
+			pageSize: parseFloat(pageSize),
+			page: 1,
+			displayedRecords: tableData.totalRecords.slice((1 - 1) * parseFloat(pageSize), 1 * parseFloat(pageSize)),
+		});
+	};
+	const paginate = pageNumber => {
+		if (pageNumber === 'next') {
+			setTableData({
+				...tableData,
+				page: tableData.page + 1,
+				displayedRecords: tableData.totalRecords.slice(
+					(tableData.page + 1 - 1) * tableData.pageSize,
+					(tableData.page + 1) * tableData.pageSize,
+				),
+			});
+		} else if (pageNumber === 'previous') {
+			setTableData({
+				...tableData,
+				page: tableData.page - 1,
+				displayedRecords: tableData.totalRecords.slice(
+					(tableData.page - 1 - 1) * tableData.pageSize,
+					(tableData.page - 1) * tableData.pageSize,
+				),
+			});
+		} else {
+			setTableData({
+				...tableData,
+				page: pageNumber,
+				displayedRecords: tableData.totalRecords.slice(
+					(pageNumber - 1) * tableData.pageSize,
+					pageNumber * tableData.pageSize,
+				),
+			});
+		}
+	};
 	useEffect(() => {
 		getArbitrageStrategies();
 	}, []);
@@ -99,10 +159,10 @@ const StrategiesCreatedTable = props => {
 			<table>
 				<tbody className="tableDateCentered">
 					<tr className="tableHeaderColor">
-						<th colSpan={Object.keys(data.realData[0]).length}>Strategies Created</th>
+						<th colSpan={Object.keys(tableData.displayedRecords[0]).length}>Strategies Created</th>
 					</tr>
 					<tr className="tableHeaderColor">
-						{Object.keys(data.realData[0]).map((strategy, id) => {
+						{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
 							let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
 							return strategy !== 'additionalInfo' ? (
 								<td onClick={() => sortBy(strategy)} key={id}>
@@ -123,7 +183,7 @@ const StrategiesCreatedTable = props => {
 							) : null;
 						})}
 					</tr>
-					{data.realData.map((strategy, id) => {
+					{tableData.displayedRecords.map((strategy, id) => {
 						return (
 							<tr
 								key={strategy.strategyName}
@@ -143,6 +203,16 @@ const StrategiesCreatedTable = props => {
 					})}
 				</tbody>
 			</table>
+			<div className="paginationWrapper">
+				<DropDown postsPerPage={tableData.pageSize} setPostsPerPage={setPostPerPage} />
+				<Pagination
+					postsPerPage={tableData.pageSize}
+					totalPosts={tableData.count}
+					paginate={paginate}
+					activePage={tableData.page}
+					setPostsPerPage={setPostPerPage}
+				/>
+			</div>
 			<div className="buttonsActionsWrapper">
 				<button
 					type="button"
