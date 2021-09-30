@@ -84,7 +84,7 @@
 		border-spacing: 0;
 		border-collapse: collapse;
 		border-style: hidden;
-
+		table-layout: fixed;
 		width: 100%;
 		max-width: 100%;
 	}
@@ -110,11 +110,11 @@
 	}
 }
 @media screen and (max-width: 730px) {
-	.setUpDatabaseTable,.setUpParametersTable {
+	.setUpDatabaseTable,
+	.setUpParametersTable {
 		overflow-x: scroll;
-		table{
+		table {
 			font-size: 0.5rem;
 		}
 	}
-	
 }

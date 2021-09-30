@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import '../../../style/General/FirstPage/ParametersTable.scss';
 import ComponentWrapper from '../ComponentWrapper';
 import TableFieldDropDown from '../TableFieldDropDown';
+import { httpRequest } from '../../../scripts/http';
+import { API } from '../../../scripts/routes';
 
 const ParametersTable = props => {
 	const strategyType = ['Buy', 'Sell'];
 	const exchangeDropdw = ['IB', 'TT'];
-	const ticekrDropdw = ['ISP U21', 'ES U21'];
+	const [tickerLegOneOptions, setTickerLegOneOptions] = useState([]);
+	const [tickerLegTwoOptions, setTickerLegTwoOptions] = useState([]);
 	const [state, setState] = useState({
 		datebase: {
 			legOne: { exchange: '', ticker: '' },
@@ -36,8 +39,17 @@ const ParametersTable = props => {
 	};
 
 	useEffect(() => {
-		// console.log(state);
-	}, [state]);
+		if (state.datebase.legOne.exchange !== '')
+			httpRequest(API.arbitrageProduct + state.datebase.legOne.exchange, 'get').then(res => {
+				if (res.status === 200) setTickerLegOneOptions(res.data);
+			});
+	}, [state.datebase.legOne.exchange]);
+	useEffect(() => {
+		if (state.datebase.legTwo.exchange !== '')
+			httpRequest(API.arbitrageProduct + state.datebase.legTwo.exchange, 'get').then(res => {
+				if (res.status === 200) setTickerLegTwoOptions(res.data);
+			});
+	}, [state.datebase.legTwo.exchange]);
 
 	return (
 		<ComponentWrapper>
@@ -88,7 +100,7 @@ const ParametersTable = props => {
 							<td>Ticker</td>
 							<td>
 								<TableFieldDropDown
-									options={ticekrDropdw}
+									options={tickerLegOneOptions}
 									inputChanged={e =>
 										setState({
 											...state,
@@ -100,7 +112,7 @@ const ParametersTable = props => {
 							<td>Ticker</td>
 							<td>
 								<TableFieldDropDown
-									options={ticekrDropdw}
+									options={tickerLegTwoOptions}
 									inputChanged={e =>
 										setState({
 											...state,
