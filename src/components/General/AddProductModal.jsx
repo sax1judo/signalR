@@ -9,6 +9,7 @@ import { API } from '../../scripts/routes';
 const AddProductModal = props => {
 	const [productAliasFunctionNames, setProductAliasFunctionNames] = useState([]);
 	const [ibMarketDataTypes, setIbMarketDataTypes] = useState([]);
+	const [createdTradingNames, setCreatedTradingNames] = useState([]);
 	const [formData, setFormData] = useState({
 		keyName: '',
 		marketName: '',
@@ -23,49 +24,52 @@ const AddProductModal = props => {
 	const goToPreviousPath = () => {
 		history.goBack();
 	};
+	const nameValidation = name => {
+		if (createdTradingNames.includes(name)) {
+			return true;
+		} else return false;
+	};
 	const addProduct = () => {
+		let data;
 		if (location.market == 'IB') {
-			let data = {
-				marketName: formData.marketName,
-				contractName: formData.name,
+			data = {
+				marketName: formData.marketName.toUpperCase(),
+				contractName: formData.name.toUpperCase(),
 				contractAliasFunctionName: formData.aliasFunctionName,
-				contractType: formData.type,
+				contractType: formData.type.toUpperCase(),
 				addMonths: formData.addMonths,
 				marketDataType: formData.marketDataType,
 			};
 		} else {
-			let data = {
-				marketName: formData.marketName,
-				productName: formData.name,
-				productType: formData.type,
-				productAliasFunctionName:formData.aliasFunctionName,
+			data = {
+				marketName: formData.marketName.toUpperCase(),
+				productName: formData.name.toUpperCase(),
+				productType: formData.type.toUpperCase(),
+				productAliasFunctionName: formData.aliasFunctionName,
 				sinkPrices: true,
 				sinkNumberStrategyId: 0,
 				addMonths: formData.addMonths,
 			};
 		}
-		console.log(API.arbitrageProduct + location.market.toLowerCase() + `/${formData.keyName}`);
-		console.log(data);
-		
-		// useEffect(() => {
-		// 	httpRequest(API.getProductAliasFunctionNames+location.market+`/${formData.keyName}`, 'put').then(res => {
-		// 		if (res.status === 200) setProductAliasFunctionNames(res.data);
-		// 	});
+		httpRequest(API.arbitrageProduct + location.market + `/${formData.keyName.toUpperCase()}`, 'put', data).then(
+			res => {
+				if (res.status === 200) goToPreviousPath();
+			},
+		);
 	};
 	useEffect(() => {
+		httpRequest(API.arbitrageProduct + location.market, 'get').then(res => {
+			if (res.status === 200) setCreatedTradingNames(res.data);
+		});
 		httpRequest(API.getProductAliasFunctionNames, 'get').then(res => {
 			if (res.status === 200) setProductAliasFunctionNames(res.data);
 		});
 		if (location.market === 'IB')
-		httpRequest(API.getIbMarketDataTypes, 'get').then(res => {
-			if (res.status === 200) setIbMarketDataTypes(res.data);
+			httpRequest(API.getIbMarketDataTypes, 'get').then(res => {
+				if (res.status === 200) setIbMarketDataTypes(res.data);
 			});
 	}, []);
 
-	useEffect(() => {
-		// console.log(formData);
-		// console.log(productAliasFunctionNames);
-	}, [formData]);
 	return (
 		<div className="modifyStrategyWrapper ">
 			<h4>Product Market: {location.market}</h4>
@@ -88,6 +92,17 @@ const AddProductModal = props => {
 										})
 									}
 								/>
+								{formData.keyName !== '' ? (
+									!nameValidation(formData.keyName) ? (
+										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
+											Looks good!
+										</div>
+									) : (
+										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
+											'This name already exist'
+										</div>
+									)
+								) : null}
 							</td>
 						</tr>
 						<tr>
@@ -177,13 +192,13 @@ const AddProductModal = props => {
 									}
 								/>
 								{formData.addMonths !== '' ? (
-									parseFloat(formData.addMonths) > 0 && Number.isInteger(parseFloat(formData.addMonths)) ? (
+									parseFloat(formData.addMonths) >= 0 && Number.isInteger(parseFloat(formData.addMonths)) ? (
 										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
 											Looks good!
 										</div>
 									) : (
 										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											{parseFloat(formData.addMonths) > 0
+											{parseFloat(formData.addMonths) >= 0
 												? 'Please type integer value.'
 												: 'Please type greater than zero.'}
 										</div>
