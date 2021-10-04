@@ -17,6 +17,9 @@ export const API = {
 	arbitrageStrategies: 'http://35.225.80.47:8080/arbitrage/strategies',
 	arbitrageProduct: 'http://35.225.80.47:8080/arbitrage/products/',
 	startStopStrategy: 'http://35.225.80.47:8080/arbitrage/strategies/active/',
+	loadStrategy: 'http://35.225.80.47:8080/arbitrage/strategies/load/',
+	getProductAliasFunctionNames: 'http://35.225.80.47:8080/arbitrage/products/productAliasFunctionNames',
+	getIbMarketDataTypes: 'http://35.225.80.47:8080/arbitrage/products/ib/marketDataTypes',
 
 	//LOCAL ENVIRONMENT
 	// trades: 'http://localhost:5000/trades',

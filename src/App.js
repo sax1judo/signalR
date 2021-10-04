@@ -5,6 +5,8 @@ import FirstPage from './components/Pages/FirstPage';
 import ModifyStrategyModal from './components/General/ModifyStrategyModal';
 import SecondPage from './components/Pages/SecondPage';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import AddProductModal from './components/General/AddProductModal';
+import AddStrategyModal from './components/General/AddStrategyModal';
 
 const App = () => {
 	return (
@@ -20,6 +22,12 @@ const App = () => {
 					</Route>
 					<Route path="/modifyStrategy">
 						<ModifyStrategyModal />
+					</Route>
+					<Route path="/addProduct">
+						<AddProductModal />
+					</Route>
+					<Route path="/addStrategy">
+						<AddStrategyModal />
 					</Route>
 				</Switch>
 			</div>

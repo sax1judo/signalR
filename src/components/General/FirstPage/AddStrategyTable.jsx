@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import '../../../style/General/FirstPage/ParametersTable.scss';
+import '../../../style/General/FirstPage/AddStrategyTable.scss';
 import ComponentWrapper from '../ComponentWrapper';
 import TableFieldDropDown from '../TableFieldDropDown';
 import { httpRequest } from '../../../scripts/http';
 import { API } from '../../../scripts/routes';
+import { NavLink } from 'react-router-dom';
 
-const ParametersTable = props => {
+const AddStrategyTable = props => {
 	const strategyType = ['Buy', 'Sell'];
 	const exchangeDropdw = ['IB', 'TT'];
 	const [tickerLegOneOptions, setTickerLegOneOptions] = useState([]);
@@ -325,7 +326,18 @@ const ParametersTable = props => {
 					</tbody>
 				</table>
 			</div>
+
+			<button type="button" className="btn addStrategyButton">
+				<NavLink
+					to={{
+						pathname: '/addStrategy',
+						strategy: '',
+					}}
+				>
+					Add Strategy
+				</NavLink>
+			</button>
 		</ComponentWrapper>
 	);
 };
-export default ParametersTable;
+export default AddStrategyTable;

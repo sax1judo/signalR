@@ -5,7 +5,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { httpRequest } from '../../scripts/http';
 import { API } from '../../scripts/routes';
 
-const ModifyStrategyModal = props => {
+const AddStrategyModal = props => {
 	const [formData, setFormData] = useState({
 		clip: '',
 		LimitBuy: '',
@@ -28,7 +28,7 @@ const ModifyStrategyModal = props => {
 			pointsAway,
 		}))(formData);
 		console.log(data);
-		httpRequest(API.arbitrageStrategies + `/${location.strategy[0].leg1Exchange}/${formData.strategyName}`, 'put', data).then(res => {
+		httpRequest(API.arbitrageStrategies + `/${formData.strategyName}`, 'put', data).then(res => {
 			if (res.status === 200) {
 				goToPreviousPath();
 			}
@@ -150,4 +150,4 @@ const ModifyStrategyModal = props => {
 		</div>
 	);
 };
-export default ModifyStrategyModal;
+export default AddStrategyModal;

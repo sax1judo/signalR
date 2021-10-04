@@ -28,18 +28,19 @@ const StrategiesCreatedTable = props => {
 	const [modalShow, setModalShow] = useState(false);
 
 	const getArbitrageStrategies = () => {
-		httpRequest(API.arbitrageStrategies, 'get').then(res => {
+		httpRequest(API.arbitrageStrategies + '?onlyLoaded=false', 'get').then(res => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];
-				let { clip, LimitBuy, LimitSell, pointsAway, ...exclObj } = obj;
+				let { clip, LimitBuy, LimitSell, pointsAway, load, ...exclObj } = obj;
 				for (let strategy in exclObj) {
 					let strategyName = exclObj[strategy].leg1Action + exclObj[strategy].leg1Ticker;
-					let additionalInfo = (({ clip, LimitBuy, LimitSell, pointsAway }) => ({
+					let additionalInfo = (({ clip, LimitBuy, LimitSell, pointsAway, load }) => ({
 						clip,
 						LimitBuy,
 						LimitSell,
 						pointsAway,
+						load,
 					}))(obj);
 					exclObj[strategy] = { strategyName, additionalInfo, ...exclObj[strategy] };
 
@@ -101,9 +102,22 @@ const StrategiesCreatedTable = props => {
 	};
 	const startStopStrategy = () => {
 		httpRequestStartStopStrategy(
-			API.startStopStrategy + `${selectedStrategiesObject[0].strategyName}`,
+			API.startStopStrategy + `${selectedStrategiesObject[0].leg1Exchange}/${selectedStrategiesObject[0].strategyName}`,
 			'put',
 			selectedStrategiesObject[0].active ? 'false' : 'true',
+		).then(res => {
+			if (res.status === 200) {
+				setSelectedStrategies([]);
+				setSelectedStrategiesObject([]);
+				getArbitrageStrategies();
+			}
+		});
+	};
+	const loadStrategy = () => {
+		httpRequestStartStopStrategy(
+			API.loadStrategy + `${selectedStrategiesObject[0].leg1Exchange}/${selectedStrategiesObject[0].strategyName}`,
+			'put',
+			'true',
 		).then(res => {
 			if (res.status === 200) {
 				setSelectedStrategies([]);
@@ -192,7 +206,7 @@ const StrategiesCreatedTable = props => {
 							>
 								{Object.keys(strategy).map((data, id) => {
 									let tableData = strategy[data];
-									if (data === 'active') {
+									if (typeof strategy[data] == 'boolean') {
 										if (tableData) tableData = 'true';
 										else tableData = 'false';
 									}
@@ -221,7 +235,6 @@ const StrategiesCreatedTable = props => {
 					style={selectedStrategies.length === 1 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
 				>
 					<NavLink
-						activeClassName="is-active"
 						to={{
 							pathname: '/modifyStrategy',
 							strategy: selectedStrategiesObject,
@@ -248,15 +261,16 @@ const StrategiesCreatedTable = props => {
 				>
 					Stop Strategy
 				</button>
-				{/* <button
+				<button
 					type="button"
 					className="btn "
 					disabled={selectedStrategies.length === 0 ? true : false}
 					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+					onClick={() => loadStrategy()}
 				>
 					Load Strategy
 				</button>
-				<button
+				{/* <button
 					type="button"
 					className="btn"
 					onClick={() => setModalShow(true)}
