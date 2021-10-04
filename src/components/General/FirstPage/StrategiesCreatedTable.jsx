@@ -10,9 +10,6 @@ import Pagination from '../Pagination';
 import DropDown from '../DropDown';
 
 const StrategiesCreatedTable = props => {
-	const [data, setData] = useState({
-		realData: [{}],
-	});
 	const [tableData, setTableData] = useState({
 		totalRecordsNumber: null,
 		properties: [],
@@ -47,7 +44,6 @@ const StrategiesCreatedTable = props => {
 					modifyResponse.push(exclObj[strategy]);
 				}
 			});
-			setData({ realData: modifyResponse });
 			setTableData({
 				...tableData,
 				count: modifyResponse.length,

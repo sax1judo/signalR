@@ -7,252 +7,19 @@ import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
 import Pagination from '../Pagination';
 import DropDown from '../DropDown';
+import { httpRequest } from '../../../scripts/http';
+import { API } from '../../../scripts/routes';
+import { HubConnectionBuilder } from '@microsoft/signalr';
 
 const StrategiesTable = props => {
+	const [tickers, setTickersData] = useState({ data: [] });
+	const [connection, setConnection] = useState(null);
 	const [tableData, setTableData] = useState({
 		properties: [],
-		totalRecords: [
-			{
-				satus: 'running',
-				strategyName: 'buys ISP',
-				type: 'sell',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 12,
-				quantityLegTwo: 33,
-				spreadSet: 12,
-				spreadMkt: 1.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'running',
-				strategyName: 'sell ISP',
-				type: 'buy',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 2,
-				quantityLegTwo: 3,
-				spreadSet: 2,
-				spreadMkt: 1.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'running',
-				strategyName: 'selll ISP',
-				type: 'buy',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 2,
-				quantityLegTwo: 3,
-				spreadSet: 2,
-				spreadMkt: 1.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'running',
-				strategyName: 'sqell ISP',
-				type: 'buy',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 2,
-				quantityLegTwo: 3,
-				spreadSet: 2,
-				spreadMkt: 1.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'running',
-				strategyName: 'sell ISPP',
-				type: 'buy',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 2,
-				quantityLegTwo: 3,
-				spreadSet: 2,
-				spreadMkt: 1.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'running',
-				strategyName: 'sell ISPL',
-				type: 'buy',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 2,
-				quantityLegTwo: 3,
-				spreadSet: 2,
-				spreadMkt: 1.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'paused',
-				strategyName: 'Buy ISssP',
-				type: 'sell',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 28,
-				quantityLegTwo: 37,
-				spreadSet: 62,
-				spreadMkt: 1.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'paused',
-				strategyName: 'Buy ISPrr',
-				type: 'buy',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'IB',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 29,
-				quantityLegTwo: 13,
-				spreadSet: 12,
-				spreadMkt: 21.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'stoped',
-				strategyName: 'SELL ISPP',
-				type: 'buy',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 2,
-				quantityLegTwo: 3,
-				spreadSet: 2,
-				spreadMkt: 3.75,
-				tickers: [],
-			},
-		],
-		displayedRecords: [
-			{
-				satus: 'running',
-				strategyName: 'buy ISP',
-				type: 'sell',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 12,
-				quantityLegTwo: 33,
-				spreadSet: 12,
-				spreadMkt: 1.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'running',
-				strategyName: 'sell ISP',
-				type: 'buy',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 2,
-				quantityLegTwo: 3,
-				spreadSet: 2,
-				spreadMkt: 1.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'running',
-				strategyName: 'sell ISP',
-				type: 'buy',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 2,
-				quantityLegTwo: 3,
-				spreadSet: 2,
-				spreadMkt: 1.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'running',
-				strategyName: 'sell ISP',
-				type: 'buy',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 2,
-				quantityLegTwo: 3,
-				spreadSet: 2,
-				spreadMkt: 1.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-			{
-				satus: 'running',
-				strategyName: 'sell ISP',
-				type: 'buy',
-				legOneTicker: 'ISP U21',
-				exchangeOne: 'TT',
-				legTwoTicker: 'ES U21',
-				exchangeTwo: 'IB',
-				quantityLegOne: 2,
-				quantityLegTwo: 3,
-				spreadSet: 2,
-				spreadMkt: 1.75,
-				tickers: [
-					{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-					{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-				],
-			},
-		],
+		totalRecords: [],
+		displayedRecords: [{ tickers: [] }],
 		pageSize: 5,
 		page: 1,
-		count: 9, //hardcoded and it should be totalRecords.length
 	});
 	const [selectedStrategies, setSelectedStrategies] = useState([]);
 	const [selectedStrategiesObject, setSelectedStrategiesObject] = useState([]);
@@ -301,7 +68,7 @@ const StrategiesTable = props => {
 	const selectByType = type => {
 		let allStrategies = [];
 		for (let strategy of tableData.totalRecords) {
-			if (strategy.type === type) allStrategies.push(strategy.strategyName);
+			if (strategy.leg1Action === type) allStrategies.push(strategy.strategyName);
 		}
 		setSelectedStrategies(allStrategies);
 	};
@@ -358,18 +125,107 @@ const StrategiesTable = props => {
 		});
 		setSortField(key);
 	};
-	useEffect(() => {
-		setTableData({
-			...tableData,
-			displayedRecords: tableData.totalRecords.slice(
-				(tableData.page - 1) * tableData.pageSize,
-				tableData.page * tableData.pageSize,
-			),
+	const getArbitrageStrategies = () => {
+		httpRequest(API.arbitrageStrategies + '?onlyLoaded=true', 'get').then(res => {
+			var modifyResponse = [];
+			Object.keys(res.data).map(strategyKey => {
+				let obj = res.data[strategyKey];
+				let { clip, LimitBuy, LimitSell, pointsAway, load, ...exclObj } = obj;
+				for (let strategy in exclObj) {
+					if (exclObj[strategy] !== null) {
+						let strategyName = exclObj[strategy].leg1Action + exclObj[strategy].leg1Ticker;
+						let tickers = [];
+						let additionalInfo = (({ clip, LimitBuy, LimitSell, pointsAway, load }) => ({
+							clip,
+							LimitBuy,
+							LimitSell,
+							pointsAway,
+							load,
+						}))(obj);
+						exclObj[strategy] = { strategyName, additionalInfo, ...exclObj[strategy], tickers };
+
+						modifyResponse.push(exclObj[strategy]);
+					}
+				}
+			});
+			setTableData({
+				...tableData,
+				count: modifyResponse.length,
+				totalRecords: modifyResponse,
+				displayedRecords: modifyResponse.slice(
+					(tableData.page - 1) * tableData.pageSize,
+					tableData.page * tableData.pageSize,
+				),
+			});
 		});
-	}, []);
+	};
+
 	useEffect(() => {
-		console.log(selectedStrategiesObject);
-	}, [selectedStrategies, selectedStrategiesObject]);
+		getArbitrageStrategies();
+		const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
+		setConnection(newConnection);
+		return () => {
+			setConnection(null);
+		};
+	}, []);
+
+	//TICKERS DATA
+	useEffect(() => {
+		if (connection) {
+			connection
+				.start()
+				.then(result => {
+					console.log('Connected!');
+
+					connection.on('ComparationPrices', message => {
+						let newData = tickers.data;
+						let { time_stamp, market, trading_app, bid_quantity, ask_quantity, ...newMessage } = JSON.parse(message);
+						let swapped = false;
+
+						if (newData.length === 0) {
+							newData.push(newMessage);
+						} else {
+							for (let ticker in newData) {
+								if (newData[ticker].ticker === newMessage.ticker) {
+									newData[ticker] = newMessage;
+									swapped = true;
+									break;
+								}
+							}
+							if (!swapped) {
+								newData.push(newMessage);
+							}
+						}
+
+						setTickersData({ data: newData });
+					});
+				})
+				.catch(e => console.log('Connection failed: ', e));
+		}
+		return () => {
+			setConnection(null);
+		};
+	}, [connection]);
+
+	useEffect(() => {
+		let strategies = [];
+		for (let strategy of tableData.totalRecords) {
+			strategies.push(strategy);
+		}
+		for (let strategy of strategies) {
+			strategy.tickers = tickers.data;
+		}
+		console.log(strategies);
+		if (strategies.length !== 0)
+			setTableData({
+				...tableData,
+				totalRecords: strategies,
+				displayedRecords: strategies.slice(
+					(tableData.page - 1) * tableData.pageSize,
+					tableData.page * tableData.pageSize,
+				),
+			});
+	}, [tickers]);
 
 	return (
 		<div className="secondPageStrategyTable">
@@ -381,7 +237,7 @@ const StrategiesTable = props => {
 					<tr className="tableHeaderColor">
 						{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
 							let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
-							return (
+							return strategy !== 'additionalInfo' ? (
 								<td onClick={() => sortBy(strategy)} key={id}>
 									{title}
 									{sortField === strategy ? (
@@ -397,7 +253,7 @@ const StrategiesTable = props => {
 										<img style={{ height: '1.2rem', float: 'right' }} src={sortIcon}></img>
 									)}
 								</td>
-							);
+							) : null;
 						})}
 					</tr>
 					{tableData.displayedRecords.map((strategy, id) => {
@@ -409,8 +265,15 @@ const StrategiesTable = props => {
 									onClick={() => selectStrategy(strategy.strategyName, strategy)}
 								>
 									{Object.keys(strategy).map((key, id) => {
+										let tableData = strategy[key];
+										if (typeof strategy[key] == 'boolean') {
+											if (tableData) tableData = 'true';
+											else tableData = 'false';
+										}
 										return key !== 'tickers' ? (
-											<td key={id}>{strategy[key]}</td>
+											key !== 'additionalInfo' ? (
+												<td key={id}>{tableData}</td>
+											) : null
 										) : (
 											<td>
 												<button
@@ -486,10 +349,10 @@ const StrategiesTable = props => {
 				<button type="button" className="btn  addStrategyButton" onClick={() => setSelectedStrategies([])}>
 					Unselect All
 				</button>
-				<button type="button" className="btn  addStrategyButton" onClick={() => selectByType('buy')}>
+				<button type="button" className="btn  addStrategyButton" onClick={() => selectByType('Buy')}>
 					Select All Buys
 				</button>
-				<button type="button" className="btn  addStrategyButton" onClick={() => selectByType('sell')}>
+				<button type="button" className="btn  addStrategyButton" onClick={() => selectByType('Sell')}>
 					Select All Sells
 				</button>
 				<button
