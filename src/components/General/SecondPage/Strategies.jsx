@@ -213,9 +213,23 @@ const StrategiesTable = props => {
 			strategies.push(strategy);
 		}
 		for (let strategy of strategies) {
-			strategy.tickers = tickers.data;
+			for (let ticker of tickers.data) {
+				if (strategy.leg1Ticker === ticker.ticker || strategy.leg2Ticker === ticker.ticker) {
+					if (strategy.tickers.length === 0) strategy.tickers.push(ticker);
+					else {
+						let swapped = false;
+						for (let strategyTickers in strategy.tickers) {
+							if (strategy.tickers[strategyTickers].ticker === ticker.ticker) {
+								strategy.tickers[strategyTickers] = ticker;
+								swapped = true;
+								break;
+							}
+						}
+						if (!swapped) strategy.tickers.push(ticker);
+					}
+				}
+			}
 		}
-		console.log(strategies);
 		if (strategies.length !== 0)
 			setTableData({
 				...tableData,
