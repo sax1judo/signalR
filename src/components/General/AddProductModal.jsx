@@ -99,7 +99,7 @@ const AddProductModal = props => {
 										</div>
 									) : (
 										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											'This name already exist'
+											This name already exist
 										</div>
 									)
 								) : null}
