@@ -8,7 +8,8 @@ import { NavLink } from 'react-router-dom';
 
 const AddStrategyTable = props => {
 	const strategyType = ['Buy', 'Sell'];
-	const exchangeDropdw = ['IB', 'TT'];
+	const exchangeDropdownOne = ['IB'];
+	const exchangeDropdownTwo = [ 'TT'];
 	const [tickerLegOneOptions, setTickerLegOneOptions] = useState([]);
 	const [tickerLegTwoOptions, setTickerLegTwoOptions] = useState([]);
 	const [state, setState] = useState({
@@ -75,7 +76,7 @@ const AddStrategyTable = props => {
 							<td>Exchange</td>
 							<td>
 								<TableFieldDropDown
-									options={exchangeDropdw}
+									options={exchangeDropdownOne}
 									inputChanged={e =>
 										setState({
 											...state,
@@ -87,7 +88,7 @@ const AddStrategyTable = props => {
 							<td>Exchange</td>
 							<td>
 								<TableFieldDropDown
-									options={exchangeDropdw}
+									options={exchangeDropdownTwo}
 									inputChanged={e =>
 										setState({
 											...state,
@@ -139,59 +140,6 @@ const AddStrategyTable = props => {
 						</tr>
 
 						<tr>
-							<td>Clip:</td>
-							<td>
-								<input
-									type="number"
-									value={state.parameters.clip}
-									onChange={e =>
-										setState({
-											...state,
-											parameters: { ...state.parameters, clip: e.target.value },
-										})
-									}
-								/>
-								{state.parameters.clip !== '' ? (
-									parseFloat(state.parameters.clip) > 0 && Number.isInteger(parseFloat(state.parameters.clip)) ? (
-										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											Looks good!
-										</div>
-									) : (
-										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											{parseFloat(state.parameters.clip) > 0
-												? 'Please type integer value.'
-												: 'Please type greater than zero.'}
-										</div>
-									)
-								) : null}
-							</td>
-							<td>Strategy Spread:</td>
-							<td>
-								<input
-									type="number"
-									value={state.parameters.strategySpread}
-									onChange={e =>
-										setState({
-											...state,
-											parameters: { ...state.parameters, strategySpread: e.target.value },
-										})
-									}
-								/>
-								{state.parameters.strategySpread !== '' ? (
-									countDecimals(state.parameters.strategySpread) == 2 ? (
-										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											Looks good!
-										</div>
-									) : (
-										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											Please type floating number with two decimals.
-										</div>
-									)
-								) : null}
-							</td>
-						</tr>
-
-						<tr>
 							<td>Limit Buy:</td>
 							<td>
 								<input
@@ -219,31 +167,34 @@ const AddStrategyTable = props => {
 									)
 								) : null}
 							</td>
-							<td>Slippage:</td>
+							<td>Clip:</td>
 							<td>
 								<input
 									type="number"
-									value={state.parameters.slippage}
+									value={state.parameters.clip}
 									onChange={e =>
 										setState({
 											...state,
-											parameters: { ...state.parameters, slippage: e.target.value },
+											parameters: { ...state.parameters, clip: e.target.value },
 										})
 									}
 								/>
-								{state.parameters.slippage !== '' ? (
-									countDecimals(state.parameters.slippage) == 2 ? (
+								{state.parameters.clip !== '' ? (
+									parseFloat(state.parameters.clip) > 0 && Number.isInteger(parseFloat(state.parameters.clip)) ? (
 										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
 											Looks good!
 										</div>
 									) : (
 										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											Please type floating number with two decimals.
+											{parseFloat(state.parameters.clip) > 0
+												? 'Please type integer value.'
+												: 'Please type greater than zero.'}
 										</div>
 									)
 								) : null}
 							</td>
 						</tr>
+
 						<tr>
 							<td>Limit Sell:</td>
 							<td>
@@ -297,32 +248,6 @@ const AddStrategyTable = props => {
 								) : null}
 							</td>
 						</tr>
-						<tr>
-							<td>Leg 1 Action:</td>
-							<td>
-								<TableFieldDropDown
-									options={strategyType}
-									inputChanged={e =>
-										setState({
-											...state,
-											parameters: { ...state.parameters, legOneAction: e },
-										})
-									}
-								/>
-							</td>
-							<td>Strategy Name:</td>
-							<td>
-								<input
-									value={state.parameters.strategyName}
-									onChange={e =>
-										setState({
-											...state,
-											parameters: { ...state.parameters, strategyName: e.target.value },
-										})
-									}
-								/>
-							</td>
-						</tr>
 					</tbody>
 				</table>
 			</div>
@@ -331,7 +256,7 @@ const AddStrategyTable = props => {
 				<NavLink
 					to={{
 						pathname: '/addStrategy',
-						strategy: '',
+						data: state,
 					}}
 				>
 					Add Strategy

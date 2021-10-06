@@ -38,13 +38,13 @@ const ModifyStrategyModal = props => {
 	useEffect(() => {
 		setFormData({
 			...formData,
-			spread: location.strategy[0].spread,
-			strategyName: location.strategy[0].strategyName,
-			active: location.strategy[0].active,
+			spread: location.strategy[0].Spread,
+			strategyName: location.strategy[0].StrategyName,
+			active: location.strategy[0].StrategyActive,
 			LimitBuy: location.strategy[0].additionalInfo.LimitBuy,
 			LimitSell: location.strategy[0].additionalInfo.LimitSell,
-			pointsAway: location.strategy[0].additionalInfo.pointsAway,
-			clip: location.strategy[0].additionalInfo.clip,
+			pointsAway: location.strategy[0].additionalInfo.PointsAway,
+			clip: location.strategy[0].additionalInfo.Clip,
 		});
 	}, []);
 	useEffect(() => {

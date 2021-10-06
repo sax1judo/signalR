@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import '../../style/General/ModifyStrategyModal.scss';
-import { NavLink } from 'react-router-dom';
 import TableFieldDropDown from './TableFieldDropDown';
 import { useHistory, useLocation } from 'react-router-dom';
 import { httpRequest } from '../../scripts/http';
