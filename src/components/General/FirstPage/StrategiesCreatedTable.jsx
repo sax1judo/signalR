@@ -97,7 +97,7 @@ const StrategiesCreatedTable = props => {
 		});
 		setSortField(key);
 	};
-	const startStopStrategy = startStopParam => {
+	const startStopStrategy = async startStopParam => {
 		let selectedStrategiesObjectCopy = [];
 		let totalRecords = [];
 		for (let strategy of selectedStrategiesObject) {
@@ -107,29 +107,13 @@ const StrategiesCreatedTable = props => {
 			totalRecords.push(strategy);
 		}
 		for (let selectedStrategy of selectedStrategiesObjectCopy) {
-			httpRequestStartStopStrategy(
+			await httpRequestStartStopStrategy(
 				API.startStopStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`,
 				'put',
 				startStopParam === 'stop' ? 'false' : 'true',
 			).then(res => {
 				if (res.status === 200) {
-					// for (let strategy of totalRecords) {
-					// 	if (strategy.StrategyName === selectedStrategy.StrategyName) {
-					// 		startStopParam === 'stop' ? (strategy.StrategyActive = false) : (strategy.StrategyActive = true);
-					// 		setTableData({
-					// 			...tableData,
-					// 			totalRecords: totalRecords,
-					// 			displayedRecords: totalRecords.slice(
-					// 				(tableData.page - 1) * tableData.pageSize,
-					// 				tableData.page * tableData.pageSize,
-					// 			),
-					// 		});
-					// 	}
-					// }
-
-					// THINK HOW TO OPTIMIZE THIS TO HAVE ONLY ONE HTTP REQUEST ON THE END OF LOOP
 					getArbitrageStrategies();
-					console.log(API.startStopStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`)
 				}
 			});
 		}
@@ -218,7 +202,7 @@ const StrategiesCreatedTable = props => {
 	}, []);
 
 	useEffect(() => {
-		console.log(tableData);
+		// console.log(tableData);
 	}, [tableData]);
 	return (
 		<div className="setUpAddStrategyTable">
@@ -352,7 +336,6 @@ const StrategiesCreatedTable = props => {
 				show={modalShow}
 				onHide={param => {
 					setModalShow(false);
-					console.log(param);
 				}}
 			/>
 		</div>
