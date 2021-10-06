@@ -20,7 +20,7 @@ const StrategiesTable = props => {
 		properties: [],
 		totalRecords: [],
 		displayedRecords: [{ tickers: [] }],
-		pageSize: 5,
+		pageSize: 10,
 		page: 1,
 	});
 	const [selectedStrategies, setSelectedStrategies] = useState([]);

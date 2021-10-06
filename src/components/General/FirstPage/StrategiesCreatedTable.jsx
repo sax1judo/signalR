@@ -16,7 +16,7 @@ const StrategiesCreatedTable = props => {
 		properties: [],
 		totalRecords: [],
 		displayedRecords: [{}],
-		pageSize: 5,
+		pageSize: 10,
 		page: 1,
 	});
 	const [sortField, setSortField] = useState('');
