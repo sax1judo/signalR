@@ -208,6 +208,21 @@ const StrategiesTable = props => {
 		setSelectedStrategies([]);
 		setSelectedStrategiesObject([]);
 	};
+	const unloadStrategy = async () => {
+		for (let selectedStrategy of selectedStrategiesObject) {
+			await httpRequestStartStopStrategy(
+				API.loadStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`,
+				'put',
+				'false',
+			).then(res => {
+				if (res.status === 200) {
+					getArbitrageStrategies();
+				}
+			});
+		}
+		setSelectedStrategies([]);
+		setSelectedStrategiesObject([]);
+	};
 
 	useEffect(() => {
 		getArbitrageStrategies();
@@ -484,6 +499,9 @@ const StrategiesTable = props => {
 					>
 						Modify
 					</NavLink>
+				</button>
+				<button type="button" className="btn  addStrategyButton" onClick={() => unloadStrategy()}>
+					Unload Startegy
 				</button>
 			</div>
 
