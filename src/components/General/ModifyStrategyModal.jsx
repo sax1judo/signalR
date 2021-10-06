@@ -28,7 +28,7 @@ const ModifyStrategyModal = props => {
 			pointsAway,
 		}))(formData);
 		console.log(data);
-		httpRequest(API.arbitrageStrategies + `/${location.strategy[0].leg1Exchange}/${formData.strategyName}`, 'put', data).then(res => {
+		httpRequest(API.arbitrageStrategies + `/${location.strategy[0].Leg1Exchange}/${formData.strategyName}`, 'put', data).then(res => {
 			if (res.status === 200) {
 				goToPreviousPath();
 			}
