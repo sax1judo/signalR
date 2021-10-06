@@ -7,10 +7,11 @@ import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
 import Pagination from '../Pagination';
 import DropDown from '../DropDown';
-import { httpRequest } from '../../../scripts/http';
+import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http';
 import { API } from '../../../scripts/routes';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import Loader from '../Loader';
+import Switch from 'react-bootstrap/esm/Switch';
 
 const StrategiesTable = props => {
 	const [tickers, setTickersData] = useState({ data: [] });
@@ -24,7 +25,7 @@ const StrategiesTable = props => {
 	});
 	const [selectedStrategies, setSelectedStrategies] = useState([]);
 	const [selectedStrategiesObject, setSelectedStrategiesObject] = useState([]);
-	const [modalShow, setModalShow] = useState(false);
+	const [modalShow, setModalShow] = useState({ show: false, action: '' });
 	const [sortField, setSortField] = useState('');
 	const [sortOrder, setSortOrder] = useState('dsc');
 
@@ -68,17 +69,25 @@ const StrategiesTable = props => {
 	};
 	const selectByType = type => {
 		let allStrategies = [];
+		let allStrategiesObjects = [];
 		for (let strategy of tableData.totalRecords) {
-			if (strategy.Leg1Action === type) allStrategies.push(strategy.StrategyName);
+			if (strategy.Leg1Action === type) {
+				allStrategies.push(strategy.StrategyName);
+				allStrategiesObjects.push(strategy);
+			}
 		}
 		setSelectedStrategies(allStrategies);
+		setSelectedStrategiesObject(allStrategiesObjects);
 	};
 	const selectAllStrategies = () => {
 		let allStrategies = [];
+		let allStrategiesObjects = [];
 		for (let strategy of tableData.totalRecords) {
 			allStrategies.push(strategy.StrategyName);
+			allStrategiesObjects.push(strategy);
 		}
 		setSelectedStrategies(allStrategies);
+		setSelectedStrategiesObject(allStrategiesObjects);
 	};
 	const selectStrategy = (strategy, strategyObject) => {
 		let strategies = [];
@@ -159,6 +168,45 @@ const StrategiesTable = props => {
 				),
 			});
 		});
+	};
+	const startStopStrategy = async startStopParam => {
+		let selectedStrategiesObjectCopy = [];
+		let totalRecords = [];
+		for (let strategy of selectedStrategiesObject) {
+			selectedStrategiesObjectCopy.push(strategy);
+		}
+		for (let strategy of tableData.totalRecords) {
+			totalRecords.push(strategy);
+		}
+		for (let selectedStrategy of selectedStrategiesObjectCopy) {
+			await httpRequestStartStopStrategy(
+				API.startStopStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`,
+				'put',
+				startStopParam === 'stop' ? 'false' : 'true',
+			).then(res => {
+				if (res.status === 200) {
+					getArbitrageStrategies();
+				}
+			});
+		}
+
+		setSelectedStrategies([]);
+		setSelectedStrategiesObject([]);
+	};
+	const stopAllStrategies = async () => {
+		for (let selectedStrategy of tableData.totalRecords) {
+			await httpRequestStartStopStrategy(
+				API.startStopStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`,
+				'put',
+				'false',
+			).then(res => {
+				if (res.status === 200) {
+					getArbitrageStrategies();
+				}
+			});
+		}
+		setSelectedStrategies([]);
+		setSelectedStrategiesObject([]);
 	};
 
 	useEffect(() => {
@@ -241,7 +289,9 @@ const StrategiesTable = props => {
 				),
 			});
 	}, [tickers]);
-
+	useEffect(() => {
+		console.log(selectedStrategiesObject);
+	}, [selectedStrategiesObject]);
 	return (
 		<div className="secondPageStrategyTable">
 			{Object.keys(tableData.displayedRecords).length !== 0 ? (
@@ -369,7 +419,14 @@ const StrategiesTable = props => {
 				<button type="button" className="btn addStrategyButton" onClick={() => selectAllStrategies()}>
 					Select All
 				</button>
-				<button type="button" className="btn  addStrategyButton" onClick={() => setSelectedStrategies([])}>
+				<button
+					type="button"
+					className="btn  addStrategyButton"
+					onClick={() => {
+						setSelectedStrategies([]);
+						setSelectedStrategiesObject([]);
+					}}
+				>
 					Unselect All
 				</button>
 				<button type="button" className="btn  addStrategyButton" onClick={() => selectByType('Buy')}>
@@ -381,7 +438,7 @@ const StrategiesTable = props => {
 				<button
 					type="button"
 					className="btn  addStrategyButton"
-					onClick={() => setModalShow(true)}
+					onClick={() => setModalShow({ ...modalShow, show: true })}
 					disabled={selectedStrategies.length === 0 ? true : false}
 					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
 				>
@@ -392,6 +449,7 @@ const StrategiesTable = props => {
 					className="btn  addStrategyButton"
 					disabled={selectedStrategies.length === 0 ? true : false}
 					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+					onClick={() => startStopStrategy('start')}
 				>
 					Start Strategy
 				</button>
@@ -400,10 +458,15 @@ const StrategiesTable = props => {
 					className="btn  addStrategyButton"
 					disabled={selectedStrategies.length === 0 ? true : false}
 					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+					onClick={() => startStopStrategy('stop')}
 				>
 					Stop Strategy
 				</button>
-				<button type="button" className="btn  addStrategyButton" onClick={() => setModalShow(true)}>
+				<button
+					type="button"
+					className="btn  addStrategyButton"
+					onClick={() => setModalShow({ show: true, action: 'stopAllStartegies' })}
+				>
 					Stop All Strategies
 				</button>
 				<button
@@ -425,10 +488,18 @@ const StrategiesTable = props => {
 			</div>
 
 			<MyVerticallyCenteredModal
-				show={modalShow}
+				show={modalShow.show}
 				onHide={param => {
-					setModalShow(false);
-					console.log(param);
+					if (param) {
+						switch (modalShow.action) {
+							case 'stopAllStartegies':
+								stopAllStrategies();
+								break;
+							default:
+								break;
+						}
+					}
+					setModalShow({ show: false, action: '' });
 				}}
 			/>
 		</div>
