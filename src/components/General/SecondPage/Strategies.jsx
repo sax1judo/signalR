@@ -10,6 +10,7 @@ import DropDown from '../DropDown';
 import { httpRequest } from '../../../scripts/http';
 import { API } from '../../../scripts/routes';
 import { HubConnectionBuilder } from '@microsoft/signalr';
+import Loader from '../Loader';
 
 const StrategiesTable = props => {
 	const [tickers, setTickersData] = useState({ data: [] });
@@ -68,14 +69,14 @@ const StrategiesTable = props => {
 	const selectByType = type => {
 		let allStrategies = [];
 		for (let strategy of tableData.totalRecords) {
-			if (strategy.leg1Action === type) allStrategies.push(strategy.strategyName);
+			if (strategy.Leg1Action === type) allStrategies.push(strategy.StrategyName);
 		}
 		setSelectedStrategies(allStrategies);
 	};
 	const selectAllStrategies = () => {
 		let allStrategies = [];
 		for (let strategy of tableData.totalRecords) {
-			allStrategies.push(strategy.strategyName);
+			allStrategies.push(strategy.StrategyName);
 		}
 		setSelectedStrategies(allStrategies);
 	};
@@ -91,7 +92,7 @@ const StrategiesTable = props => {
 
 		if (strategies.includes(strategy)) {
 			strategies = selectedStrategies.filter(strategies => strategies !== strategy);
-			strategiesObject = selectedStrategiesObject.filter(strategies => strategies.strategyName !== strategy);
+			strategiesObject = selectedStrategiesObject.filter(strategies => strategies.StrategyName !== strategy);
 			setSelectedStrategies(strategies);
 			setSelectedStrategiesObject(strategiesObject);
 		} else {
@@ -130,19 +131,19 @@ const StrategiesTable = props => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];
-				let { clip, LimitBuy, LimitSell, pointsAway, load, ...exclObj } = obj;
+				let { Clip, LimitBuy, LimitSell, PointsAway, Load, ...exclObj } = obj;
 				for (let strategy in exclObj) {
 					if (exclObj[strategy] !== null) {
-						let strategyName = exclObj[strategy].leg1Action + exclObj[strategy].leg1Ticker;
+						let StrategyName = exclObj[strategy].Leg1Action + exclObj[strategy].Leg1Ticker;
 						let tickers = [];
-						let additionalInfo = (({ clip, LimitBuy, LimitSell, pointsAway, load }) => ({
-							clip,
+						let additionalInfo = (({ Clip, LimitBuy, LimitSell, PointsAway, Load }) => ({
+							Clip,
 							LimitBuy,
 							LimitSell,
-							pointsAway,
-							load,
+							PointsAway,
+							Load,
 						}))(obj);
-						exclObj[strategy] = { strategyName, additionalInfo, ...exclObj[strategy], tickers };
+						exclObj[strategy] = { StrategyName, additionalInfo, ...exclObj[strategy], tickers };
 
 						modifyResponse.push(exclObj[strategy]);
 					}
@@ -214,7 +215,7 @@ const StrategiesTable = props => {
 		}
 		for (let strategy of strategies) {
 			for (let ticker of tickers.data) {
-				if (strategy.leg1Ticker === ticker.ticker || strategy.leg2Ticker === ticker.ticker) {
+				if (strategy.Leg1Ticker === ticker.ticker || strategy.Leg2Ticker === ticker.ticker) {
 					if (strategy.tickers.length === 0) strategy.tickers.push(ticker);
 					else {
 						let swapped = false;
@@ -243,119 +244,127 @@ const StrategiesTable = props => {
 
 	return (
 		<div className="secondPageStrategyTable">
-			<table>
-				<tbody className="tableDateCentered">
-					<tr className="tableHeaderColor">
-						<th colSpan="12">Strategies</th>
-					</tr>
-					<tr className="tableHeaderColor">
-						{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
-							let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
-							return strategy !== 'additionalInfo' ? (
-								<td onClick={() => sortBy(strategy)} key={id}>
-									{title}
-									{sortField === strategy ? (
-										<img
-											style={
-												sortOrder === 'asc'
-													? { height: '1.2rem', float: 'right', transform: 'rotate(180deg)' }
-													: { height: '1.2rem', float: 'right' }
-											}
-											src={sortAscIcon}
-										></img>
-									) : (
-										<img style={{ height: '1.2rem', float: 'right' }} src={sortIcon}></img>
-									)}
-								</td>
-							) : null;
-						})}
-					</tr>
-					{tableData.displayedRecords.map((strategy, id) => {
-						return (
-							<ComponentWrapper>
-								<tr
-									key={strategy.strategyName}
-									className={selectedStrategies.includes(strategy.strategyName) ? 'tableData activeRow' : 'tableData '}
-									onClick={() => selectStrategy(strategy.strategyName, strategy)}
-								>
-									{Object.keys(strategy).map((key, id) => {
-										let tableData = strategy[key];
-										if (typeof strategy[key] == 'boolean') {
-											if (tableData) tableData = 'true';
-											else tableData = 'false';
-										}
-										return key !== 'tickers' ? (
-											key !== 'additionalInfo' ? (
-												<td key={id}>{tableData}</td>
-											) : null
-										) : (
-											<td>
-												<button
-													onClick={e => {
-														e.stopPropagation();
-														showTickerTable(strategy.strategyName);
-													}}
-													type="button"
-													className="btn addStrategyButton"
-													disabled={strategy.tickers.length === 0 ? true : false}
-												>
-													Details
-												</button>
-											</td>
-										);
-									})}
-								</tr>
-								{/* Tickers collapsed table */}
-								{strategy.tickers.length === 0 ? null : (
-									<tr
-										key={strategy.strategyName + 'tickers'}
-										className="expandedContainer"
-										style={{ pointerEvents: 'none' }}
-									>
-										<td colSpan={Object.keys(strategy).length}>
-											<table id={strategy.strategyName + 'ticker'} className="tickerTableWrapper collapsed">
-												<tbody>
-													<tr>
-														<th colSpan={8} className="tableDateCentered">
-															Tickers
-														</th>
-													</tr>
-
-													{strategy.tickers.map((ticker, id) => {
-														return (
-															<tr id={'ticker' + id} key={id}>
-																{Object.keys(ticker).map((key, id) => {
-																	return (
-																		<ComponentWrapper>
-																			<td key={id + 'tickerKey'}>{key}:</td>
-																			<td key={id + 'tickerValue'}>{ticker[key]}</td>
-																		</ComponentWrapper>
-																	);
-																})}
-															</tr>
-														);
-													})}
-												</tbody>
-											</table>
+			{Object.keys(tableData.displayedRecords).length !== 0 ? (
+				<>
+					<table>
+						<tbody className="tableDateCentered">
+							<tr className="tableHeaderColor">
+								<th colSpan="12">Strategies</th>
+							</tr>
+							<tr className="tableHeaderColor">
+								{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
+									let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
+									return strategy !== 'additionalInfo' ? (
+										<td onClick={() => sortBy(strategy)} key={id}>
+											{title}
+											{sortField === strategy ? (
+												<img
+													style={
+														sortOrder === 'asc'
+															? { height: '1.2rem', float: 'right', transform: 'rotate(180deg)' }
+															: { height: '1.2rem', float: 'right' }
+													}
+													src={sortAscIcon}
+												></img>
+											) : (
+												<img style={{ height: '1.2rem', float: 'right' }} src={sortIcon}></img>
+											)}
 										</td>
-									</tr>
-								)}
-								{/* Tickers collapsed table */}
-							</ComponentWrapper>
-						);
-					})}
-				</tbody>
-			</table>
-			<div className="paginationWrapper">
-				<DropDown postsPerPage={tableData.pageSize} setPostsPerPage={setPostPerPage} />
-				<Pagination
-					postsPerPage={tableData.pageSize}
-					totalPosts={tableData.count}
-					paginate={paginate}
-					activePage={tableData.page}
-					setPostsPerPage={setPostPerPage}
-				/>
-			</div>
+									) : null;
+								})}
+							</tr>
+							{tableData.displayedRecords.map((strategy, id) => {
+								return (
+									<ComponentWrapper>
+										<tr
+											key={strategy.StrategyName}
+											className={
+												selectedStrategies.includes(strategy.StrategyName) ? 'tableData activeRow' : 'tableData '
+											}
+											onClick={() => selectStrategy(strategy.StrategyName, strategy)}
+										>
+											{Object.keys(strategy).map((key, id) => {
+												let tableData = strategy[key];
+												if (typeof strategy[key] == 'boolean') {
+													if (tableData) tableData = 'true';
+													else tableData = 'false';
+												}
+												return key !== 'tickers' ? (
+													key !== 'additionalInfo' ? (
+														<td key={id}>{tableData}</td>
+													) : null
+												) : (
+													<td>
+														<button
+															onClick={e => {
+																e.stopPropagation();
+																showTickerTable(strategy.StrategyName);
+															}}
+															type="button"
+															className="btn addStrategyButton"
+															disabled={strategy.tickers.length === 0 ? true : false}
+														>
+															Details
+														</button>
+													</td>
+												);
+											})}
+										</tr>
+										{/* Tickers collapsed table */}
+										{strategy.tickers.length === 0 ? null : (
+											<tr
+												key={strategy.StrategyName + 'tickers'}
+												className="expandedContainer"
+												style={{ pointerEvents: 'none' }}
+											>
+												<td colSpan={Object.keys(strategy).length}>
+													<table id={strategy.StrategyName + 'ticker'} className="tickerTableWrapper collapsed">
+														<tbody>
+															<tr>
+																<th colSpan={8} className="tableDateCentered">
+																	Tickers
+																</th>
+															</tr>
+
+															{strategy.tickers.map((ticker, id) => {
+																return (
+																	<tr id={'ticker' + id} key={id}>
+																		{Object.keys(ticker).map((key, id) => {
+																			return (
+																				<ComponentWrapper>
+																					<td key={id + 'tickerKey'}>{key}:</td>
+																					<td key={id + 'tickerValue'}>{ticker[key]}</td>
+																				</ComponentWrapper>
+																			);
+																		})}
+																	</tr>
+																);
+															})}
+														</tbody>
+													</table>
+												</td>
+											</tr>
+										)}
+										{/* Tickers collapsed table */}
+									</ComponentWrapper>
+								);
+							})}
+						</tbody>
+					</table>
+					<div className="paginationWrapper">
+						<DropDown postsPerPage={tableData.pageSize} setPostsPerPage={setPostPerPage} />
+						<Pagination
+							postsPerPage={tableData.pageSize}
+							totalPosts={tableData.count}
+							paginate={paginate}
+							activePage={tableData.page}
+							setPostsPerPage={setPostPerPage}
+						/>
+					</div>
+				</>
+			) : (
+				<Loader />
+			)}
 			<div className="buttonsActionsWrapper">
 				<button type="button" className="btn addStrategyButton" onClick={() => selectAllStrategies()}>
 					Select All
@@ -414,6 +423,7 @@ const StrategiesTable = props => {
 					</NavLink>
 				</button>
 			</div>
+
 			<MyVerticallyCenteredModal
 				show={modalShow}
 				onHide={param => {

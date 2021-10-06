@@ -8,6 +8,7 @@ import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http
 import { API } from '../../../scripts/routes';
 import Pagination from '../Pagination';
 import DropDown from '../DropDown';
+import Loader from '../Loader';
 
 const StrategiesCreatedTable = props => {
 	const [tableData, setTableData] = useState({
@@ -29,17 +30,17 @@ const StrategiesCreatedTable = props => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];
-				let { clip, LimitBuy, LimitSell, pointsAway, load, ...exclObj } = obj;
+				let { Clip, LimitBuy, LimitSell, PointsAway, Load, ...exclObj } = obj;
 				for (let strategy in exclObj) {
-					let strategyName = exclObj[strategy].leg1Action + exclObj[strategy].leg1Ticker;
-					let additionalInfo = (({ clip, LimitBuy, LimitSell, pointsAway, load }) => ({
-						clip,
+					let StrategyName = exclObj[strategy].Leg1Action + exclObj[strategy].Leg1Ticker;
+					let additionalInfo = (({ Clip, LimitBuy, LimitSell, PointsAway, Load }) => ({
+						Clip,
 						LimitBuy,
 						LimitSell,
-						pointsAway,
-						load,
+						PointsAway,
+						Load,
 					}))(obj);
-					exclObj[strategy] = { strategyName, additionalInfo, ...exclObj[strategy] };
+					exclObj[strategy] = { StrategyName, additionalInfo, ...exclObj[strategy] };
 
 					modifyResponse.push(exclObj[strategy]);
 				}
@@ -67,7 +68,7 @@ const StrategiesCreatedTable = props => {
 
 		if (strategies.includes(strategy)) {
 			strategies = selectedStrategies.filter(strategies => strategies !== strategy);
-			strategiesObject = selectedStrategiesObject.filter(strategies => strategies.strategyName !== strategy);
+			strategiesObject = selectedStrategiesObject.filter(strategies => strategies.StrategyName !== strategy);
 			setSelectedStrategies(strategies);
 			setSelectedStrategiesObject(strategiesObject);
 		} else {
@@ -96,31 +97,83 @@ const StrategiesCreatedTable = props => {
 		});
 		setSortField(key);
 	};
-	const startStopStrategy = () => {
-		httpRequestStartStopStrategy(
-			API.startStopStrategy + `${selectedStrategiesObject[0].leg1Exchange}/${selectedStrategiesObject[0].strategyName}`,
-			'put',
-			selectedStrategiesObject[0].active ? 'false' : 'true',
-		).then(res => {
-			if (res.status === 200) {
-				setSelectedStrategies([]);
-				setSelectedStrategiesObject([]);
-				getArbitrageStrategies();
-			}
-		});
+	const startStopStrategy = startStopParam => {
+		let selectedStrategiesObjectCopy = [];
+		let totalRecords = [];
+		for (let strategy of selectedStrategiesObject) {
+			selectedStrategiesObjectCopy.push(strategy);
+		}
+		for (let strategy of tableData.totalRecords) {
+			totalRecords.push(strategy);
+		}
+		for (let selectedStrategy of selectedStrategiesObjectCopy) {
+			httpRequestStartStopStrategy(
+				API.startStopStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`,
+				'put',
+				startStopParam === 'stop' ? 'false' : 'true',
+			).then(res => {
+				if (res.status === 200) {
+					// for (let strategy of totalRecords) {
+					// 	if (strategy.StrategyName === selectedStrategy.StrategyName) {
+					// 		startStopParam === 'stop' ? (strategy.StrategyActive = false) : (strategy.StrategyActive = true);
+					// 		setTableData({
+					// 			...tableData,
+					// 			totalRecords: totalRecords,
+					// 			displayedRecords: totalRecords.slice(
+					// 				(tableData.page - 1) * tableData.pageSize,
+					// 				tableData.page * tableData.pageSize,
+					// 			),
+					// 		});
+					// 	}
+					// }
+
+					// THINK HOW TO OPTIMIZE THIS TO HAVE ONLY ONE HTTP REQUEST ON THE END OF LOOP
+					getArbitrageStrategies();
+					console.log(API.startStopStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`)
+				}
+			});
+		}
+
+		setSelectedStrategies([]);
+		setSelectedStrategiesObject([]);
 	};
 	const loadStrategy = () => {
-		httpRequestStartStopStrategy(
-			API.loadStrategy + `${selectedStrategiesObject[0].leg1Exchange}/${selectedStrategiesObject[0].strategyName}`,
-			'put',
-			'true',
-		).then(res => {
-			if (res.status === 200) {
-				setSelectedStrategies([]);
-				setSelectedStrategiesObject([]);
-				getArbitrageStrategies();
-			}
-		});
+		let selectedStrategiesObjectCopy = [];
+		let totalRecords = [];
+		for (let strategy of selectedStrategiesObject) {
+			selectedStrategiesObjectCopy.push(strategy);
+		}
+		for (let strategy of tableData.totalRecords) {
+			totalRecords.push(strategy);
+		}
+		for (let selectedStrategy of selectedStrategiesObjectCopy) {
+			httpRequestStartStopStrategy(
+				API.loadStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`,
+				'put',
+				'true',
+			).then(res => {
+				if (res.status === 200) {
+					// for (let strategy of totalRecords) {
+					// 	if (strategy.StrategyName === selectedStrategy.StrategyName) {
+					// 		strategy.load = !strategy.load;
+					// 		setTableData({
+					// 			...tableData,
+					// 			totalRecords: totalRecords,
+					// 			displayedRecords: totalRecords.slice(
+					// 				(tableData.page - 1) * tableData.pageSize,
+					// 				tableData.page * tableData.pageSize,
+					// 			),
+					// 		});
+					// 	}
+					// }
+
+					// THINK HOW TO OPTIMIZE THIS TO HAVE ONLY ONE HTTP REQUEST ON THE END OF LOOP
+					getArbitrageStrategies();
+				}
+			});
+		}
+		setSelectedStrategies([]);
+		setSelectedStrategiesObject([]);
 	};
 	const setPostPerPage = pageSize => {
 		setTableData({
@@ -164,65 +217,77 @@ const StrategiesCreatedTable = props => {
 		getArbitrageStrategies();
 	}, []);
 
+	useEffect(() => {
+		console.log(tableData);
+	}, [tableData]);
 	return (
 		<div className="setUpAddStrategyTable">
-			<table>
-				<tbody className="tableDateCentered">
-					<tr className="tableHeaderColor">
-						<th colSpan={Object.keys(tableData.displayedRecords[0]).length}>Strategies Created</th>
-					</tr>
-					<tr className="tableHeaderColor">
-						{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
-							let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
-							return strategy !== 'additionalInfo' ? (
-								<td onClick={() => sortBy(strategy)} key={id}>
-									{title}
-									{sortField === strategy ? (
-										<img
-											style={
-												sortOrder === 'asc'
-													? { height: '1.2rem', float: 'right', transform: 'rotate(180deg)' }
-													: { height: '1.2rem', float: 'right' }
-											}
-											src={sortAscIcon}
-										></img>
-									) : (
-										<img style={{ height: '1.2rem', float: 'right' }} src={sortIcon}></img>
-									)}
-								</td>
-							) : null;
-						})}
-					</tr>
-					{tableData.displayedRecords.map((strategy, id) => {
-						return (
-							<tr
-								key={strategy.strategyName}
-								className={selectedStrategies.includes(strategy.strategyName) ? 'tableData activeRow' : 'tableData '}
-								onClick={() => selectStrategy(strategy.strategyName, strategy)}
-							>
-								{Object.keys(strategy).map((data, id) => {
-									let tableData = strategy[data];
-									if (typeof strategy[data] == 'boolean') {
-										if (tableData) tableData = 'true';
-										else tableData = 'false';
-									}
-									return data !== 'additionalInfo' ? <td key={id}>{tableData}</td> : null;
+			{tableData.displayedRecords.length !== 0 ? (
+				<>
+					<table>
+						<tbody className="tableDateCentered">
+							<tr className="tableHeaderColor">
+								<th colSpan={Object.keys(tableData.displayedRecords[0]).length}>Strategies Created</th>
+							</tr>
+							<tr className="tableHeaderColor">
+								{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
+									let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
+									return strategy !== 'additionalInfo' ? (
+										<td onClick={() => sortBy(strategy)} key={id}>
+											{title}
+											{sortField === strategy ? (
+												<img
+													style={
+														sortOrder === 'asc'
+															? { height: '1.2rem', float: 'right', transform: 'rotate(180deg)' }
+															: { height: '1.2rem', float: 'right' }
+													}
+													src={sortAscIcon}
+												></img>
+											) : (
+												<img style={{ height: '1.2rem', float: 'right' }} src={sortIcon}></img>
+											)}
+										</td>
+									) : null;
 								})}
 							</tr>
-						);
-					})}
-				</tbody>
-			</table>
-			<div className="paginationWrapper">
-				<DropDown postsPerPage={tableData.pageSize} setPostsPerPage={setPostPerPage} />
-				<Pagination
-					postsPerPage={tableData.pageSize}
-					totalPosts={tableData.count}
-					paginate={paginate}
-					activePage={tableData.page}
-					setPostsPerPage={setPostPerPage}
-				/>
-			</div>
+							{tableData.displayedRecords.map((strategy, id) => {
+								return (
+									<tr
+										key={strategy.StrategyName}
+										className={
+											selectedStrategies.includes(strategy.StrategyName) ? 'tableData activeRow' : 'tableData '
+										}
+										onClick={() => selectStrategy(strategy.StrategyName, strategy)}
+									>
+										{Object.keys(strategy).map((data, id) => {
+											let tableData = strategy[data];
+											if (typeof strategy[data] == 'boolean') {
+												if (tableData) tableData = 'true';
+												else tableData = 'false';
+											}
+											return data !== 'additionalInfo' ? <td key={id}>{tableData}</td> : null;
+										})}
+									</tr>
+								);
+							})}
+						</tbody>
+					</table>
+					<div className="paginationWrapper">
+						<DropDown postsPerPage={tableData.pageSize} setPostsPerPage={setPostPerPage} />
+						<Pagination
+							postsPerPage={tableData.pageSize}
+							totalPosts={tableData.count}
+							paginate={paginate}
+							activePage={tableData.page}
+							setPostsPerPage={setPostPerPage}
+						/>
+					</div>
+				</>
+			) : (
+				<Loader />
+			)}
+
 			<div className="buttonsActionsWrapper">
 				<button
 					type="button"
@@ -242,18 +307,18 @@ const StrategiesCreatedTable = props => {
 				<button
 					type="button"
 					className="btn "
-					disabled={selectedStrategies.length === 1 && !selectedStrategiesObject[0].active ? false : true}
-					style={selectedStrategies.length === 1 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
-					onClick={() => startStopStrategy()}
+					disabled={selectedStrategies.length !== 0 ? false : true}
+					style={selectedStrategies.length !== 0 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
+					onClick={() => startStopStrategy('start')}
 				>
 					Start Strategy
 				</button>
 				<button
 					type="button"
 					className="btn "
-					disabled={selectedStrategies.length === 1 && selectedStrategiesObject[0].active ? false : true}
-					style={selectedStrategies.length === 1 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
-					onClick={() => startStopStrategy()}
+					disabled={selectedStrategies.length !== 0 ? false : true}
+					style={selectedStrategies.length !== 0 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
+					onClick={() => startStopStrategy('stop')}
 				>
 					Stop Strategy
 				</button>
