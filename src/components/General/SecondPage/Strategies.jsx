@@ -350,13 +350,22 @@ const StrategiesTable = props => {
 										>
 											{Object.keys(strategy).map((key, id) => {
 												let tableData = strategy[key];
+												let strategyActiveColor = 'inherit';
 												if (typeof strategy[key] == 'boolean') {
 													if (tableData) tableData = 'true';
 													else tableData = 'false';
 												}
+												{/* color for active and unactive strategy */}
+												if (key === 'StrategyActive' && tableData ==='true') {
+													strategyActiveColor = '#099667';
+												} else if (key === 'StrategyActive' && tableData==='false') {
+													strategyActiveColor = '#ef3934';
+												}
 												return key !== 'tickers' ? (
 													key !== 'additionalInfo' ? (
-														<td key={id}>{tableData}</td>
+														<td key={id} style={{ backgroundColor: strategyActiveColor }}>
+															{tableData}
+														</td>
 													) : null
 												) : (
 													<td>
@@ -486,7 +495,7 @@ const StrategiesTable = props => {
 				</button>
 				<button
 					type="button"
-					className="btn  addStrategyButton"
+					className="btn  addStrategyButton linkButton"
 					disabled={selectedStrategies.length === 1 ? false : true}
 					style={selectedStrategies.length === 1 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
 				>
