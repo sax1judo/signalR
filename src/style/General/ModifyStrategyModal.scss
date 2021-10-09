@@ -23,7 +23,7 @@
 
 	th,
 	td {
-		padding: 14px;
+		padding: 20px;
 		border: 1px solid #3c3c3c;
 	}
 	input {
@@ -44,6 +44,7 @@
 		gap: 2rem;
 		button {
 			color: white;
+			min-width: 20%;
 		}
 		.confirm {
 			background-color: #0cb36d;

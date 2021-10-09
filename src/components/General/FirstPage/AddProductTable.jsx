@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom';
 
 const AddProductTable = props => {
 	const exchangeDropdw = ['IB', 'TT'];
-	const [state, setState] = useState();
+	const [state, setState] = useState(null);
 	return (
 		<div className="setUpProductTable setUpParametersTable">
 			<table>
@@ -28,7 +28,12 @@ const AddProductTable = props => {
 					{/* table data */}
 				</tbody>
 			</table>
-			<button type="button" className="btn addStrategyButton">
+			<button
+				type="button"
+				className="btn addStrategyButton"
+				disabled={state === null || state === '...' ? true : false}
+				style={state === null || state === '...' ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+			>
 				<NavLink
 					to={{
 						pathname: '/addProduct',

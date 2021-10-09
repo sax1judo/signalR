@@ -7,8 +7,9 @@ import { API } from '../../scripts/routes';
 
 const AddProductModal = props => {
 	const [productAliasFunctionNames, setProductAliasFunctionNames] = useState([]);
+	const [addProductButton, setAddProductButton] = useState(false);
 	const [ibMarketDataTypes, setIbMarketDataTypes] = useState([]);
-	const [createdTradingNames, setCreatedTradingNames] = useState([]);
+	const [createdTradingNames, setCreatedTradingNames] = useState([' ']);
 	const [formData, setFormData] = useState({
 		keyName: '',
 		marketName: '',
@@ -68,7 +69,20 @@ const AddProductModal = props => {
 				if (res.status === 200) setIbMarketDataTypes(res.data);
 			});
 	}, []);
-
+	useEffect(() => {
+		let cnt = 0;
+		let formValidation = document.getElementsByClassName('invalid-feedback');
+		if (formValidation.length === 0) {
+			for (let formFields in formData) {
+				if (formData[formFields] !== '') cnt++;
+			}
+			if (cnt === Object.keys(formData).length) {
+				setAddProductButton(true);
+			} else {
+				setAddProductButton(false);
+			}
+		} else setAddProductButton(false);
+	}, [formData]);
 	return (
 		<div className="modifyStrategyWrapper ">
 			<h4>Product Market: {location.market}</h4>
@@ -155,7 +169,8 @@ const AddProductModal = props => {
 									inputChanged={e =>
 										setFormData({
 											...formData,
-											aliasFunctionName: productAliasFunctionNames.indexOf(e),
+											aliasFunctionName:
+												productAliasFunctionNames.indexOf(e) === -1 ? '' : productAliasFunctionNames.indexOf(e),
 										})
 									}
 								/>
@@ -170,7 +185,7 @@ const AddProductModal = props => {
 										inputChanged={e =>
 											setFormData({
 												...formData,
-												marketDataType: ibMarketDataTypes.indexOf(e),
+												marketDataType: ibMarketDataTypes.indexOf(e) === -1 ? '' : ibMarketDataTypes.indexOf(e),
 											})
 										}
 									/>
@@ -186,7 +201,7 @@ const AddProductModal = props => {
 									onChange={e =>
 										setFormData({
 											...formData,
-											addMonths: parseFloat(e.target.value),
+											addMonths: e.target.value !== '' ? parseFloat(e.target.value) : '',
 										})
 									}
 								/>
@@ -208,7 +223,13 @@ const AddProductModal = props => {
 					</tbody>
 				</table>
 				<div className="modifyStrategyButtonsWrapper">
-					<button type="button" className="btn confirm" onClick={() => addProduct()}>
+					<button
+						type="button"
+						className="btn confirm"
+						disabled={!addProductButton ? true : false}
+						style={!addProductButton ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+						onClick={() => addProduct()}
+					>
 						Add Product
 					</button>
 					<button type="button" className="btn skip " onClick={goToPreviousPath}>
