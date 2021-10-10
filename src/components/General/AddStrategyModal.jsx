@@ -5,6 +5,7 @@ import { httpRequest } from '../../scripts/http';
 import { API } from '../../scripts/routes';
 
 const AddStrategyModal = props => {
+	const [addStrategyButton, setAddStrategyButtton] = useState(false);
 	const [formData, setFormData] = useState({
 		BuyIB: {
 			cycleActive: true,
@@ -108,7 +109,13 @@ const AddStrategyModal = props => {
 	}, []);
 
 	useEffect(() => {
-		console.log(formData);
+		let inputFields = document.getElementsByTagName('input');
+		for (let i = 0; i < inputFields.length; i++) {
+			if (inputFields[i].value === '') {
+				setAddStrategyButtton(false);
+				break;
+			} else if (!addStrategyButton) setAddStrategyButtton(true);
+		}
 	}, [formData]);
 
 	return (
@@ -502,7 +509,13 @@ const AddStrategyModal = props => {
 			</div>
 
 			<div className="modifyStrategyButtonsWrapper">
-				<button type="button" className="btn confirm" onClick={() => addStrategy()}>
+				<button
+					type="button"
+					className="btn confirm"
+					disabled={!addStrategyButton ? true : false}
+					style={!addStrategyButton ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+					onClick={() => addStrategy()}
+				>
 					Add Strategy
 				</button>
 				<button type="button" className="btn skip " onClick={goToPreviousPath}>

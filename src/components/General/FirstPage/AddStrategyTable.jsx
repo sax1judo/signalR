@@ -7,9 +7,9 @@ import { API } from '../../../scripts/routes';
 import { NavLink } from 'react-router-dom';
 
 const AddStrategyTable = props => {
-	const strategyType = ['Buy', 'Sell'];
 	const exchangeDropdownOne = ['IB'];
-	const exchangeDropdownTwo = [ 'TT'];
+	const exchangeDropdownTwo = ['TT'];
+	const [addStrategyButton, setAddStrategyButtton] = useState(false);
 	const [tickerLegOneOptions, setTickerLegOneOptions] = useState([]);
 	const [tickerLegTwoOptions, setTickerLegTwoOptions] = useState([]);
 	const [state, setState] = useState({
@@ -53,6 +53,29 @@ const AddStrategyTable = props => {
 			});
 	}, [state.datebase.legTwo.exchange]);
 
+	useEffect(() => {
+		let cntParameters = 0;
+		let formValidation = document.getElementsByClassName('invalid-feedback');
+		if (formValidation.length === 0) {
+			for (let formFields in state.parameters) {
+				if (state.parameters[formFields] !== '') cntParameters++;
+			}
+			// number of keys for now is for
+			if (cntParameters === 4) {
+				setAddStrategyButtton(true);
+			} else {
+				setAddStrategyButtton(false);
+			}
+		} else setAddStrategyButtton(false);
+
+		if (
+			state.datebase.legOne.exchange === '' ||
+			state.datebase.legTwo.exchange === '' ||
+			state.datebase.legOne.ticker === '' ||
+			state.datebase.legTwo.ticker === ''
+		)
+			setAddStrategyButtton(false);
+	}, [state]);
 	return (
 		<ComponentWrapper>
 			<div className="setUpDatabaseTable">
@@ -78,10 +101,15 @@ const AddStrategyTable = props => {
 								<TableFieldDropDown
 									options={exchangeDropdownOne}
 									inputChanged={e =>
-										setState({
-											...state,
-											datebase: { ...state.datebase, legOne: { ...state.datebase.legOne, exchange: e } },
-										})
+										e !== '...'
+											? setState({
+													...state,
+													datebase: { ...state.datebase, legOne: { ...state.datebase.legOne, exchange: e } },
+											  })
+											: setState({
+													...state,
+													datebase: { ...state.datebase, legOne: { ...state.datebase.legOne, exchange: '' } },
+											  })
 									}
 								/>
 							</td>
@@ -90,10 +118,15 @@ const AddStrategyTable = props => {
 								<TableFieldDropDown
 									options={exchangeDropdownTwo}
 									inputChanged={e =>
-										setState({
-											...state,
-											datebase: { ...state.datebase, legTwo: { ...state.datebase.legTwo, exchange: e } },
-										})
+										e !== '...'
+											? setState({
+													...state,
+													datebase: { ...state.datebase, legTwo: { ...state.datebase.legTwo, exchange: e } },
+											  })
+											: setState({
+													...state,
+													datebase: { ...state.datebase, legTwo: { ...state.datebase.legTwo, exchange: '' } },
+											  })
 									}
 								/>
 							</td>
@@ -104,10 +137,15 @@ const AddStrategyTable = props => {
 								<TableFieldDropDown
 									options={tickerLegOneOptions}
 									inputChanged={e =>
-										setState({
-											...state,
-											datebase: { ...state.datebase, legOne: { ...state.datebase.legOne, ticker: e } },
-										})
+										e !== '...'
+											? setState({
+													...state,
+													datebase: { ...state.datebase, legOne: { ...state.datebase.legOne, ticker: e } },
+											  })
+											: setState({
+													...state,
+													datebase: { ...state.datebase, legOne: { ...state.datebase.legOne, ticker: '' } },
+											  })
 									}
 								/>
 							</td>
@@ -116,10 +154,15 @@ const AddStrategyTable = props => {
 								<TableFieldDropDown
 									options={tickerLegTwoOptions}
 									inputChanged={e =>
-										setState({
-											...state,
-											datebase: { ...state.datebase, legTwo: { ...state.datebase.legTwo, ticker: e } },
-										})
+										e !== '...'
+											? setState({
+													...state,
+													datebase: { ...state.datebase, legTwo: { ...state.datebase.legTwo, ticker: e } },
+											  })
+											: setState({
+													...state,
+													datebase: { ...state.datebase, legTwo: { ...state.datebase.legTwo, ticker: '' } },
+											  })
 									}
 								/>
 							</td>
@@ -252,7 +295,12 @@ const AddStrategyTable = props => {
 				</table>
 			</div>
 
-			<button type="button" className="btn addStrategyButton">
+			<button
+				type="button"
+				className="btn addStrategyButton"
+				disabled={!addStrategyButton ? true : false}
+				style={!addStrategyButton ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+			>
 				<NavLink
 					to={{
 						pathname: '/addStrategy',
