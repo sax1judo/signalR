@@ -85,6 +85,7 @@ const AddStrategyModal = props => {
 			Clip: parseFloat(location.data.parameters.clip),
 			Leg1LimitBuy: parseFloat(location.data.parameters.limitBuy),
 			Leg1LimitSell: parseFloat(location.data.parameters.limitSell),
+			LimitPerDay: parseFloat(location.data.parameters.LimitPerDay),
 			BuyTT: {
 				...formData.BuyTT,
 				leg1Ticker: location.data.datebase.legTwo.ticker,

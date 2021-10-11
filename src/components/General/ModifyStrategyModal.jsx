@@ -20,15 +20,20 @@ const ModifyStrategyModal = props => {
 		history.goBack();
 	};
 	const modifyStrategy = () => {
-		let data = (({ clip, LimitBuy, LimitSell, spread, pointsAway }) => ({
+		let data = (({ clip, LimitBuy, LimitSell, LimitPerDay, spread, pointsAway }) => ({
 			clip,
 			LimitBuy,
 			LimitSell,
+			LimitPerDay,
 			spread,
 			pointsAway,
 		}))(formData);
 		console.log(data);
-		httpRequest(API.arbitrageStrategies + `/${location.strategy[0].Leg1Exchange}/${formData.strategyName}`, 'put', data).then(res => {
+		httpRequest(
+			API.arbitrageStrategies + `/${location.strategy[0].Leg1Exchange}/${formData.strategyName}`,
+			'put',
+			data,
+		).then(res => {
 			if (res.status === 200) {
 				goToPreviousPath();
 			}
@@ -43,6 +48,7 @@ const ModifyStrategyModal = props => {
 			active: location.strategy[0].StrategyActive,
 			LimitBuy: location.strategy[0].additionalInfo.LimitBuy,
 			LimitSell: location.strategy[0].additionalInfo.LimitSell,
+			LimitPerDay: location.strategy[0].additionalInfo.LimitPerDay,
 			pointsAway: location.strategy[0].additionalInfo.PointsAway,
 			clip: location.strategy[0].additionalInfo.Clip,
 		});
@@ -103,9 +109,18 @@ const ModifyStrategyModal = props => {
 									}
 								/>
 							</td>
-							<td>Slippage:</td>
+							<td>Limit Per Day:</td>
 							<td>
-								<input disabled />
+								<input
+									type="number"
+									value={formData.LimitPerDay}
+									onChange={e =>
+										setFormData({
+											...formData,
+											LimitPerDay: parseFloat(e.target.value),
+										})
+									}
+								/>
 							</td>
 						</tr>
 						<tr>

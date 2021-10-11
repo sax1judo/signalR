@@ -21,11 +21,8 @@ const AddStrategyTable = props => {
 			clip: '',
 			limitBuy: '',
 			limitSell: '',
-			legOneAction: '',
-			strategySpread: '',
-			slippage: '',
+			LimitPerDay:'',
 			pointsAway: '',
-			strategyName: '',
 		},
 	});
 	const countDecimals = value => {
@@ -61,7 +58,7 @@ const AddStrategyTable = props => {
 				if (state.parameters[formFields] !== '') cntParameters++;
 			}
 			// number of keys for now is for
-			if (cntParameters === 4) {
+			if (cntParameters ===Object.keys(state.parameters).length) {
 				setAddStrategyButtton(true);
 			} else {
 				setAddStrategyButtton(false);
@@ -290,6 +287,36 @@ const AddStrategyTable = props => {
 									)
 								) : null}
 							</td>
+						</tr>
+						<tr>
+							<td>Limit Per Day:</td>
+							<td>
+								<input
+									type="number"
+									value={state.parameters.LimitPerDay}
+									onChange={e =>
+										setState({
+											...state,
+											parameters: { ...state.parameters, LimitPerDay: e.target.value },
+										})
+									}
+								/>
+								{state.parameters.LimitPerDay !== '' ? (
+									parseFloat(state.parameters.LimitPerDay) > 0 &&
+									Number.isInteger(parseFloat(state.parameters.LimitPerDay)) ? (
+										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
+											Looks good!
+										</div>
+									) : (
+										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
+											{parseFloat(state.parameters.LimitPerDay) > 0
+												? 'Please type integer value.'
+												: 'Please type greater than zero.'}
+										</div>
+									)
+								) : null}
+							</td>
+							
 						</tr>
 					</tbody>
 				</table>
