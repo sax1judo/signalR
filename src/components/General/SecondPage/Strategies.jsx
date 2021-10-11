@@ -11,7 +11,6 @@ import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http
 import { API } from '../../../scripts/routes';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import Loader from '../Loader';
-import Switch from 'react-bootstrap/esm/Switch';
 
 const StrategiesTable = props => {
 	const [tickers, setTickersData] = useState({ data: [] });
@@ -135,20 +134,21 @@ const StrategiesTable = props => {
 		});
 		setSortField(key);
 	};
-	const getArbitrageStrategies = () => {
-		httpRequest(API.arbitrageStrategies + '?onlyLoaded=true', 'get').then(res => {
+	const getArbitrageStrategies = async () => {
+		await httpRequest(API.arbitrageStrategies + '?onlyLoaded=true', 'get').then(res => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];
-				let { Clip, LimitBuy, LimitSell, PointsAway, Load, ...exclObj } = obj;
+				let { Clip, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load, ...exclObj } = obj;
 				for (let strategy in exclObj) {
 					if (exclObj[strategy] !== null) {
 						let StrategyName = exclObj[strategy].Leg1Action + exclObj[strategy].Leg1Ticker;
 						let tickers = [];
-						let additionalInfo = (({ Clip, LimitBuy, LimitSell, PointsAway, Load }) => ({
+						let additionalInfo = (({ Clip, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load }) => ({
 							Clip,
 							LimitBuy,
 							LimitSell,
+							LimitPerDay,
 							PointsAway,
 							Load,
 						}))(obj);
@@ -226,8 +226,10 @@ const StrategiesTable = props => {
 
 	useEffect(() => {
 		getArbitrageStrategies();
-		const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
-		setConnection(newConnection);
+		setTimeout(() => {
+			const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
+			setConnection(newConnection);
+		}, 500);
 		return () => {
 			setConnection(null);
 		};
@@ -262,6 +264,27 @@ const StrategiesTable = props => {
 						}
 
 						setTickersData({ data: newData });
+					});
+					connection.on('ArbitrageQuantity', message => {
+						let newData = tableData.totalRecords;
+						let messageStrategy = JSON.parse(message);
+						if (newData.length !== 0) {
+							for (let strategy in newData) {
+								if (newData[strategy].StrategyName.toUpperCase() === messageStrategy.StrategyName) {
+									newData[strategy].Leg1Quantity = messageStrategy.Leg1Quantity;
+									newData[strategy].Leg2Quantity = messageStrategy.Leg2Quantity;
+									break;
+								}
+							}
+							setTableData({
+								...tableData,
+								totalRecords: newData,
+								displayedRecords: newData.slice(
+									(tableData.page - 1) * tableData.pageSize,
+									tableData.page * tableData.pageSize,
+								),
+							});
+						}
 					});
 				})
 				.catch(e => console.log('Connection failed: ', e));
@@ -355,10 +378,12 @@ const StrategiesTable = props => {
 													if (tableData) tableData = 'true';
 													else tableData = 'false';
 												}
-												{/* color for active and unactive strategy */}
-												if (key === 'StrategyActive' && tableData ==='true') {
+												{
+													/* color for active and unactive strategy */
+												}
+												if (key === 'StrategyActive' && tableData === 'true') {
 													strategyActiveColor = '#099667';
-												} else if (key === 'StrategyActive' && tableData==='false') {
+												} else if (key === 'StrategyActive' && tableData === 'false') {
 													strategyActiveColor = '#ef3934';
 												}
 												return key !== 'tickers' ? (
