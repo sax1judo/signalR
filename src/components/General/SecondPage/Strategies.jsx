@@ -9,12 +9,9 @@ import Pagination from '../Pagination';
 import DropDown from '../DropDown';
 import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http';
 import { API } from '../../../scripts/routes';
-import { HubConnectionBuilder } from '@microsoft/signalr';
 import Loader from '../Loader';
 
 const StrategiesTable = props => {
-	const [tickers, setTickersData] = useState({ data: [] });
-	const [connection, setConnection] = useState(null);
 	const [tableData, setTableData] = useState({
 		properties: [],
 		totalRecords: [],
@@ -143,7 +140,7 @@ const StrategiesTable = props => {
 				for (let strategy in exclObj) {
 					if (exclObj[strategy] !== null) {
 						let StrategyName = exclObj[strategy].Leg1Action + exclObj[strategy].Leg1Ticker;
-						let tickers = [];
+						let spreadMkt = 0;
 						let additionalInfo = (({ Clip, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load }) => ({
 							Clip,
 							LimitBuy,
@@ -152,7 +149,7 @@ const StrategiesTable = props => {
 							PointsAway,
 							Load,
 						}))(obj);
-						exclObj[strategy] = { StrategyName, additionalInfo, ...exclObj[strategy], tickers };
+						exclObj[strategy] = { StrategyName, additionalInfo, ...exclObj[strategy], spreadMkt };
 
 						modifyResponse.push(exclObj[strategy]);
 					}
@@ -185,7 +182,20 @@ const StrategiesTable = props => {
 				startStopParam === 'stop' ? 'false' : 'true',
 			).then(res => {
 				if (res.status === 200) {
-					getArbitrageStrategies();
+					for (let strategy in totalRecords) {
+						if (totalRecords[strategy].StrategyName === selectedStrategy.StrategyName) {
+							totalRecords[strategy].StrategyActive = !totalRecords[strategy].StrategyActive;
+							break;
+						}
+					}
+					setTableData({
+						...tableData,
+						totalRecords: totalRecords,
+						displayedRecords: totalRecords.slice(
+							(tableData.page - 1) * tableData.pageSize,
+							tableData.page * tableData.pageSize,
+						),
+					});
 				}
 			});
 		}
@@ -209,6 +219,10 @@ const StrategiesTable = props => {
 		setSelectedStrategiesObject([]);
 	};
 	const unloadStrategy = async () => {
+		let totalRecords = [];
+		for (let strategy of tableData.totalRecords) {
+			totalRecords.push(strategy);
+		}
 		for (let selectedStrategy of selectedStrategiesObject) {
 			await httpRequestStartStopStrategy(
 				API.loadStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`,
@@ -216,7 +230,20 @@ const StrategiesTable = props => {
 				'false',
 			).then(res => {
 				if (res.status === 200) {
-					getArbitrageStrategies();
+					for (let strategy in totalRecords) {
+						if (totalRecords[strategy].StrategyName === selectedStrategy.StrategyName) {
+							totalRecords.splice(strategy, 1);
+							break;
+						}
+					}
+					setTableData({
+						...tableData,
+						totalRecords: totalRecords,
+						displayedRecords: totalRecords.slice(
+							(tableData.page - 1) * tableData.pageSize,
+							tableData.page * tableData.pageSize,
+						),
+					});
 				}
 			});
 		}
@@ -226,110 +253,40 @@ const StrategiesTable = props => {
 
 	useEffect(() => {
 		getArbitrageStrategies();
-		setTimeout(() => {
-			const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
-			setConnection(newConnection);
-		}, 500);
-		return () => {
-			setConnection(null);
-		};
 	}, []);
 
 	//TICKERS DATA
 	useEffect(() => {
-		if (connection) {
-			connection
-				.start()
-				.then(result => {
-					console.log('Connected!');
-
-					connection.on('ComparationPrices', message => {
-						let newData = tickers.data;
-						let { time_stamp, market, trading_app, bid_quantity, ask_quantity, ...newMessage } = JSON.parse(message);
-						let swapped = false;
-
-						if (newData.length === 0) {
-							newData.push(newMessage);
-						} else {
-							for (let ticker in newData) {
-								if (newData[ticker].ticker === newMessage.ticker) {
-									newData[ticker] = newMessage;
-									swapped = true;
-									break;
-								}
-							}
-							if (!swapped) {
-								newData.push(newMessage);
-							}
-						}
-
-						setTickersData({ data: newData });
-					});
-					connection.on('ArbitrageQuantity', message => {
-						let newData = tableData.totalRecords;
-						let messageStrategy = JSON.parse(message);
-						if (newData.length !== 0) {
-							for (let strategy in newData) {
-								if (newData[strategy].StrategyName.toUpperCase() === messageStrategy.StrategyName) {
-									newData[strategy].Leg1Quantity = messageStrategy.Leg1Quantity;
-									newData[strategy].Leg2Quantity = messageStrategy.Leg2Quantity;
-									break;
-								}
-							}
-							setTableData({
-								...tableData,
-								totalRecords: newData,
-								displayedRecords: newData.slice(
-									(tableData.page - 1) * tableData.pageSize,
-									tableData.page * tableData.pageSize,
-								),
-							});
-						}
-					});
-				})
-				.catch(e => console.log('Connection failed: ', e));
-		}
-		return () => {
-			setConnection(null);
-		};
-	}, [connection]);
-
-	useEffect(() => {
-		let strategies = [];
-		for (let strategy of tableData.totalRecords) {
-			strategies.push(strategy);
-		}
-		for (let strategy of strategies) {
-			for (let ticker of tickers.data) {
-				if (strategy.Leg1Ticker === ticker.ticker || strategy.Leg2Ticker === ticker.ticker) {
-					if (strategy.tickers.length === 0) strategy.tickers.push(ticker);
-					else {
-						let swapped = false;
-						for (let strategyTickers in strategy.tickers) {
-							if (strategy.tickers[strategyTickers].ticker === ticker.ticker) {
-								strategy.tickers[strategyTickers] = ticker;
-								swapped = true;
-								break;
-							}
-						}
-						if (!swapped) strategy.tickers.push(ticker);
-					}
-				}
+		let newData = tableData.totalRecords;
+		for (let strategy in newData) {
+			if (newData[strategy].StrategyName.toUpperCase() === props.arbitrageQuantity.StrategyName) {
+				newData[strategy].Leg1Quantity = props.arbitrageQuantity.Leg1Quantity;
+				newData[strategy].Leg2Quantity = props.arbitrageQuantity.Leg2Quantity;
+				break;
 			}
 		}
-		if (strategies.length !== 0)
-			setTableData({
-				...tableData,
-				totalRecords: strategies,
-				displayedRecords: strategies.slice(
-					(tableData.page - 1) * tableData.pageSize,
-					tableData.page * tableData.pageSize,
-				),
-			});
-	}, [tickers]);
+		setTableData({
+			...tableData,
+			totalRecords: newData,
+			displayedRecords: newData.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
+		});
+	}, [props.arbitrageQuantity]);
 	useEffect(() => {
-		console.log(selectedStrategiesObject);
-	}, [selectedStrategiesObject]);
+		let newData = tableData.totalRecords;
+		for (let strategy in newData) {
+			if (newData[strategy].StrategyName.toUpperCase() === props.arbitrageSpread.StrategyName) {
+				newData[strategy].spreadMkt = props.arbitrageSpread.MarketSpread;
+
+				break;
+			}
+		}
+		setTableData({
+			...tableData,
+			totalRecords: newData,
+			displayedRecords: newData.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
+		});
+	}, [props.arbitrageSpread]);
+
 	return (
 		<div className="secondPageStrategyTable">
 			{Object.keys(tableData.displayedRecords).length !== 0 ? (
@@ -337,7 +294,7 @@ const StrategiesTable = props => {
 					<table>
 						<tbody className="tableDateCentered">
 							<tr className="tableHeaderColor">
-								<th colSpan="12">Strategies</th>
+								<th colSpan="13">Strategies</th>
 							</tr>
 							<tr className="tableHeaderColor">
 								{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
@@ -386,80 +343,30 @@ const StrategiesTable = props => {
 												} else if (key === 'StrategyActive' && tableData === 'false') {
 													strategyActiveColor = '#ef3934';
 												}
-												return key !== 'tickers' ? (
-													key !== 'additionalInfo' ? (
-														<td key={id} style={{ backgroundColor: strategyActiveColor }}>
-															{tableData}
-														</td>
-													) : null
-												) : (
-													<td>
-														<button
-															onClick={e => {
-																e.stopPropagation();
-																showTickerTable(strategy.StrategyName);
-															}}
-															type="button"
-															className="btn addStrategyButton"
-															disabled={strategy.tickers.length === 0 ? true : false}
-														>
-															Details
-														</button>
+												return key !== 'additionalInfo' ? (
+													<td key={id} style={{ backgroundColor: strategyActiveColor }}>
+														{tableData}
 													</td>
-												);
+												) : null;
 											})}
 										</tr>
-										{/* Tickers collapsed table */}
-										{strategy.tickers.length === 0 ? null : (
-											<tr
-												key={strategy.StrategyName + 'tickers'}
-												className="expandedContainer"
-												style={{ pointerEvents: 'none' }}
-											>
-												<td colSpan={Object.keys(strategy).length}>
-													<table id={strategy.StrategyName + 'ticker'} className="tickerTableWrapper collapsed">
-														<tbody>
-															<tr>
-																<th colSpan={8} className="tableDateCentered">
-																	Tickers
-																</th>
-															</tr>
-
-															{strategy.tickers.map((ticker, id) => {
-																return (
-																	<tr id={'ticker' + id} key={id}>
-																		{Object.keys(ticker).map((key, id) => {
-																			return (
-																				<ComponentWrapper>
-																					<td key={id + 'tickerKey'}>{key}:</td>
-																					<td key={id + 'tickerValue'}>{ticker[key]}</td>
-																				</ComponentWrapper>
-																			);
-																		})}
-																	</tr>
-																);
-															})}
-														</tbody>
-													</table>
-												</td>
-											</tr>
-										)}
-										{/* Tickers collapsed table */}
 									</ComponentWrapper>
 								);
 							})}
 						</tbody>
 					</table>
-					<div className="paginationWrapper">
-						<DropDown postsPerPage={tableData.pageSize} setPostsPerPage={setPostPerPage} />
-						<Pagination
-							postsPerPage={tableData.pageSize}
-							totalPosts={tableData.count}
-							paginate={paginate}
-							activePage={tableData.page}
-							setPostsPerPage={setPostPerPage}
-						/>
-					</div>
+					{tableData.totalRecords.length < tableData.pageSize ? null : (
+						<div className="paginationWrapper">
+							<DropDown postsPerPage={tableData.pageSize} setPostsPerPage={setPostPerPage} />
+							<Pagination
+								postsPerPage={tableData.pageSize}
+								totalPosts={tableData.count}
+								paginate={paginate}
+								activePage={tableData.page}
+								setPostsPerPage={setPostPerPage}
+							/>
+						</div>
+					)}
 				</>
 			) : (
 				<Loader />
