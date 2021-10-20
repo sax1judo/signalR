@@ -17,6 +17,7 @@ const AddProductModal = props => {
 		type: '',
 		aliasFunctionName: '',
 		addMonths: '',
+		dailyLimit:''
 	});
 	let history = useHistory();
 	let location = useLocation();
@@ -39,6 +40,7 @@ const AddProductModal = props => {
 				contractType: formData.type.toUpperCase(),
 				addMonths: formData.addMonths,
 				marketDataType: formData.marketDataType,
+				dailyLimit:formData.dailyLimit
 			};
 		} else {
 			data = {
@@ -49,6 +51,7 @@ const AddProductModal = props => {
 				sinkPrices: true,
 				sinkNumberStrategyId: 0,
 				addMonths: formData.addMonths,
+				dailyLimit:formData.dailyLimit
 			};
 		}
 		httpRequest(API.arbitrageProduct + location.market + `/${formData.keyName.toUpperCase()}`, 'put', data).then(
@@ -213,6 +216,34 @@ const AddProductModal = props => {
 									) : (
 										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
 											{parseFloat(formData.addMonths) >= 0
+												? 'Please type integer value.'
+												: 'Please type greater than zero.'}
+										</div>
+									)
+								) : null}
+							</td>
+						</tr>
+						<tr>
+							<td>Daily Limit</td>
+							<td>
+								<input
+									type="number"
+									value={formData.dailyLimit}
+									onChange={e =>
+										setFormData({
+											...formData,
+											dailyLimit: e.target.value !== '' ? parseFloat(e.target.value) : '',
+										})
+									}
+								/>
+								{formData.dailyLimit !== '' ? (
+									parseFloat(formData.dailyLimit) >= 0 && Number.isInteger(parseFloat(formData.dailyLimit)) ? (
+										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
+											Looks good!
+										</div>
+									) : (
+										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
+											{parseFloat(formData.dailyLimit) >= 0
 												? 'Please type integer value.'
 												: 'Please type greater than zero.'}
 										</div>

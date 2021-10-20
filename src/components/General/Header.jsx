@@ -49,7 +49,12 @@ const Header = () => {
 					<ul className="navigationLinks">
 						<li>
 							<NavLink activeClassName="is-active" exact to="/">
-								Set Up
+								Strategies
+							</NavLink>
+						</li>
+						<li>
+							<NavLink activeClassName="is-active" exact to="/products">
+								Products
 							</NavLink>
 						</li>
 						<li>
@@ -81,7 +86,17 @@ const Header = () => {
 									to="/"
 									onClick={() => document.getElementById('mobileNavigationWrapper').classList.toggle('visible')}
 								>
-									Set Up
+									Strategies
+								</NavLink>
+							</li>
+							<li>
+								<NavLink
+									activeClassName="is-active"
+									exact
+									to="/products"
+									onClick={() => document.getElementById('mobileNavigationWrapper').classList.toggle('visible')}
+								>
+									Products
 								</NavLink>
 							</li>
 							<li>

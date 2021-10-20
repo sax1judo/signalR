@@ -19,7 +19,7 @@ export const httpRequestStartStopStrategy = async (url, method, data) => {
 		data: data,
 	})
 		.then(res => res)
-		.catch(err => console.error(err));
+		.catch(err => err);
 };
 export const exportExcelHttp = async url => {
 	return axios({

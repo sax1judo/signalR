@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../../../style/General/SecondPage/StrategiesTable.scss';
 import { NavLink } from 'react-router-dom';
-import ComponentWrapper from '../../General/ComponentWrapper';
 import MyVerticallyCenteredModal from '../MyVerticallyCenteredModal';
 import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
@@ -12,10 +11,17 @@ import { API } from '../../../scripts/routes';
 import Loader from '../Loader';
 
 const StrategiesTable = props => {
+	const stateTableDataColor = {
+		INACTIVE: { color: '#bca819' },
+		ACTIVE: { color: '#099667' },
+		PROBLEM: { color: '#ef3934' },
+		INCYCLE: { color: '#0d6efd' },
+		LIMIT_REACHED: { color: '#ef3934' },
+	};
 	const [tableData, setTableData] = useState({
 		properties: [],
 		totalRecords: [],
-		displayedRecords: [{ tickers: [] }],
+		displayedRecords: [],
 		pageSize: 10,
 		page: 1,
 	});
@@ -180,24 +186,30 @@ const StrategiesTable = props => {
 				API.startStopStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`,
 				'put',
 				startStopParam === 'stop' ? 'false' : 'true',
-			).then(res => {
-				if (res.status === 200) {
-					for (let strategy in totalRecords) {
-						if (totalRecords[strategy].StrategyName === selectedStrategy.StrategyName) {
-							totalRecords[strategy].StrategyActive = !totalRecords[strategy].StrategyActive;
-							break;
+			)
+				.then(res => {
+					if (res.status === 200) {
+						for (let strategy in totalRecords) {
+							if (totalRecords[strategy].StrategyName === selectedStrategy.StrategyName) {
+								if (startStopParam === 'stop') totalRecords[strategy].State = 'INACTIVE';
+								else totalRecords[strategy].State = 'ACTIVE';
+
+								break;
+							}
 						}
+						setTableData({
+							...tableData,
+							totalRecords: totalRecords,
+							displayedRecords: totalRecords.slice(
+								(tableData.page - 1) * tableData.pageSize,
+								tableData.page * tableData.pageSize,
+							),
+						});
 					}
-					setTableData({
-						...tableData,
-						totalRecords: totalRecords,
-						displayedRecords: totalRecords.slice(
-							(tableData.page - 1) * tableData.pageSize,
-							tableData.page * tableData.pageSize,
-						),
-					});
-				}
-			});
+				})
+				.catch(err => {
+					console.log(err.response.status);
+				});
 		}
 
 		setSelectedStrategies([]);
@@ -258,33 +270,38 @@ const StrategiesTable = props => {
 	//TICKERS DATA
 	useEffect(() => {
 		let newData = tableData.totalRecords;
-		for (let strategy in newData) {
-			if (newData[strategy].StrategyName.toUpperCase() === props.arbitrageQuantity.StrategyName) {
-				newData[strategy].Leg1Quantity = props.arbitrageQuantity.Leg1Quantity;
-				newData[strategy].Leg2Quantity = props.arbitrageQuantity.Leg2Quantity;
-				break;
+		if (tableData.displayedRecords.length !== 0) {
+			for (let strategy in newData) {
+				if (newData[strategy].StrategyName.toUpperCase() === props.arbitrageQuantity.StrategyName) {
+					newData[strategy].Leg1Quantity = props.arbitrageQuantity.Leg1Quantity;
+					newData[strategy].Leg2Quantity = props.arbitrageQuantity.Leg2Quantity;
+					break;
+				}
 			}
+			setTableData({
+				...tableData,
+				totalRecords: newData,
+				displayedRecords: newData.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
+			});
 		}
-		setTableData({
-			...tableData,
-			totalRecords: newData,
-			displayedRecords: newData.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
-		});
 	}, [props.arbitrageQuantity]);
 	useEffect(() => {
 		let newData = tableData.totalRecords;
-		for (let strategy in newData) {
-			if (newData[strategy].StrategyName.toUpperCase() === props.arbitrageSpread.StrategyName) {
-				newData[strategy].spreadMkt = props.arbitrageSpread.MarketSpread;
+		if (tableData.displayedRecords.length !== 0) {
+			for (let strategy in newData) {
+				if (newData[strategy].StrategyName.toUpperCase() === props.arbitrageSpread.StrategyName) {
+					newData[strategy].spreadMkt = props.arbitrageSpread.MarketSpread;
+					newData[strategy].State = props.arbitrageSpread.StrategyState;
 
-				break;
+					break;
+				}
 			}
+			setTableData({
+				...tableData,
+				totalRecords: newData,
+				displayedRecords: newData.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
+			});
 		}
-		setTableData({
-			...tableData,
-			totalRecords: newData,
-			displayedRecords: newData.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
-		});
 	}, [props.arbitrageSpread]);
 
 	return (
@@ -320,7 +337,7 @@ const StrategiesTable = props => {
 							</tr>
 							{tableData.displayedRecords.map((strategy, id) => {
 								return (
-									<ComponentWrapper>
+									<>
 										<tr
 											key={strategy.StrategyName}
 											className={
@@ -338,10 +355,8 @@ const StrategiesTable = props => {
 												{
 													/* color for active and unactive strategy */
 												}
-												if (key === 'StrategyActive' && tableData === 'true') {
-													strategyActiveColor = '#099667';
-												} else if (key === 'StrategyActive' && tableData === 'false') {
-													strategyActiveColor = '#ef3934';
+												if (key === 'State') {
+													strategyActiveColor = stateTableDataColor[tableData].color;
 												}
 												return key !== 'additionalInfo' ? (
 													<td key={id} style={{ backgroundColor: strategyActiveColor }}>
@@ -350,7 +365,7 @@ const StrategiesTable = props => {
 												) : null;
 											})}
 										</tr>
-									</ComponentWrapper>
+									</>
 								);
 							})}
 						</tbody>
