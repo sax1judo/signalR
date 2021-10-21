@@ -196,6 +196,7 @@ const CreatedProducts = props => {
 								to={{
 									pathname: '/modifyProduct',
 									strategy: selectedStrategiesObject,
+									type: props.title.toLowerCase(),
 								}}
 							>
 								Modify

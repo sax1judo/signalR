@@ -28,7 +28,7 @@ const ModifyStrategyModal = props => {
 			spread,
 			pointsAway,
 		}))(formData);
-		console.log(data);
+		// console.log(data);
 		httpRequest(
 			API.arbitrageStrategies + `/${location.strategy[0].Leg1Exchange}/${formData.strategyName}`,
 			'put',
