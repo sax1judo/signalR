@@ -68,3 +68,19 @@
 		}
 	}
 }
+@media screen and (max-width: 730px) {
+	.modifyStrategyWrapper {
+		width: 95%;
+		padding: 0.7rem;
+		overflow-x: scroll;
+		table {
+			font-size: 0.5rem;
+		}
+		.modifyStrategyButtonsWrapper {
+			margin-bottom: 1rem;
+			button {
+				font-size: 0.5rem;
+			}
+		}
+	}
+}
