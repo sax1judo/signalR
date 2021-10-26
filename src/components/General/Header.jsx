@@ -19,22 +19,24 @@ const Header = () => {
 			const scrollUp = 'scroll-up';
 			const scrollDown = 'scroll-down';
 			let headerElem = document.getElementById('header');
-			if (currentScroll <= 0) {
-				headerElem.classList.remove(scrollUp);
-				return;
+			if (window.innerWidth > 1000) {
+				if (currentScroll <= 0) {
+					headerElem.classList.remove(scrollUp);
+					return;
+				}
+				if (currentScroll > lastScroll.current && !headerElem.classList.contains(scrollDown)) {
+					// down
+					headerElem.classList.remove(scrollUp);
+					headerElem.classList.add(scrollDown);
+					// lottiePlayer.play();
+				} else if (currentScroll < lastScroll.current && headerElem.classList.contains(scrollDown)) {
+					// up
+					headerElem.classList.remove(scrollDown);
+					headerElem.classList.add(scrollUp);
+					// lottiePlayer.stop();
+				}
+				lastScroll.current = currentScroll;
 			}
-			if (currentScroll > lastScroll.current && !headerElem.classList.contains(scrollDown)) {
-				// down
-				headerElem.classList.remove(scrollUp);
-				headerElem.classList.add(scrollDown);
-				// lottiePlayer.play();
-			} else if (currentScroll < lastScroll.current && headerElem.classList.contains(scrollDown)) {
-				// up
-				headerElem.classList.remove(scrollDown);
-				headerElem.classList.add(scrollUp);
-				// lottiePlayer.stop();
-			}
-			lastScroll.current = currentScroll;
 		});
 	}, []);
 	useEffect(() => {}, [state]);
