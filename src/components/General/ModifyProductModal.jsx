@@ -7,6 +7,7 @@ import { API } from '../../scripts/routes';
 const ModifyProductModal = props => {
 	const [formData, setFormData] = useState({
 		DailyLimit: '',
+		PositionCorrection: '',
 	});
 	let history = useHistory();
 	let location = useLocation();
@@ -18,7 +19,7 @@ const ModifyProductModal = props => {
 		httpRequestStartStopStrategy(
 			API.getProductDetails + `${location.type}/${formData.knownName}`,
 			'put',
-			formData.DailyLimit,
+			formData,
 		).then(res => {
 			if (res.status === 200) {
 				goToPreviousPath();
@@ -31,6 +32,7 @@ const ModifyProductModal = props => {
 			...formData,
 			DailyLimit: location.strategy[0].DailyLimit,
 			knownName: location.strategy[0].KnownName,
+			PositionCorrection: location.strategy[0].PositionCorrection,
 		});
 	}, []);
 	useEffect(() => {
@@ -56,6 +58,21 @@ const ModifyProductModal = props => {
 										setFormData({
 											...formData,
 											DailyLimit: parseFloat(e.target.value),
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Position Correction:</td>
+							<td>
+								<input
+									type="number"
+									value={formData.PositionCorrection}
+									onChange={e =>
+										setFormData({
+											...formData,
+											PositionCorrection: parseFloat(e.target.value),
 										})
 									}
 								/>

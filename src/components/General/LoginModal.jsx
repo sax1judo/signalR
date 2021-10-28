@@ -18,7 +18,7 @@ const LoginModal = props => {
 
 	const loginAction = () => {
 
-        if(formData.username==='henrique' && formData.password==='iglesisas')
+        if(formData.username==='henrique' && formData.password==='iglesias')
         setTimeout(() => {
             history.push("/strategies");
             props.isLoggedAction(true)
