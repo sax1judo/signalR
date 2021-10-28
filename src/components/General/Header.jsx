@@ -46,11 +46,11 @@ const Header = () => {
 			{state === 'desktop' ? (
 				<div id="header" className="header">
 					<div className="logo">
-						<NavLink exact to="/"></NavLink>
+						<NavLink exact to="/strategies"></NavLink>
 					</div>
 					<ul className="navigationLinks">
 						<li>
-							<NavLink activeClassName="is-active" exact to="/">
+							<NavLink activeClassName="is-active" exact to="/strategies">
 								Strategies
 							</NavLink>
 						</li>

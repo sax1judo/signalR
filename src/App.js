@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Header from './components/General/Header';
 import FirstPage from './components/Pages/FirstPage';
@@ -9,14 +9,20 @@ import ModifyProductModal from './components/General/ModifyProductModal';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import AddProductModal from './components/General/AddProductModal';
 import AddStrategyModal from './components/General/AddStrategyModal';
+import LoginModal from './components/General/LoginModal';
 
 const App = () => {
+	const [isLogged, setIsLogged] = useState(false);
+
+	const isLoggedAction = () => {
+		setIsLogged(true);
+	};
 	return (
 		<Router>
-			<Header />
+			{!isLogged ? <LoginModal isLoggedAction={isLoggedAction} /> : <Header />}
 			<div className="contentSection">
 				<Switch>
-					<Route exact path="/">
+					<Route exact path="/strategies">
 						<FirstPage />
 					</Route>
 					<Route path="/arbitrageMonitoring">
