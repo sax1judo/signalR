@@ -30,6 +30,7 @@ const StrategiesTable = props => {
 	const [modalShow, setModalShow] = useState({ show: false, action: '' });
 	const [sortField, setSortField] = useState('');
 	const [sortOrder, setSortOrder] = useState('dsc');
+	const [layout, setLayout] = useState('');
 
 	const setPostPerPage = pageSize => {
 		setTableData({
@@ -108,7 +109,11 @@ const StrategiesTable = props => {
 			setSelectedStrategiesObject(strategiesObject);
 		} else {
 			strategies.push(strategy);
-			strategiesObject.push(strategyObject);
+			for (let str of tableData.totalRecords) {
+				if (str.StrategyName === strategy) {
+					strategiesObject.push(str);
+				}
+			}
 			setSelectedStrategies(strategies);
 			setSelectedStrategiesObject(strategiesObject);
 		}
@@ -161,16 +166,50 @@ const StrategiesTable = props => {
 					}
 				}
 			});
-			setTableData({
-				...tableData,
-				count: modifyResponse.length,
-				totalRecords: modifyResponse,
-				displayedRecords: modifyResponse.slice(
-					(tableData.page - 1) * tableData.pageSize,
-					tableData.page * tableData.pageSize,
-				),
-			});
+
+			let data = setMobileData(modifyResponse);
+			if (data === null) {
+				setTableData({
+					...tableData,
+					count: modifyResponse.length,
+					totalRecords: modifyResponse,
+					displayedRecords: modifyResponse.slice(
+						(tableData.page - 1) * tableData.pageSize,
+						tableData.page * tableData.pageSize,
+					),
+				});
+			} else {
+				setTableData({
+					...tableData,
+					count: data.length,
+					totalRecords: modifyResponse,
+					displayedRecords: data.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
+				});
+			}
 		});
+	};
+	const setMobileData = passedMobileData => {
+		if (window.innerWidth < 1000) {
+			let mobileData = [];
+			for (let data of passedMobileData) {
+				mobileData.push(data);
+			}
+			for (let mobileDataItem in mobileData) {
+				let {
+					Leg1Action,
+					Leg1Exchange,
+					Leg1Quantity,
+					Leg1Ticker,
+					Leg2Exchange,
+					Leg2Quantity,
+					Leg2Ticker,
+					Load,
+					...exclObj
+				} = mobileData[mobileDataItem];
+				mobileData[mobileDataItem] = exclObj;
+			}
+			return mobileData;
+		} else return null;
 	};
 	const startStopStrategy = async startStopParam => {
 		let selectedStrategiesObjectCopy = [];
@@ -197,14 +236,27 @@ const StrategiesTable = props => {
 								break;
 							}
 						}
-						setTableData({
-							...tableData,
-							totalRecords: totalRecords,
-							displayedRecords: totalRecords.slice(
-								(tableData.page - 1) * tableData.pageSize,
-								tableData.page * tableData.pageSize,
-							),
-						});
+						let data = setMobileData(totalRecords);
+						if (data === null) {
+							setTableData({
+								...tableData,
+								totalRecords: totalRecords,
+								displayedRecords: totalRecords.slice(
+									(tableData.page - 1) * tableData.pageSize,
+									tableData.page * tableData.pageSize,
+								),
+							});
+						} else {
+							setTableData({
+								...tableData,
+								count: data.length,
+								totalRecords: totalRecords,
+								displayedRecords: data.slice(
+									(tableData.page - 1) * tableData.pageSize,
+									tableData.page * tableData.pageSize,
+								),
+							});
+						}
 					}
 				})
 				.catch(err => {
@@ -264,6 +316,12 @@ const StrategiesTable = props => {
 	};
 
 	useEffect(() => {
+		if (window.innerWidth < 1000) setLayout('mobile');
+		else setLayout('desktop');
+		window.addEventListener('resize', () => {
+			if (window.innerWidth < 1000) setLayout('mobile');
+			else setLayout('desktop');
+		});
 		getArbitrageStrategies();
 	}, []);
 
@@ -386,7 +444,7 @@ const StrategiesTable = props => {
 			) : (
 				<Loader />
 			)}
-			<div className="buttonsActionsWrapper">
+			<div className={layout === 'desktop' ? 'buttonsActionsWrapper' : 'buttonsActionsWrapper mobile'}>
 				<button type="button" className="btn addStrategyButton" onClick={() => selectAllStrategies()}>
 					Select All
 				</button>
@@ -400,10 +458,20 @@ const StrategiesTable = props => {
 				>
 					Unselect All
 				</button>
-				<button type="button" className="btn  addStrategyButton" onClick={() => selectByType('Buy')}>
+				<button
+					style={layout === 'desktop' ? { display: 'block' } : { display: 'none' }}
+					type="button"
+					className="btn  addStrategyButton"
+					onClick={() => selectByType('Buy')}
+				>
 					Select All Buys
 				</button>
-				<button type="button" className="btn  addStrategyButton" onClick={() => selectByType('Sell')}>
+				<button
+					style={layout === 'desktop' ? { display: 'block' } : { display: 'none' }}
+					type="button"
+					className="btn  addStrategyButton"
+					onClick={() => selectByType('Sell')}
+				>
 					Select All Sells
 				</button>
 				<button
@@ -421,6 +489,7 @@ const StrategiesTable = props => {
 					disabled={selectedStrategies.length === 0 ? true : false}
 					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
 					onClick={() => startStopStrategy('start')}
+					style={{ backgroundColor: '#28a745' }}
 				>
 					Start Strategy
 				</button>
@@ -437,6 +506,7 @@ const StrategiesTable = props => {
 					type="button"
 					className="btn  addStrategyButton"
 					onClick={() => setModalShow({ show: true, action: 'stopAllStartegies' })}
+					style={{ backgroundColor: '#c82333' }}
 				>
 					Stop All Strategies
 				</button>

@@ -77,7 +77,23 @@ const TickersTable = props => {
 		});
 		setSortField(key);
 	};
-
+	const setMobileData = passedMobileData => {
+		if (window.innerWidth < 1000) {
+			let mobileData = [];
+			for (let data of passedMobileData) {
+				mobileData.push(data);
+			}
+			for (let mobileDataItem in mobileData) {
+				let {
+					ask_price,
+					bid_price,
+					...exclObj
+				} = mobileData[mobileDataItem];
+				mobileData[mobileDataItem] = exclObj;
+			}
+			return mobileData;
+		} else return null;
+	};
 	useEffect(() => {
 		setTimeout(() => {
 			const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
@@ -115,14 +131,27 @@ const TickersTable = props => {
 								newData.push(newMessage);
 							}
 						}
-						setTableData({
-							...tableData,
-							totalRecords: newData,
-							displayedRecords: newData.slice(
-								(tableData.page - 1) * tableData.pageSize,
-								tableData.page * tableData.pageSize,
-							),
-						});
+						let data = setMobileData(newData);
+						if (data === null) {
+							setTableData({
+								...tableData,
+								totalRecords: newData,
+								displayedRecords: newData.slice(
+									(tableData.page - 1) * tableData.pageSize,
+									tableData.page * tableData.pageSize,
+								),
+							});
+						} else {
+							setTableData({
+								...tableData,
+								count: data.length,
+								totalRecords: data,
+								displayedRecords: data.slice(
+									(tableData.page - 1) * tableData.pageSize,
+									tableData.page * tableData.pageSize,
+								),
+							});
+						}
 					});
 				})
 				.catch(e => console.log('Connection failed: ', e));

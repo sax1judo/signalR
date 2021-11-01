@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../../../style/General/FirstPage/StrategiesCreatedTable.scss';
+import '../../../style/General/ThirdPage/CreatedProducts.scss';
 import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
 import { httpRequest } from '../../../scripts/http';
@@ -181,7 +182,7 @@ const CreatedProducts = props => {
 							/>
 						</div>
 					)}
-					<div className="buttonsActionsWrapper">
+					<div className="buttonsActionsWrapper modifyStrategyButtonsWrapperProducts">
 						<button
 							type="button"
 							className="btn linkButton"

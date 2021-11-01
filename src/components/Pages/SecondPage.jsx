@@ -47,7 +47,7 @@ const SecondPage = props => {
 		<div className="strategiesSecondPageWrapper">
 			<div className="futuresArbitrageStrategies">
 				<h4 style={{ textAlign: 'center' }}>Futures Arbitrage Monitoring</h4>
-				<ConnectionMonitoring />
+				{/* <ConnectionMonitoring /> */}
 				<TickersTable />
 				<div>
 					<StrategiesTable arbitrageSpread={arbitrageSpread} arbitrageQuantity={arbitrageQuantity} />
