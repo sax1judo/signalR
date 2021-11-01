@@ -70,7 +70,7 @@ const Header = () => {
 				<div className="headerMobile">
 					<nav className="navbar navbar-dark ">
 						<div className="logo">
-							<NavLink exact to="/"></NavLink>
+							<NavLink exact to="/strategies"></NavLink>
 						</div>
 						<button
 							className="navbar-toggler"
@@ -85,7 +85,7 @@ const Header = () => {
 								<NavLink
 									activeClassName="is-active"
 									exact
-									to="/"
+									to="/strategies"
 									onClick={() => document.getElementById('mobileNavigationWrapper').classList.toggle('visible')}
 								>
 									Strategies
