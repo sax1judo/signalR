@@ -41,9 +41,7 @@
 	}
 	.tableData {
 		cursor: pointer;
-		&:hover {
-			background: #383d44;
-		}
+		
 	}
 	.activeRow {
 		background: #383d44;
@@ -76,6 +74,9 @@
 				flex: 1;
 				justify-content: center;
 			}
+		}
+		&.mobile{
+			grid-template-columns: repeat(4, 1fr);
 		}
 	}
 	.expandedContainer {

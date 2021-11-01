@@ -9,6 +9,7 @@
 
 		width: 100%;
 		max-width: 100%;
+	
 	}
 
 	th,
@@ -40,9 +41,6 @@
 	}
 	.tableData {
 		cursor: pointer;
-		&:hover {
-			background: #383d44;
-		}
 	}
 	.activeRow {
 		background: #383d44;
