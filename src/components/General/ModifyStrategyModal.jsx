@@ -15,7 +15,9 @@ const ModifyStrategyModal = props => {
 	});
 	let history = useHistory();
 	let location = useLocation();
-
+	
+	//REDIRECT IF IT'S NOT LOGGED
+	if (!props.isLogged) history.push('/');
 	const goToPreviousPath = () => {
 		history.goBack();
 	};

@@ -3,11 +3,16 @@ import { httpRequest } from '../../scripts/http';
 import { API } from '../../scripts/routes';
 import AddProductTable from '../General/ThirdPage/AddProductTable';
 import CreatedProducts from '../General/ThirdPage/CreatedProducts';
+import { useHistory } from 'react-router-dom';
 
 const ThirdPage = props => {
 	const [ibProducts, setIbProducts] = useState([]);
 	const [ttProducts, setTtProducts] = useState([]);
 
+	//REDIRECT IF IT'S NOT LOGGED
+	const history = useHistory();
+	if (!props.isLogged) history.push('/');
+	
 	const getProducts = () => {
 		httpRequest(API.getProductDetails + 'ib', 'get').then(res => {
 			var ibProducts = [];
@@ -45,7 +50,6 @@ const ThirdPage = props => {
 				<h4 style={{ textAlign: 'center' }}>Created Products</h4>
 				<CreatedProducts title={'IB'} tableData={ibProducts} />
 				<CreatedProducts title={'TT'} tableData={ttProducts} />
-				
 			</div>
 		</div>
 	);

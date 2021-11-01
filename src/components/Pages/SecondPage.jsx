@@ -6,11 +6,16 @@ import ConnectionMonitoring from '../General/SecondPage/ConnectionMonitoring';
 import TickersTable from '../General/SecondPage/TickersTable';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import { API } from '../../scripts/routes';
+import { useHistory } from 'react-router-dom';
 
 const SecondPage = props => {
 	const [connection, setConnection] = useState(null);
 	const [arbitrageQuantity, setArbitrageQuantity] = useState(null);
 	const [arbitrageSpread, setArbitrageSpread] = useState(null);
+
+	//REDIRECT IF IT'S NOT LOGGED
+	const history = useHistory();
+	if (!props.isLogged) history.push('/');
 
 	useEffect(() => {
 		const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();

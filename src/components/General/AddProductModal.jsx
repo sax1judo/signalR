@@ -17,11 +17,13 @@ const AddProductModal = props => {
 		type: '',
 		aliasFunctionName: '',
 		addMonths: '',
-		dailyLimit:''
+		dailyLimit: '',
 	});
 	let history = useHistory();
 	let location = useLocation();
-
+	//REDIRECT IF IT'S NOT LOGGED
+	if (!props.isLogged) history.push('/');
+	
 	const goToPreviousPath = () => {
 		history.goBack();
 	};
@@ -40,7 +42,7 @@ const AddProductModal = props => {
 				contractType: formData.type.toUpperCase(),
 				addMonths: formData.addMonths,
 				marketDataType: formData.marketDataType,
-				dailyLimit:formData.dailyLimit
+				dailyLimit: formData.dailyLimit,
 			};
 		} else {
 			data = {
@@ -51,7 +53,7 @@ const AddProductModal = props => {
 				sinkPrices: true,
 				sinkNumberStrategyId: 0,
 				addMonths: formData.addMonths,
-				dailyLimit:formData.dailyLimit
+				dailyLimit: formData.dailyLimit,
 			};
 		}
 		httpRequest(API.arbitrageProduct + location.market + `/${formData.keyName.toUpperCase()}`, 'put', data).then(

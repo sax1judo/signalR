@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../../style/General/LoginModal.scss';
 import '../../style/General/ModifyStrategyModal.scss';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { httpRequestStartStopStrategy } from '../../scripts/http';
 import { API } from '../../scripts/routes';
 
@@ -20,8 +20,8 @@ const LoginModal = props => {
 
         if(formData.username==='henrique' && formData.password==='henrique')
         setTimeout(() => {
+			props.isLoggedAction(true)
             history.push("/strategies");
-            props.isLoggedAction(true)
         }, 500);
 
     };

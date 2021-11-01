@@ -23,25 +23,25 @@ const App = () => {
 			<div className="contentSection">
 				<Switch>
 					<Route exact path="/strategies">
-						<FirstPage />
+						<FirstPage isLogged={isLogged} />
 					</Route>
 					<Route path="/arbitrageMonitoring">
-						<SecondPage />
+						<SecondPage isLogged={isLogged} />
 					</Route>
 					<Route path="/products">
-						<ThirdPage />
+						<ThirdPage isLogged={isLogged} />
 					</Route>
 					<Route path="/modifyStrategy">
-						<ModifyStrategyModal />
+						<ModifyStrategyModal isLogged={isLogged} />
 					</Route>
 					<Route path="/modifyProduct">
-						<ModifyProductModal />
+						<ModifyProductModal isLogged={isLogged} />
 					</Route>
 					<Route path="/addProduct">
-						<AddProductModal />
+						<AddProductModal isLogged={isLogged} />
 					</Route>
 					<Route path="/addStrategy">
-						<AddStrategyModal />
+						<AddStrategyModal isLogged={isLogged} />
 					</Route>
 				</Switch>
 			</div>
