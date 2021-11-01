@@ -18,11 +18,11 @@ const LoginModal = props => {
 
 	const loginAction = () => {
 
-        if(formData.username==='henrique' && formData.password==='iglesias')
+        if(formData.username==='henrique' && formData.password==='henrique')
         setTimeout(() => {
             history.push("/strategies");
             props.isLoggedAction(true)
-        }, 2000);
+        }, 500);
 
     };
 	return (
