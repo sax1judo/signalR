@@ -336,11 +336,23 @@ const StrategiesTable = props => {
 					break;
 				}
 			}
-			setTableData({
-				...tableData,
-				totalRecords: newData,
-				displayedRecords: newData.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
-			});
+
+			let data = setMobileData(newData);
+			if (data === null) {
+				setTableData({
+					...tableData,
+					totalRecords: newData,
+					displayedRecords: newData.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
+				});
+			} else {
+				setTableData({
+					...tableData,
+					count: data.length,
+					totalRecords: newData,
+					displayedRecords: data.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
+				});
+			}
+			
 		}
 	}, [props.arbitrageQuantity]);
 	useEffect(() => {
@@ -365,7 +377,7 @@ const StrategiesTable = props => {
 				setTableData({
 					...tableData,
 					count: data.length,
-					totalRecords: data,
+					totalRecords: newData,
 					displayedRecords: data.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
 				});
 			}

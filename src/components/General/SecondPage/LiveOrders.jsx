@@ -45,7 +45,13 @@ const LiveOrders = props => {
 
 					connection.on('ArbitrageOrders', message => {
 						let newData = data.liveOrders;
-						let newMessage = JSON.parse(message);
+						let newMessagePreParsed = JSON.parse(message);
+						let newMessage;
+
+						if (window.innerWidth < 1000) {
+							const { filled, ...exculeddMesage } = newMessagePreParsed;
+							newMessage = exculeddMesage;
+						} else newMessage = JSON.parse(message);
 						let swapped = false;
 
 						if (newData.length === 0) {
