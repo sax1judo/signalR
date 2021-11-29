@@ -7,8 +7,8 @@ import { API } from '../../../scripts/routes';
 import { NavLink } from 'react-router-dom';
 
 const AddStrategyTable = props => {
-	const exchangeDropdownOne = ['IB'];
-	const exchangeDropdownTwo = ['TT'];
+	const exchangeDropdownOne = ['IB', 'TT'];
+	const exchangeDropdownTwo = ['TT', 'IB'];
 	const [addStrategyButton, setAddStrategyButtton] = useState(false);
 	const [tickerLegOneOptions, setTickerLegOneOptions] = useState([]);
 	const [tickerLegTwoOptions, setTickerLegTwoOptions] = useState([]);
@@ -17,13 +17,13 @@ const AddStrategyTable = props => {
 			legOne: { exchange: '', ticker: '' },
 			legTwo: { exchange: '', ticker: '' },
 		},
-		parameters: {
-			clip: '',
-			limitBuy: '',
-			limitSell: '',
-			LimitPerDay:'',
-			pointsAway: '',
-		},
+		// parameters: {
+		// 	clip: '',
+		// 	limitBuy: '',
+		// 	limitSell: '',
+		// 	LimitPerDay:'',
+		// 	pointsAway: '',
+		// },
 	});
 	const countDecimals = value => {
 		if (Math.floor(value.valueOf()) === value.valueOf()) return 0;
@@ -51,27 +51,28 @@ const AddStrategyTable = props => {
 	}, [state.datebase.legTwo.exchange]);
 
 	useEffect(() => {
-		let cntParameters = 0;
-		let formValidation = document.getElementsByClassName('invalid-feedback');
-		if (formValidation.length === 0) {
-			for (let formFields in state.parameters) {
-				if (state.parameters[formFields] !== '') cntParameters++;
-			}
-			// number of keys for now is for
-			if (cntParameters ===Object.keys(state.parameters).length) {
-				setAddStrategyButtton(true);
-			} else {
-				setAddStrategyButtton(false);
-			}
-		} else setAddStrategyButtton(false);
+		// let cntParameters = 0;
+		// let formValidation = document.getElementsByClassName('invalid-feedback');
+		// if (formValidation.length === 0) {
+		// 	for (let formFields in state.parameters) {
+		// 		if (state.parameters[formFields] !== '') cntParameters++;
+		// 	}
+		// 	// number of keys for now is for
+		// 	if (cntParameters ===Object.keys(state.parameters).length) {
+		// 		setAddStrategyButtton(true);
+		// 	} else {
+		// 		setAddStrategyButtton(false);
+		// 	}
+		// } else setAddStrategyButtton(false);
 
 		if (
-			state.datebase.legOne.exchange === '' ||
-			state.datebase.legTwo.exchange === '' ||
-			state.datebase.legOne.ticker === '' ||
-			state.datebase.legTwo.ticker === ''
+			state.datebase.legOne.exchange !== '' &&
+			state.datebase.legTwo.exchange !== '' &&
+			state.datebase.legOne.ticker !== '' &&
+			state.datebase.legTwo.ticker !== ''
 		)
-			setAddStrategyButtton(false);
+			setAddStrategyButtton(true);
+		else setAddStrategyButtton(false);
 	}, [state]);
 	return (
 		<ComponentWrapper>
@@ -170,7 +171,7 @@ const AddStrategyTable = props => {
 				</table>
 			</div>
 
-			<div className="setUpParametersTable">
+			{/* <div className="setUpParametersTable">
 				<table>
 					<tbody className="tableDateCentered">
 						<tr>
@@ -320,7 +321,7 @@ const AddStrategyTable = props => {
 						</tr>
 					</tbody>
 				</table>
-			</div>
+			</div> */}
 
 			<button
 				type="button"

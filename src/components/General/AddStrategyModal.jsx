@@ -7,62 +7,78 @@ import { API } from '../../scripts/routes';
 const AddStrategyModal = props => {
 	const [addStrategyButton, setAddStrategyButtton] = useState(false);
 	const [formData, setFormData] = useState({
-		BuyIB: {
+		BuyLeg1: {
 			cycleActive: true,
 			spread: 0,
 			strategyActive: true,
-			leg1Exchange: 'IB',
+			leg1Exchange: null,
 			leg1Ticker: null,
 			leg1Action: 'BUY',
-			leg2Exchange: 'TT',
+			leg2Exchange: null,
 			leg2Ticker: null,
+			pointsAway: 0,
+			clip: 0,
+			leg1LimitBuy: 0,
+			leg1LimitSell: 0,
+			limitPerDay: 0,
 			leg1Quantity: 0,
 			leg2Quantity: 0,
-			load: true,
+			load: true
 		},
-		SellIB: {
+		SellLeg1: {
 			spread: 0,
 			cycleActive: true,
 			strategyActive: true,
-			leg1Exchange: 'IB',
+			leg1Exchange: null,
 			leg1Ticker: null,
 			leg1Action: 'SELL',
-			leg2Exchange: 'TT',
+			leg2Exchange: null,
 			leg2Ticker: null,
+			pointsAway: 0,
+			clip: 0,
+			leg1LimitBuy: 0,
+			leg1LimitSell: 0,
+			limitPerDay: 0,
 			leg1Quantity: 0,
 			leg2Quantity: 0,
-			load: true,
+			load: true
 		},
-		BuyTT: {
+		BuyLeg2: {
 			spread: 0,
 			cycleActive: true,
 			strategyActive: true,
-			leg1Exchange: 'TT',
+			leg1Exchange: null,
 			leg1Ticker: null,
 			leg1Action: 'BUY',
-			leg2Exchange: 'IB',
+			leg2Exchange: null,
 			leg2Ticker: null,
+			pointsAway: 0,
+			clip: 0,
+			leg1LimitBuy: 0,
+			leg1LimitSell: 0,
+			limitPerDay: 0,
 			leg1Quantity: 0,
 			leg2Quantity: 0,
-			load: true,
+			load: true
 		},
-		SellTT: {
+		SellLeg2: {
 			spread: 0,
 			cycleActive: true,
 			strategyActive: true,
-			leg1Exchange: 'TT',
+			leg1Exchange: null,
 			leg1Ticker: null,
 			leg1Action: 'SELL',
-			leg2Exchange: 'IB',
+			leg2Exchange: null,
 			leg2Ticker: null,
+			pointsAway: 0,
+			clip: 0,
+			leg1LimitBuy: 0,
+			leg1LimitSell: 0,
+			limitPerDay: 0,
 			leg1Quantity: 0,
 			leg2Quantity: 0,
-			load: true,
-		},
-		PointsAway: 0,
-		Clip: 0,
-		Leg1LimitBuy: 0,
-		Leg1LimitSell: 0,
+			load: true
+		}
 	});
 	let history = useHistory();
 	let location = useLocation();
@@ -83,30 +99,38 @@ const AddStrategyModal = props => {
 		// leg2ticekr =>TT
 		setFormData({
 			...formData,
-			PointsAway: parseFloat(location.data.parameters.pointsAway),
-			Clip: parseFloat(location.data.parameters.clip),
-			Leg1LimitBuy: parseFloat(location.data.parameters.limitBuy),
-			Leg1LimitSell: parseFloat(location.data.parameters.limitSell),
-			LimitPerDay: parseFloat(location.data.parameters.LimitPerDay),
-			BuyTT: {
-				...formData.BuyTT,
-				leg1Ticker: location.data.datebase.legTwo.ticker,
-				leg2Ticker: location.data.datebase.legOne.ticker,
-			},
-			SellTT: {
-				...formData.SellTT,
-				leg1Ticker: location.data.datebase.legTwo.ticker,
-				leg2Ticker: location.data.datebase.legOne.ticker,
-			},
-			BuyIB: {
-				...formData.BuyIB,
+			// PointsAway: parseFloat(location.data.parameters.pointsAway),
+			// Clip: parseFloat(location.data.parameters.clip),
+			// Leg1LimitBuy: parseFloat(location.data.parameters.limitBuy),
+			// Leg1LimitSell: parseFloat(location.data.parameters.limitSell),
+			// LimitPerDay: parseFloat(location.data.parameters.LimitPerDay),
+			BuyLeg1: {
+				...formData.BuyLeg1,
 				leg1Ticker: location.data.datebase.legOne.ticker,
+				leg1Exchange: location.data.datebase.legOne.exchange,
 				leg2Ticker: location.data.datebase.legTwo.ticker,
+				leg2Exchange: location.data.datebase.legTwo.exchange,
 			},
-			SellIB: {
-				...formData.SellIB,
+			SellLeg1: {
+				...formData.SellLeg1,
 				leg1Ticker: location.data.datebase.legOne.ticker,
+				leg1Exchange: location.data.datebase.legOne.exchange,
 				leg2Ticker: location.data.datebase.legTwo.ticker,
+				leg2Exchange: location.data.datebase.legTwo.exchange,
+			},
+			BuyLeg2: {
+				...formData.BuyLeg2,
+				leg1Ticker: location.data.datebase.legTwo.ticker,
+				leg1Exchange: location.data.datebase.legTwo.exchange,
+				leg2Ticker: location.data.datebase.legOne.ticker,
+				leg2Exchange: location.data.datebase.legOne.exchange,
+			},
+			SellLeg2: {
+				...formData.SellLeg2,
+				leg1Ticker: location.data.datebase.legTwo.ticker,
+				leg1Exchange: location.data.datebase.legTwo.exchange,
+				leg2Ticker: location.data.datebase.legOne.ticker,
+				leg2Exchange: location.data.datebase.legOne.exchange,
 			},
 		});
 	}, []);
@@ -127,33 +151,18 @@ const AddStrategyModal = props => {
 				<table>
 					<tbody className="tableDateCentered">
 						<tr style={{ textAlign: 'center' }}>
-							<th colSpan="2">BuyTT</th>
+							<th colSpan="2">BuyLeg1</th>
 						</tr>
 
-						<tr>
-							<td>Spread</td>
-							<td>
-								<input
-									type="number"
-									value={formData.BuyTT.spread}
-									onChange={e =>
-										setFormData({
-											...formData,
-											BuyTT: { ...formData.BuyTT, spread: parseFloat(e.target.value) },
-										})
-									}
-								/>
-							</td>
-						</tr>
 						<tr>
 							<td>Leg 1 Exchange</td>
 							<td>
 								<input
-									value={formData.BuyTT.leg1Exchange}
+									value={formData.BuyLeg1.leg1Exchange}
 									onChange={e =>
 										setFormData({
 											...formData,
-											BuyTT: { ...formData.BuyTT, leg1Exchange: e.target.value },
+											BuyLeg1: { ...formData.BuyLeg1, leg1Exchange: e.target.value },
 										})
 									}
 								/>
@@ -163,11 +172,11 @@ const AddStrategyModal = props => {
 							<td> Leg 1 Action</td>
 							<td>
 								<input
-									value={formData.BuyTT.leg1Action}
+									value={formData.BuyLeg1.leg1Action}
 									onChange={e =>
 										setFormData({
 											...formData,
-											BuyTT: { ...formData.BuyTT, leg1Action: e.target.value },
+											BuyLeg1: { ...formData.BuyLeg1, leg1Action: e.target.value },
 										})
 									}
 								/>
@@ -178,11 +187,11 @@ const AddStrategyModal = props => {
 							<td>Leg 1 Ticker</td>
 							<td>
 								<input
-									value={formData.BuyTT.leg1Ticker}
+									value={formData.BuyLeg1.leg1Ticker}
 									onChange={e =>
 										setFormData({
 											...formData,
-											BuyTT: { ...formData.BuyTT, leg1Ticker: e.target.value },
+											BuyLeg1: { ...formData.BuyLeg1, leg1Ticker: e.target.value },
 										})
 									}
 								/>
@@ -192,11 +201,11 @@ const AddStrategyModal = props => {
 							<td>Leg 2 Exchange </td>
 							<td>
 								<input
-									value={formData.BuyTT.leg2Exchange}
+									value={formData.BuyLeg1.leg2Exchange}
 									onChange={e =>
 										setFormData({
 											...formData,
-											BuyTT: { ...formData.BuyTT, leg2Exchange: e.target.value },
+											BuyLeg1: { ...formData.BuyLeg1, leg2Exchange: e.target.value },
 										})
 									}
 								/>
@@ -206,11 +215,95 @@ const AddStrategyModal = props => {
 							<td>Leg 2 Ticker</td>
 							<td>
 								<input
-									value={formData.BuyTT.leg2Ticker}
+									value={formData.BuyLeg1.leg2Ticker}
 									onChange={e =>
 										setFormData({
 											...formData,
-											BuyTT: { ...formData.BuyTT, leg2Ticker: e.target.value },
+											BuyLeg1: { ...formData.BuyLeg1, leg2Ticker: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Spread</td>
+							<td>
+								<input
+									value={formData.BuyLeg1.spread}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg1: { ...formData.BuyLeg1, spread: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Clip</td>
+							<td>
+								<input
+									value={formData.BuyLeg1.clip}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg1: { ...formData.BuyLeg1, clip: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Points Away</td>
+							<td>
+								<input
+									value={formData.BuyLeg1.pointsAway}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg1: { ...formData.BuyLeg1, pointsAway: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Limit Buy</td>
+							<td>
+								<input
+									value={formData.BuyLeg1.leg1LimitBuy}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg1: { ...formData.BuyLeg1, leg1LimitBuy: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Limit Sell</td>
+							<td>
+								<input
+									value={formData.BuyLeg1.leg1LimitSell}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg1: { ...formData.BuyLeg1, leg1LimitSell: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Limit Per Day</td>
+							<td>
+								<input
+									value={formData.BuyLeg1.limitPerDay}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg1: { ...formData.BuyLeg1, limitPerDay: e.target.value },
 										})
 									}
 								/>
@@ -224,33 +317,18 @@ const AddStrategyModal = props => {
 				<table>
 					<tbody className="tableDateCentered">
 						<tr style={{ textAlign: 'center' }}>
-							<th colSpan="2">SellTT</th>
+							<th colSpan="2">SellLeg1</th>
 						</tr>
 
-						<tr>
-							<td>Spread</td>
-							<td>
-								<input
-									type="number"
-									value={formData.SellTT.spread}
-									onChange={e =>
-										setFormData({
-											...formData,
-											SellTT: { ...formData.SellTT, spread: parseFloat(e.target.value) },
-										})
-									}
-								/>
-							</td>
-						</tr>
 						<tr>
 							<td>Leg 1 Exchange</td>
 							<td>
 								<input
-									value={formData.SellTT.leg1Exchange}
+									value={formData.SellLeg1.leg1Exchange}
 									onChange={e =>
 										setFormData({
 											...formData,
-											SellTT: { ...formData.SellTT, leg1Exchange: e.target.value },
+											SellLeg1: { ...formData.SellLeg1, leg1Exchange: e.target.value },
 										})
 									}
 								/>
@@ -260,11 +338,11 @@ const AddStrategyModal = props => {
 							<td> Leg 1 Action</td>
 							<td>
 								<input
-									value={formData.SellTT.leg1Action}
+									value={formData.SellLeg1.leg1Action}
 									onChange={e =>
 										setFormData({
 											...formData,
-											SellTT: { ...formData.SellTT, leg1Action: e.target.value },
+											SellLeg1: { ...formData.SellLeg1, leg1Action: e.target.value },
 										})
 									}
 								/>
@@ -275,11 +353,11 @@ const AddStrategyModal = props => {
 							<td>Leg 1 Ticker</td>
 							<td>
 								<input
-									value={formData.SellTT.leg1Ticker}
+									value={formData.SellLeg1.leg1Ticker}
 									onChange={e =>
 										setFormData({
 											...formData,
-											SellTT: { ...formData.SellTT, leg1Ticker: e.target.value },
+											SellLeg1: { ...formData.SellLeg1, leg1Ticker: e.target.value },
 										})
 									}
 								/>
@@ -289,11 +367,11 @@ const AddStrategyModal = props => {
 							<td>Leg 2 Exchange </td>
 							<td>
 								<input
-									value={formData.SellTT.leg2Exchange}
+									value={formData.SellLeg1.leg2Exchange}
 									onChange={e =>
 										setFormData({
 											...formData,
-											SellTT: { ...formData.SellTT, leg2Exchange: e.target.value },
+											SellLeg1: { ...formData.SellLeg1, leg2Exchange: e.target.value },
 										})
 									}
 								/>
@@ -303,11 +381,95 @@ const AddStrategyModal = props => {
 							<td>Leg 2 Ticker</td>
 							<td>
 								<input
-									value={formData.SellTT.leg2Ticker}
+									value={formData.SellLeg1.leg2Ticker}
 									onChange={e =>
 										setFormData({
 											...formData,
-											SellTT: { ...formData.SellTT, leg2Ticker: e.target.value },
+											SellLeg1: { ...formData.SellLeg1, leg2Ticker: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Spread</td>
+							<td>
+								<input
+									value={formData.SellLeg1.spread}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg1: { ...formData.SellLeg1, spread: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Clip</td>
+							<td>
+								<input
+									value={formData.SellLeg1.clip}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg1: { ...formData.SellLeg1, clip: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Points Away</td>
+							<td>
+								<input
+									value={formData.SellLeg1.pointsAway}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg1: { ...formData.SellLeg1, pointsAway: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Limit Buy</td>
+							<td>
+								<input
+									value={formData.SellLeg1.leg1LimitBuy}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg1: { ...formData.SellLeg1, leg1LimitBuy: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Limit Sell</td>
+							<td>
+								<input
+									value={formData.SellLeg1.leg1LimitSell}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg1: { ...formData.SellLeg1, leg1LimitSell: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Limit Per Day</td>
+							<td>
+								<input
+									value={formData.SellLeg1.limitPerDay}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg1: { ...formData.SellLeg1, limitPerDay: e.target.value },
 										})
 									}
 								/>
@@ -321,33 +483,18 @@ const AddStrategyModal = props => {
 				<table>
 					<tbody className="tableDateCentered">
 						<tr style={{ textAlign: 'center' }}>
-							<th colSpan="2">BuyIB</th>
+							<th colSpan="2">BuyLeg2</th>
 						</tr>
 
-						<tr>
-							<td>Spread</td>
-							<td>
-								<input
-									value={formData.BuyIB.spread}
-									type="number"
-									onChange={e =>
-										setFormData({
-											...formData,
-											BuyIB: { ...formData.BuyIB, spread: parseFloat(e.target.value) },
-										})
-									}
-								/>
-							</td>
-						</tr>
 						<tr>
 							<td>Leg 1 Exchange</td>
 							<td>
 								<input
-									value={formData.BuyIB.leg1Exchange}
+									value={formData.BuyLeg2.leg1Exchange}
 									onChange={e =>
 										setFormData({
 											...formData,
-											BuyIB: { ...formData.BuyIB, leg1Exchange: e.target.value },
+											BuyLeg2: { ...formData.BuyLeg2, leg1Exchange: e.target.value },
 										})
 									}
 								/>
@@ -357,11 +504,11 @@ const AddStrategyModal = props => {
 							<td> Leg 1 Action</td>
 							<td>
 								<input
-									value={formData.BuyIB.leg1Action}
+									value={formData.BuyLeg2.leg1Action}
 									onChange={e =>
 										setFormData({
 											...formData,
-											BuyIB: { ...formData.BuyIB, leg1Action: e.target.value },
+											BuyLeg2: { ...formData.BuyLeg2, leg1Action: e.target.value },
 										})
 									}
 								/>
@@ -372,11 +519,11 @@ const AddStrategyModal = props => {
 							<td>Leg 1 Ticker</td>
 							<td>
 								<input
-									value={formData.BuyIB.leg1Ticker}
+									value={formData.BuyLeg2.leg1Ticker}
 									onChange={e =>
 										setFormData({
 											...formData,
-											BuyIB: { ...formData.BuyIB, leg1Ticker: e.target.value },
+											BuyLeg2: { ...formData.BuyLeg2, leg1Ticker: e.target.value },
 										})
 									}
 								/>
@@ -386,11 +533,11 @@ const AddStrategyModal = props => {
 							<td>Leg 2 Exchange </td>
 							<td>
 								<input
-									value={formData.BuyIB.leg2Exchange}
+									value={formData.BuyLeg2.leg2Exchange}
 									onChange={e =>
 										setFormData({
 											...formData,
-											BuyIB: { ...formData.BuyIB, leg2Exchange: e.target.value },
+											BuyLeg2: { ...formData.BuyLeg2, leg2Exchange: e.target.value },
 										})
 									}
 								/>
@@ -400,11 +547,95 @@ const AddStrategyModal = props => {
 							<td>Leg 2 Ticker</td>
 							<td>
 								<input
-									value={formData.BuyIB.leg2Ticker}
+									value={formData.BuyLeg2.leg2Ticker}
 									onChange={e =>
 										setFormData({
 											...formData,
-											BuyIB: { ...formData.BuyIB, leg2Ticker: e.target.value },
+											BuyLeg2: { ...formData.BuyLeg2, leg2Ticker: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Spread</td>
+							<td>
+								<input
+									value={formData.BuyLeg2.spread}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg2: { ...formData.BuyLeg2, spread: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Clip</td>
+							<td>
+								<input
+									value={formData.BuyLeg2.clip}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg2: { ...formData.BuyLeg2, clip: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Points Away</td>
+							<td>
+								<input
+									value={formData.BuyLeg2.pointsAway}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg2: { ...formData.BuyLeg2, pointsAway: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Limit Buy</td>
+							<td>
+								<input
+									value={formData.BuyLeg2.leg1LimitBuy}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg2: { ...formData.BuyLeg2, leg1LimitBuy: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Limit Sell</td>
+							<td>
+								<input
+									value={formData.BuyLeg2.leg1LimitSell}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg2: { ...formData.BuyLeg2, leg1LimitSell: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Limit Per Day</td>
+							<td>
+								<input
+									value={formData.BuyLeg2.limitPerDay}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg2: { ...formData.BuyLeg2, limitPerDay: e.target.value },
 										})
 									}
 								/>
@@ -418,33 +649,19 @@ const AddStrategyModal = props => {
 				<table>
 					<tbody className="tableDateCentered">
 						<tr style={{ textAlign: 'center' }}>
-							<th colSpan="2">SellIB</th>
+							<th colSpan="2">SellLeg2</th>
 						</tr>
 
-						<tr>
-							<td>Spread</td>
-							<td>
-								<input
-									value={formData.SellIB.spread}
-									type="number"
-									onChange={e =>
-										setFormData({
-											...formData,
-											SellIB: { ...formData.SellIB, spread: parseFloat(e.target.value) },
-										})
-									}
-								/>
-							</td>
-						</tr>
+						
 						<tr>
 							<td>Leg 1 Exchange</td>
 							<td>
 								<input
-									value={formData.SellIB.leg1Exchange}
+									value={formData.SellLeg2.leg1Exchange}
 									onChange={e =>
 										setFormData({
 											...formData,
-											SellIB: { ...formData.SellIB, leg1Exchange: e.target.value },
+											SellLeg2: { ...formData.SellLeg2, leg1Exchange: e.target.value },
 										})
 									}
 								/>
@@ -454,11 +671,11 @@ const AddStrategyModal = props => {
 							<td> Leg 1 Action</td>
 							<td>
 								<input
-									value={formData.SellIB.leg1Action}
+									value={formData.SellLeg2.leg1Action}
 									onChange={e =>
 										setFormData({
 											...formData,
-											SellIB: { ...formData.SellIB, leg1Action: e.target.value },
+											SellLeg2: { ...formData.SellLeg2, leg1Action: e.target.value },
 										})
 									}
 								/>
@@ -469,11 +686,11 @@ const AddStrategyModal = props => {
 							<td>Leg 1 Ticker</td>
 							<td>
 								<input
-									value={formData.SellIB.leg1Ticker}
+									value={formData.SellLeg2.leg1Ticker}
 									onChange={e =>
 										setFormData({
 											...formData,
-											SellIB: { ...formData.SellIB, leg1Ticker: e.target.value },
+											SellLeg2: { ...formData.SellLeg2, leg1Ticker: e.target.value },
 										})
 									}
 								/>
@@ -483,11 +700,11 @@ const AddStrategyModal = props => {
 							<td>Leg 2 Exchange </td>
 							<td>
 								<input
-									value={formData.SellIB.leg2Exchange}
+									value={formData.SellLeg2.leg2Exchange}
 									onChange={e =>
 										setFormData({
 											...formData,
-											SellIB: { ...formData.SellIB, leg2Exchange: e.target.value },
+											SellLeg2: { ...formData.SellLeg2, leg2Exchange: e.target.value },
 										})
 									}
 								/>
@@ -497,11 +714,95 @@ const AddStrategyModal = props => {
 							<td>Leg 2 Ticker</td>
 							<td>
 								<input
-									value={formData.SellIB.leg2Ticker}
+									value={formData.SellLeg2.leg2Ticker}
 									onChange={e =>
 										setFormData({
 											...formData,
-											SellIB: { ...formData.SellIB, leg2Ticker: e.target.value },
+											SellLeg2: { ...formData.SellLeg2, leg2Ticker: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Spread</td>
+							<td>
+								<input
+									value={formData.SellLeg2.spread}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg2: { ...formData.SellLeg2, spread: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Clip</td>
+							<td>
+								<input
+									value={formData.SellLeg2.clip}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg2: { ...formData.SellLeg2, clip: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Points Away</td>
+							<td>
+								<input
+									value={formData.SellLeg2.pointsAway}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg2: { ...formData.SellLeg2, pointsAway: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Limit Buy</td>
+							<td>
+								<input
+									value={formData.SellLeg2.leg1LimitBuy}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg2: { ...formData.SellLeg2, leg1LimitBuy: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Limit Sell</td>
+							<td>
+								<input
+									value={formData.SellLeg2.leg1LimitSell}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg2: { ...formData.SellLeg2, leg1LimitSell: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Limit Per Day</td>
+							<td>
+								<input
+									value={formData.SellLeg2.limitPerDay}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg2: { ...formData.SellLeg2, limitPerDay: e.target.value },
 										})
 									}
 								/>
