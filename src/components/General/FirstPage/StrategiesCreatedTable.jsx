@@ -30,9 +30,8 @@ const StrategiesCreatedTable = props => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];
-				let { Clip, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load, ...exclObj } = obj;
-				for (let strategy in exclObj) {
-					let StrategyName = exclObj[strategy].Leg1Action + exclObj[strategy].Leg1Ticker;
+				for (let strategy in obj) {
+					let StrategyName = obj[strategy].Leg1Action + obj[strategy].Leg1Ticker + '_' + obj[strategy].Leg2Ticker;
 					let additionalInfo = (({ Clip, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load }) => ({
 						Clip,
 						LimitBuy,
@@ -40,10 +39,11 @@ const StrategiesCreatedTable = props => {
 						LimitPerDay,
 						PointsAway,
 						Load,
-					}))(obj);
-					exclObj[strategy] = { StrategyName, additionalInfo, ...exclObj[strategy] };
+					}))(obj[strategy]);
+					let { Clip, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load, ...exclObj } = obj[strategy];
+					obj[strategy] = { StrategyName, additionalInfo, ...exclObj };
 
-					modifyResponse.push(exclObj[strategy]);
+					modifyResponse.push(obj[strategy]);
 				}
 			});
 			setTableData({

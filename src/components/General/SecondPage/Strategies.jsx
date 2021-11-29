@@ -150,7 +150,7 @@ const StrategiesTable = props => {
 				let { Clip, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load, ...exclObj } = obj;
 				for (let strategy in exclObj) {
 					if (exclObj[strategy] !== null) {
-						let StrategyName = exclObj[strategy].Leg1Action + exclObj[strategy].Leg1Ticker;
+						let StrategyName = exclObj[strategy].Leg1Action + exclObj[strategy].Leg1Ticker +'_'+ exclObj[strategy].Leg2Ticker;
 						let spreadMkt = 0;
 						let additionalInfo = (({ Clip, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load }) => ({
 							Clip,
@@ -159,7 +159,7 @@ const StrategiesTable = props => {
 							LimitPerDay,
 							PointsAway,
 							Load,
-						}))(obj);
+						}))(exclObj[strategy]);
 						exclObj[strategy] = { StrategyName, additionalInfo, ...exclObj[strategy], spreadMkt };
 
 						modifyResponse.push(exclObj[strategy]);
@@ -204,6 +204,11 @@ const StrategiesTable = props => {
 					Leg2Quantity,
 					Leg2Ticker,
 					Load,
+					LimitPerDay,
+					LimitSell,
+					LimitBuy,
+					Clip,
+					PointsAway,
 					...exclObj
 				} = mobileData[mobileDataItem];
 				mobileData[mobileDataItem] = exclObj;
@@ -392,7 +397,7 @@ const StrategiesTable = props => {
 					<table>
 						<tbody className="tableDateCentered">
 							<tr className="tableHeaderColor">
-								<th colSpan="13">Strategies</th>
+								<th colSpan="17">Strategies</th>
 							</tr>
 							<tr className="tableHeaderColor">
 								{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
