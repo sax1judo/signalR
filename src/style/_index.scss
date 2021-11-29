@@ -1,6 +1,22 @@
 html,
 body {
 	background-color: #31373f !important;
+	/* width */
+	::-webkit-scrollbar {
+		width: 10px;
+	}
+
+	/* Track */
+	::-webkit-scrollbar-track {
+		background: #746f6f;
+		border-radius: 6px;
+	}
+
+	/* Handle */
+	::-webkit-scrollbar-thumb {
+		background: #212529;
+		border-radius: 6px;
+	}
 }
 #root {
 	width: 100%;

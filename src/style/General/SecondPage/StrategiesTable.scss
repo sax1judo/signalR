@@ -138,7 +138,7 @@
 		margin-top: 1rem;
 	}
 }
-@media screen and (max-width: 1140px) {
+@media screen and (max-width: 1520px) {
 	.secondPageStrategyTable {
 		overflow-x: scroll;
 		.buttonsActionsWrapper {
@@ -146,6 +146,17 @@
 		}
 		table {
 			font-size: 0.6rem;
+		}
+	}
+}
+@media screen and (max-width: 1140px) {
+	.secondPageStrategyTable {
+		overflow-x: scroll;
+		.buttonsActionsWrapper {
+			margin-bottom: 1rem;
+		}
+		table {
+			font-size: 0.4rem;
 		}
 	}
 }
