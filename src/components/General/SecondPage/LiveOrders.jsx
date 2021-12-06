@@ -58,7 +58,7 @@ const LiveOrders = props => {
 							newData.push(newMessage);
 						} else {
 							for (let order in newData) {
-								if (newData[order].strategy === newMessage.strategy) {
+								if (newData[order].id === newMessage.id) {
 									newData[order] = newMessage;
 									swapped = true;
 									break;
@@ -96,7 +96,7 @@ const LiveOrders = props => {
 						<tr className="tableHeaderColor">
 							{Object.keys(data.liveOrders[0]).map((liveOrders, id) => {
 								let title = liveOrders.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
-								return (
+								return title === 'id' ? null : (
 									<th
 										onClick={() => {
 											if (sortOrder.current === 'dsc') {
@@ -135,7 +135,7 @@ const LiveOrders = props => {
 											let date = new Date(liveOrders[data]);
 											value = date.toLocaleString('en-GB');
 										} else value = liveOrders[data];
-										return <td key={id}>{value}</td>;
+										return data === 'id' ? null : <td key={id}>{value}</td>;
 									})}
 								</tr>
 							);
