@@ -11,6 +11,13 @@ import DropDown from '../DropDown';
 import Loader from '../Loader';
 
 const StrategiesCreatedTable = props => {
+	const stateTableDataColor = {
+		INACTIVE: { color: '#bca819' },
+		ACTIVE: { color: '#099667' },
+		PROBLEM: { color: '#ef3934' },
+		INCYCLE: { color: '#0d6efd' },
+		LIMIT_REACHED: { color: '#ef3934' },
+	};
 	const [tableData, setTableData] = useState({
 		totalRecordsNumber: null,
 		properties: [],
@@ -32,15 +39,26 @@ const StrategiesCreatedTable = props => {
 				let obj = res.data[strategyKey];
 				for (let strategy in obj) {
 					let StrategyName = obj[strategy].Leg1Action + obj[strategy].Leg1Ticker + '_' + obj[strategy].Leg2Ticker;
-					let additionalInfo = (({ Clip, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load }) => ({
-						Clip,
+					let additionalInfo = (({
+						Slippage,
 						LimitBuy,
 						LimitSell,
 						LimitPerDay,
 						PointsAway,
 						Load,
+						Leg1Ratio,
+						Leg2Ratio,
+					}) => ({
+						Slippage,
+						LimitBuy,
+						LimitSell,
+						LimitPerDay,
+						PointsAway,
+						Load,
+						Leg1Ratio,
+						Leg2Ratio,
 					}))(obj[strategy]);
-					
+
 					obj[strategy] = { StrategyName, additionalInfo, ...obj[strategy] };
 
 					modifyResponse.push(obj[strategy]);
@@ -132,15 +150,13 @@ const StrategiesCreatedTable = props => {
 			totalRecords.push(strategy);
 		}
 		for (let selectedStrategy of selectedStrategiesObjectCopy) {
-			await httpRequestStartStopStrategy(
-				API.loadStrategy + `${selectedStrategy.StrategyName}`,
-				'put',
-				'true',
-			).then(res => {
-				if (res.status === 200) {
-					getArbitrageStrategies();
-				}
-			});
+			await httpRequestStartStopStrategy(API.loadStrategy + `${selectedStrategy.StrategyName}`, 'put', 'true').then(
+				res => {
+					if (res.status === 200) {
+						getArbitrageStrategies();
+					}
+				},
+			);
 		}
 		setSelectedStrategies([]);
 		setSelectedStrategiesObject([]);
@@ -232,11 +248,19 @@ const StrategiesCreatedTable = props => {
 									>
 										{Object.keys(strategy).map((data, id) => {
 											let tableData = strategy[data];
+											let strategyActiveColor = 'inherit';
 											if (typeof strategy[data] == 'boolean') {
 												if (tableData) tableData = 'true';
 												else tableData = 'false';
 											}
-											return data !== 'additionalInfo' ? <td key={id}>{tableData}</td> : null;
+											if (data === 'State') {
+												strategyActiveColor = stateTableDataColor[tableData].color;
+											}
+											return data !== 'additionalInfo' ? (
+												<td key={id} style={{ backgroundColor: strategyActiveColor }}>
+													{tableData}
+												</td>
+											) : null;
 										})}
 									</tr>
 								);

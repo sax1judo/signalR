@@ -147,18 +147,30 @@ const StrategiesTable = props => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];
-				let { Clip, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load, ...exclObj } = obj;
+				let { Slippage, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load, ...exclObj } = obj;
 				for (let strategy in exclObj) {
 					if (exclObj[strategy] !== null) {
-						let StrategyName = exclObj[strategy].Leg1Action + exclObj[strategy].Leg1Ticker +'_'+ exclObj[strategy].Leg2Ticker;
+						let StrategyName =
+							exclObj[strategy].Leg1Action + exclObj[strategy].Leg1Ticker + '_' + exclObj[strategy].Leg2Ticker;
 						let spreadMkt = 0;
-						let additionalInfo = (({ Clip, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load }) => ({
-							Clip,
+						let additionalInfo = (({
+							Slippage,
 							LimitBuy,
 							LimitSell,
 							LimitPerDay,
 							PointsAway,
 							Load,
+							Leg1Ratio,
+							Leg2Ratio,
+						}) => ({
+							Slippage,
+							LimitBuy,
+							LimitSell,
+							LimitPerDay,
+							PointsAway,
+							Load,
+							Leg1Ratio,
+							Leg2Ratio,
 						}))(exclObj[strategy]);
 						exclObj[strategy] = { StrategyName, additionalInfo, ...exclObj[strategy], spreadMkt };
 
@@ -207,8 +219,10 @@ const StrategiesTable = props => {
 					LimitPerDay,
 					LimitSell,
 					LimitBuy,
-					Clip,
+					Slippage,
 					PointsAway,
+					Leg1Ratio,
+					Leg2Ratio,
 					...exclObj
 				} = mobileData[mobileDataItem];
 				mobileData[mobileDataItem] = exclObj;
@@ -293,28 +307,26 @@ const StrategiesTable = props => {
 			totalRecords.push(strategy);
 		}
 		for (let selectedStrategy of selectedStrategiesObject) {
-			await httpRequestStartStopStrategy(
-				API.loadStrategy + `${selectedStrategy.StrategyName}`,
-				'put',
-				'false',
-			).then(res => {
-				if (res.status === 200) {
-					for (let strategy in totalRecords) {
-						if (totalRecords[strategy].StrategyName === selectedStrategy.StrategyName) {
-							totalRecords.splice(strategy, 1);
-							break;
+			await httpRequestStartStopStrategy(API.loadStrategy + `${selectedStrategy.StrategyName}`, 'put', 'false').then(
+				res => {
+					if (res.status === 200) {
+						for (let strategy in totalRecords) {
+							if (totalRecords[strategy].StrategyName === selectedStrategy.StrategyName) {
+								totalRecords.splice(strategy, 1);
+								break;
+							}
 						}
+						setTableData({
+							...tableData,
+							totalRecords: totalRecords,
+							displayedRecords: totalRecords.slice(
+								(tableData.page - 1) * tableData.pageSize,
+								tableData.page * tableData.pageSize,
+							),
+						});
 					}
-					setTableData({
-						...tableData,
-						totalRecords: totalRecords,
-						displayedRecords: totalRecords.slice(
-							(tableData.page - 1) * tableData.pageSize,
-							tableData.page * tableData.pageSize,
-						),
-					});
-				}
-			});
+				},
+			);
 		}
 		setSelectedStrategies([]);
 		setSelectedStrategiesObject([]);
@@ -347,7 +359,10 @@ const StrategiesTable = props => {
 				setTableData({
 					...tableData,
 					totalRecords: newData,
-					displayedRecords: newData.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
+					displayedRecords: newData.slice(
+						(tableData.page - 1) * tableData.pageSize,
+						tableData.page * tableData.pageSize,
+					),
 				});
 			} else {
 				setTableData({
@@ -357,7 +372,6 @@ const StrategiesTable = props => {
 					displayedRecords: data.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
 				});
 			}
-			
 		}
 	}, [props.arbitrageQuantity]);
 	useEffect(() => {
@@ -376,7 +390,10 @@ const StrategiesTable = props => {
 				setTableData({
 					...tableData,
 					totalRecords: newData,
-					displayedRecords: newData.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
+					displayedRecords: newData.slice(
+						(tableData.page - 1) * tableData.pageSize,
+						tableData.page * tableData.pageSize,
+					),
 				});
 			} else {
 				setTableData({
@@ -386,7 +403,6 @@ const StrategiesTable = props => {
 					displayedRecords: data.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
 				});
 			}
-			
 		}
 	}, [props.arbitrageSpread]);
 

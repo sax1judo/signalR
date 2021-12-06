@@ -7,35 +7,35 @@ import { API } from '../../scripts/routes';
 
 const ModifyStrategyModal = props => {
 	const [formData, setFormData] = useState({
-		clip: '',
+		Slippage: '',
 		LimitBuy: '',
 		LimitSell: '',
 		spread: '',
 		pointsAway: '',
+		Leg1Ratio: '',
+		Leg2Ratio: '',
 	});
 	let history = useHistory();
 	let location = useLocation();
-	
+
 	//REDIRECT IF IT'S NOT LOGGED
 	if (!props.isLogged) history.push('/');
 	const goToPreviousPath = () => {
 		history.goBack();
 	};
 	const modifyStrategy = () => {
-		let data = (({ clip, LimitBuy, LimitSell, LimitPerDay, spread, pointsAway }) => ({
-			clip,
+		let data = (({ spread, pointsAway, Slippage, LimitBuy, LimitSell, LimitPerDay, Leg1Ratio, Leg2Ratio }) => ({
+			spread,
+			pointsAway,
+			Slippage,
 			LimitBuy,
 			LimitSell,
 			LimitPerDay,
-			spread,
-			pointsAway,
+			Leg1Ratio,
+			Leg2Ratio,
 		}))(formData);
-		// console.log(data);
-		httpRequest(
-			API.arbitrageStrategies + `/${formData.strategyName}`,
-			'put',
-			data,
-		).then(res => {
+		console.log(data);
+		httpRequest(API.arbitrageStrategies + `/${formData.strategyName}`, 'put', data).then(res => {
 			if (res.status === 200) {
 				goToPreviousPath();
 			}
@@ -52,7 +52,9 @@ const ModifyStrategyModal = props => {
 			LimitSell: location.strategy[0].additionalInfo.LimitSell,
 			LimitPerDay: location.strategy[0].additionalInfo.LimitPerDay,
 			pointsAway: location.strategy[0].additionalInfo.PointsAway,
-			clip: location.strategy[0].additionalInfo.Clip,
+			Slippage: location.strategy[0].additionalInfo.Slippage,
+			Leg1Ratio: location.strategy[0].additionalInfo.Leg1Ratio,
+			Leg2Ratio: location.strategy[0].additionalInfo.Leg2Ratio,
 		});
 	}, []);
 	useEffect(() => {
@@ -69,15 +71,15 @@ const ModifyStrategyModal = props => {
 						</tr>
 
 						<tr>
-							<td>Clip:</td>
+							<td>Slippage:</td>
 							<td>
 								<input
 									type="number"
-									value={formData.clip}
+									value={formData.Slippage}
 									onChange={e =>
 										setFormData({
 											...formData,
-											clip: parseFloat(e.target.value),
+											Slippage: parseFloat(e.target.value),
 										})
 									}
 								/>
@@ -148,6 +150,34 @@ const ModifyStrategyModal = props => {
 										setFormData({
 											...formData,
 											pointsAway: parseFloat(e.target.value),
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Leg1 Ratio:</td>
+							<td>
+								<input
+									type="number"
+									value={formData.Leg1Ratio}
+									onChange={e =>
+										setFormData({
+											...formData,
+											Leg1Ratio: parseFloat(e.target.value),
+										})
+									}
+								/>
+							</td>
+							<td>Leg2 Ratio:</td>
+							<td>
+								<input
+									type="number"
+									value={formData.Leg2Ratio}
+									onChange={e =>
+										setFormData({
+											...formData,
+											Leg2Ratio: parseFloat(e.target.value),
 										})
 									}
 								/>

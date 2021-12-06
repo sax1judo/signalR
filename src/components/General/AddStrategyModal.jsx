@@ -17,13 +17,15 @@ const AddStrategyModal = props => {
 			leg2Exchange: null,
 			leg2Ticker: null,
 			pointsAway: 0,
-			clip: 0,
+			Slippage: 0,
 			leg1LimitBuy: 0,
 			leg1LimitSell: 0,
 			limitPerDay: 0,
 			leg1Quantity: 0,
 			leg2Quantity: 0,
-			load: true
+			load: true,
+			Leg1Ratio: 1,
+			Leg2Ratio: 1,
 		},
 		SellLeg1: {
 			spread: 0,
@@ -35,13 +37,15 @@ const AddStrategyModal = props => {
 			leg2Exchange: null,
 			leg2Ticker: null,
 			pointsAway: 0,
-			clip: 0,
+			Slippage: 0,
 			leg1LimitBuy: 0,
 			leg1LimitSell: 0,
 			limitPerDay: 0,
 			leg1Quantity: 0,
 			leg2Quantity: 0,
-			load: true
+			load: true,
+			Leg1Ratio: 1,
+			Leg2Ratio: 1,
 		},
 		BuyLeg2: {
 			spread: 0,
@@ -53,13 +57,15 @@ const AddStrategyModal = props => {
 			leg2Exchange: null,
 			leg2Ticker: null,
 			pointsAway: 0,
-			clip: 0,
+			Slippage: 0,
 			leg1LimitBuy: 0,
 			leg1LimitSell: 0,
 			limitPerDay: 0,
 			leg1Quantity: 0,
 			leg2Quantity: 0,
-			load: true
+			load: true,
+			Leg1Ratio: 1,
+			Leg2Ratio: 1,
 		},
 		SellLeg2: {
 			spread: 0,
@@ -71,14 +77,16 @@ const AddStrategyModal = props => {
 			leg2Exchange: null,
 			leg2Ticker: null,
 			pointsAway: 0,
-			clip: 0,
+			Slippage: 0,
 			leg1LimitBuy: 0,
 			leg1LimitSell: 0,
 			limitPerDay: 0,
 			leg1Quantity: 0,
 			leg2Quantity: 0,
-			load: true
-		}
+			load: true,
+			Leg1Ratio: 1,
+			Leg2Ratio: 1,
+		},
 	});
 	let history = useHistory();
 	let location = useLocation();
@@ -99,11 +107,6 @@ const AddStrategyModal = props => {
 		// leg2ticekr =>TT
 		setFormData({
 			...formData,
-			// PointsAway: parseFloat(location.data.parameters.pointsAway),
-			// Clip: parseFloat(location.data.parameters.clip),
-			// Leg1LimitBuy: parseFloat(location.data.parameters.limitBuy),
-			// Leg1LimitSell: parseFloat(location.data.parameters.limitSell),
-			// LimitPerDay: parseFloat(location.data.parameters.LimitPerDay),
 			BuyLeg1: {
 				...formData.BuyLeg1,
 				leg1Ticker: location.data.datebase.legOne.ticker,
@@ -240,14 +243,14 @@ const AddStrategyModal = props => {
 							</td>
 						</tr>
 						<tr>
-							<td>Clip</td>
+							<td>Slippage</td>
 							<td>
 								<input
-									value={formData.BuyLeg1.clip}
+									value={formData.BuyLeg1.Slippage}
 									onChange={e =>
 										setFormData({
 											...formData,
-											BuyLeg1: { ...formData.BuyLeg1, clip: e.target.value },
+											BuyLeg1: { ...formData.BuyLeg1, Slippage: e.target.value },
 										})
 									}
 								/>
@@ -304,6 +307,34 @@ const AddStrategyModal = props => {
 										setFormData({
 											...formData,
 											BuyLeg1: { ...formData.BuyLeg1, limitPerDay: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Leg1 Ratio:</td>
+							<td>
+								<input
+									value={formData.BuyLeg1.Leg1Ratio}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg1: { ...formData.BuyLeg1, Leg1Ratio: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Leg2 Ratio:</td>
+							<td>
+								<input
+									value={formData.BuyLeg1.Leg2Ratio}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg1: { ...formData.BuyLeg1, Leg2Ratio: e.target.value },
 										})
 									}
 								/>
@@ -406,14 +437,14 @@ const AddStrategyModal = props => {
 							</td>
 						</tr>
 						<tr>
-							<td>Clip</td>
+							<td>Slippage</td>
 							<td>
 								<input
-									value={formData.SellLeg1.clip}
+									value={formData.SellLeg1.Slippage}
 									onChange={e =>
 										setFormData({
 											...formData,
-											SellLeg1: { ...formData.SellLeg1, clip: e.target.value },
+											SellLeg1: { ...formData.SellLeg1, Slippage: e.target.value },
 										})
 									}
 								/>
@@ -470,6 +501,34 @@ const AddStrategyModal = props => {
 										setFormData({
 											...formData,
 											SellLeg1: { ...formData.SellLeg1, limitPerDay: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Leg1 Ratio:</td>
+							<td>
+								<input
+									value={formData.SellLeg1.Leg1Ratio}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg1: { ...formData.SellLeg1, Leg1Ratio: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Leg2 Ratio:</td>
+							<td>
+								<input
+									value={formData.SellLeg1.Leg2Ratio}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg1: { ...formData.SellLeg1, Leg2Ratio: e.target.value },
 										})
 									}
 								/>
@@ -572,14 +631,14 @@ const AddStrategyModal = props => {
 							</td>
 						</tr>
 						<tr>
-							<td>Clip</td>
+							<td>Slippage</td>
 							<td>
 								<input
-									value={formData.BuyLeg2.clip}
+									value={formData.BuyLeg2.Slippage}
 									onChange={e =>
 										setFormData({
 											...formData,
-											BuyLeg2: { ...formData.BuyLeg2, clip: e.target.value },
+											BuyLeg2: { ...formData.BuyLeg2, Slippage: e.target.value },
 										})
 									}
 								/>
@@ -641,6 +700,34 @@ const AddStrategyModal = props => {
 								/>
 							</td>
 						</tr>
+						<tr>
+							<td>Leg1 Ratio:</td>
+							<td>
+								<input
+									value={formData.BuyLeg2.Leg1Ratio}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg2: { ...formData.BuyLeg2, Leg1Ratio: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Leg2 Ratio:</td>
+							<td>
+								<input
+									value={formData.BuyLeg2.Leg2Ratio}
+									onChange={e =>
+										setFormData({
+											...formData,
+											BuyLeg2: { ...formData.BuyLeg2, Leg2Ratio: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
 					</tbody>
 				</table>
 			</div>
@@ -652,7 +739,6 @@ const AddStrategyModal = props => {
 							<th colSpan="2">SellLeg2</th>
 						</tr>
 
-						
 						<tr>
 							<td>Leg 1 Exchange</td>
 							<td>
@@ -739,14 +825,14 @@ const AddStrategyModal = props => {
 							</td>
 						</tr>
 						<tr>
-							<td>Clip</td>
+							<td>Slippage</td>
 							<td>
 								<input
-									value={formData.SellLeg2.clip}
+									value={formData.SellLeg2.Slippage}
 									onChange={e =>
 										setFormData({
 											...formData,
-											SellLeg2: { ...formData.SellLeg2, clip: e.target.value },
+											SellLeg2: { ...formData.SellLeg2, Slippage: e.target.value },
 										})
 									}
 								/>
@@ -803,6 +889,34 @@ const AddStrategyModal = props => {
 										setFormData({
 											...formData,
 											SellLeg2: { ...formData.SellLeg2, limitPerDay: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Leg1 Ratio:</td>
+							<td>
+								<input
+									value={formData.SellLeg2.Leg1Ratio}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg2: { ...formData.SellLeg2, Leg1Ratio: e.target.value },
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Leg2 Ratio:</td>
+							<td>
+								<input
+									value={formData.SellLeg2.Leg2Ratio}
+									onChange={e =>
+										setFormData({
+											...formData,
+											SellLeg2: { ...formData.SellLeg2, Leg2Ratio: e.target.value },
 										})
 									}
 								/>
