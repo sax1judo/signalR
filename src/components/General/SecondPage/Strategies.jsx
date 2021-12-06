@@ -227,7 +227,7 @@ const StrategiesTable = props => {
 		}
 		for (let selectedStrategy of selectedStrategiesObjectCopy) {
 			await httpRequestStartStopStrategy(
-				API.startStopStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`,
+				API.startStopStrategy + `${selectedStrategy.StrategyName}`,
 				'put',
 				startStopParam === 'stop' ? 'false' : 'true',
 			)
@@ -275,7 +275,7 @@ const StrategiesTable = props => {
 	const stopAllStrategies = async () => {
 		for (let selectedStrategy of tableData.totalRecords) {
 			await httpRequestStartStopStrategy(
-				API.startStopStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`,
+				API.startStopStrategy + `${selectedStrategy.StrategyName}`,
 				'put',
 				'false',
 			).then(res => {
@@ -294,7 +294,7 @@ const StrategiesTable = props => {
 		}
 		for (let selectedStrategy of selectedStrategiesObject) {
 			await httpRequestStartStopStrategy(
-				API.loadStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`,
+				API.loadStrategy + `${selectedStrategy.StrategyName}`,
 				'put',
 				'false',
 			).then(res => {

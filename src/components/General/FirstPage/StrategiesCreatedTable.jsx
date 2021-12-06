@@ -40,8 +40,8 @@ const StrategiesCreatedTable = props => {
 						PointsAway,
 						Load,
 					}))(obj[strategy]);
-					let { Clip, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load, ...exclObj } = obj[strategy];
-					obj[strategy] = { StrategyName, additionalInfo, ...exclObj };
+					
+					obj[strategy] = { StrategyName, additionalInfo, ...obj[strategy] };
 
 					modifyResponse.push(obj[strategy]);
 				}
@@ -109,7 +109,7 @@ const StrategiesCreatedTable = props => {
 		}
 		for (let selectedStrategy of selectedStrategiesObjectCopy) {
 			await httpRequestStartStopStrategy(
-				API.startStopStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`,
+				API.startStopStrategy + `${selectedStrategy.StrategyName}`,
 				'put',
 				startStopParam === 'stop' ? 'false' : 'true',
 			).then(res => {
@@ -133,7 +133,7 @@ const StrategiesCreatedTable = props => {
 		}
 		for (let selectedStrategy of selectedStrategiesObjectCopy) {
 			await httpRequestStartStopStrategy(
-				API.loadStrategy + `${selectedStrategy.Leg1Exchange}/${selectedStrategy.StrategyName}`,
+				API.loadStrategy + `${selectedStrategy.StrategyName}`,
 				'put',
 				'true',
 			).then(res => {
