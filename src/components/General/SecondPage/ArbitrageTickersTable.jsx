@@ -8,7 +8,7 @@ import { API } from '../../../scripts/routes';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import Loader from '../Loader';
 
-const TickersTable = props => {
+const ArbitrageTickersTable = props => {
 	const [connection, setConnection] = useState(null);
 	const [tableData, setTableData] = useState({
 		properties: [],
@@ -231,4 +231,4 @@ const TickersTable = props => {
 		</div>
 	);
 };
-export default TickersTable;
+export default ArbitrageTickersTable;

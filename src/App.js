@@ -10,6 +10,8 @@ import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import AddProductModal from './components/General/AddProductModal';
 import AddStrategyModal from './components/General/AddStrategyModal';
 import LoginModal from './components/General/LoginModal';
+import FourthPage from './components/Pages/FourthPage';
+import FifthPage from './components/Pages/FifthPage';
 
 const App = () => {
 	const [isLogged, setIsLogged] = useState(false);
@@ -22,6 +24,7 @@ const App = () => {
 			{!isLogged ? <LoginModal isLoggedAction={isLoggedAction} /> : <Header />}
 			<div className="contentSection">
 				<Switch>
+					{/* PAGES START*/}
 					<Route exact path="/strategies">
 						<FirstPage isLogged={isLogged} />
 					</Route>
@@ -31,6 +34,14 @@ const App = () => {
 					<Route path="/products">
 						<ThirdPage isLogged={isLogged} />
 					</Route>
+					<Route path="/stockArbitrage">
+						<FourthPage isLogged={isLogged} />
+					</Route>
+					<Route path="/auctionArbitrage">
+						<FifthPage isLogged={isLogged} />
+					</Route>
+					{/* PAGES END*/}
+					{/* MODALS START*/}
 					<Route path="/modifyStrategy">
 						<ModifyStrategyModal isLogged={isLogged} />
 					</Route>
@@ -43,6 +54,7 @@ const App = () => {
 					<Route path="/addStrategy">
 						<AddStrategyModal isLogged={isLogged} />
 					</Route>
+					{/* MODALS END*/}
 				</Switch>
 			</div>
 		</Router>

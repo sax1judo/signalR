@@ -573,6 +573,14 @@ const StrategiesTable = props => {
 				<button type="button" className="btn  addStrategyButton" onClick={() => unloadStrategy()}>
 					Unload Startegy
 				</button>
+				<button
+					style={{ display: 'none' }}
+					type="button"
+					className="btn  addStrategyButton"
+					onClick={() => getArbitrageStrategies()}
+				>
+					Refresh
+				</button>
 			</div>
 
 			<MyVerticallyCenteredModal
