@@ -3,7 +3,7 @@ import StrategiesTable from '../General/SecondPage/Strategies';
 import '../../style/Pages/SecondPage.scss';
 import LiveOrders from '../General/SecondPage/LiveOrders';
 import ConnectionMonitoring from '../General/SecondPage/ConnectionMonitoring';
-import TickersTable from '../General/SecondPage/TickersTable';
+import ArbitrageTickersTable from '../General/SecondPage/ArbitrageTickersTable';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import { API } from '../../scripts/routes';
 import { useHistory } from 'react-router-dom';
@@ -53,7 +53,7 @@ const SecondPage = props => {
 			<div className="futuresArbitrageStrategies">
 				<h4 style={{ textAlign: 'center' }}>Futures Arbitrage Monitoring</h4>
 				{/* <ConnectionMonitoring /> */}
-				<TickersTable />
+				<ArbitrageTickersTable />
 				<div>
 					<StrategiesTable arbitrageSpread={arbitrageSpread} arbitrageQuantity={arbitrageQuantity} />
 				</div>

@@ -64,6 +64,16 @@ const Header = () => {
 								Arbitrage Monitoring
 							</NavLink>
 						</li>
+						<li>
+							<NavLink activeClassName="is-active" to="/stockArbitrage">
+								Stock Monitoring
+							</NavLink>
+						</li>
+						<li>
+							<NavLink activeClassName="is-active" to="/auctionArbitrage">
+								Auction Monitoring
+							</NavLink>
+						</li>
 					</ul>
 				</div>
 			) : (
@@ -108,6 +118,24 @@ const Header = () => {
 									onClick={() => document.getElementById('mobileNavigationWrapper').classList.toggle('visible')}
 								>
 									Arbitrage Monitoring
+								</NavLink>
+							</li>
+							<li>
+								<NavLink
+									activeClassName="is-active"
+									to="/stockArbitrage"
+									onClick={() => document.getElementById('mobileNavigationWrapper').classList.toggle('visible')}
+								>
+									Stock Monitoring
+								</NavLink>
+							</li>
+							<li>
+								<NavLink
+									activeClassName="is-active"
+									to="/auctionArbitrage"
+									onClick={() => document.getElementById('mobileNavigationWrapper').classList.toggle('visible')}
+								>
+									Auction Monitoring
 								</NavLink>
 							</li>
 						</ul>
