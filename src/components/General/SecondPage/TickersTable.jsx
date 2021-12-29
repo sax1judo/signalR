@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import '../../../style/General/SecondPage/TickersTable.scss';
 import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
@@ -17,8 +17,10 @@ const TickersTable = props => {
 		pageSize: 10,
 		page: 1,
 	});
-	const [sortField, setSortField] = useState('');
-	const [sortOrder, setSortOrder] = useState('dsc');
+	// const [sortField, setSortField] = useState('');
+	// const [sortOrder, setSortOrder] = useState('dsc');
+	const sortField = useRef('');
+	const sortOrder = useRef('dsc');
 
 	const setPostPerPage = pageSize => {
 		setTableData({
@@ -58,24 +60,30 @@ const TickersTable = props => {
 			});
 		}
 	};
-	const compareBy = key => {
-		let reverse = sortOrder === 'asc' ? 1 : -1;
-		sortOrder === 'asc' ? setSortOrder('desc') : setSortOrder('asc');
+	const compareBy = (key, tickerParam) => {
+		let reverse = sortOrder.current === 'asc' ? 1 : -1;
+		if (!tickerParam) {
+			sortOrder.current === 'asc' ? (sortOrder.current = 'desc') : (sortOrder.current = 'asc');
+		}
 		return function (a, b) {
 			if (a[key] < b[key]) return -1 * reverse;
 			if (a[key] > b[key]) return 1 * reverse;
 			return 0;
 		};
 	};
-	const sortBy = key => {
+	const sortBy = (key, tickerParam) => {
 		let arrayCopy = [...tableData.totalRecords];
-		arrayCopy.sort(compareBy(key));
+		arrayCopy.sort(compareBy(key, tickerParam));
 		setTableData({
 			...tableData,
 			totalRecords: arrayCopy,
 			displayedRecords: arrayCopy.slice((1 - 1) * parseFloat(tableData.pageSize), 1 * parseFloat(tableData.pageSize)),
 		});
-		setSortField(key);
+		sortField.current = key;
+	};
+	const sortLiveTicker = data => {
+		if (sortField.current !== '') data.sort(compareBy(sortField.current, true));
+		return data;
 	};
 	const setMobileData = passedMobileData => {
 		if (window.innerWidth < 1000) {
@@ -84,11 +92,7 @@ const TickersTable = props => {
 				mobileData.push(data);
 			}
 			for (let mobileDataItem in mobileData) {
-				let {
-					ask_price,
-					bid_price,
-					...exclObj
-				} = mobileData[mobileDataItem];
+				let { ask_price, bid_price, ...exclObj } = mobileData[mobileDataItem];
 				mobileData[mobileDataItem] = exclObj;
 			}
 			return mobileData;
@@ -131,6 +135,7 @@ const TickersTable = props => {
 								newData.push(newMessage);
 							}
 						}
+						newData = sortLiveTicker(newData);
 						let data = setMobileData(newData);
 						if (data === null) {
 							setTableData({
@@ -177,12 +182,12 @@ const TickersTable = props => {
 								{Object.keys(tableData.displayedRecords[0]).map((ticker, id) => {
 									let title = ticker.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
 									return (
-										<td onClick={() => sortBy(ticker)} key={id}>
+										<td onClick={() => sortBy(ticker, false)} key={id}>
 											{title}
-											{sortField === ticker ? (
+											{sortField.current === ticker ? (
 												<img
 													style={
-														sortOrder === 'asc'
+														sortOrder.current === 'asc'
 															? { height: '1.2rem', float: 'right', transform: 'rotate(180deg)' }
 															: { height: '1.2rem', float: 'right' }
 													}
