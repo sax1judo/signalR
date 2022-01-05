@@ -31,50 +31,6 @@
 			border-color: #6d6d6d;
 		}
 	}
-	//TO FINISH STYLE FOR INPUT FIELD
-	// input {
-	// 	background: transparent;
-	// 	border: none;
-	// 	font: inherit;
-	// 	outline: none;
-	// 	border-radius: 0;
-	// 	border-bottom: 2px solid rgba(white, 0.2);
-	// 	position: absolute;
-	// 	bottom: 0;
-	// 	left: 0;
-	// 	right: 0;
-	// 	width: 100%;
-	// 	padding-left: 1rem;
-	// 	padding-right: 1rem;
-	// 	padding-bottom: 0.2em;
-	// 	transition: border-bottom-color 0.2s ease-out 0.2s;
-	// }
-
-	// .underline {
-	// 	display: block;
-	// 	height: 3px;
-	// 	background-color: red;
-	// 	width: 100%;
-	// 	position: absolute;
-	// 	bottom: 0;
-	// 	left: 0;
-	// 	transform: scaleX(0) translateX(-100%);
-	// 	opacity: 0;
-	// 	transition: all 0.24s ease-out;
-	// }
-
-	// &.raised {
-	// 	input {
-	// 		border-bottom-color: rgba(white, 0.66);
-	// 	}
-	// }
-
-	// &.focus {
-	// 	.underline {
-	// 		transform: scaleX(1) translateX(0);
-	// 		opacity: 1;
-	// 	}
-	// }
 }
 .setUpDatabaseTable {
 	table {

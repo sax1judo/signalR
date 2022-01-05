@@ -3,6 +3,7 @@ import '../../style/General/ModifyStrategyModal.scss';
 import { useHistory, useLocation } from 'react-router-dom';
 import { httpRequest } from '../../scripts/http';
 import { API } from '../../scripts/routes';
+import '../../style/General/AddStrategyModal.scss';
 
 const AddStrategyModal = props => {
 	const [addStrategyButton, setAddStrategyButtton] = useState(false);
@@ -101,6 +102,15 @@ const AddStrategyModal = props => {
 			if (res.status === 200) goToPreviousPath();
 		});
 	};
+	const expandTable = e => {
+		e.target.classList.toggle('active');
+		var panel = e.target.nextElementSibling;
+		if (panel.style.maxHeight) {
+			panel.style.maxHeight = null;
+		} else {
+			panel.style.maxHeight = panel.scrollHeight + 'px';
+		}
+	};
 
 	useEffect(() => {
 		// leg1ticker =>IB
@@ -150,7 +160,10 @@ const AddStrategyModal = props => {
 
 	return (
 		<div className="modifyStrategyWrapper ">
-			<div className="setUpParametersTable">
+			<div className="addStrategyDropDown" onClick={e => expandTable(e)}>
+				Buy Leg 1
+			</div>
+			<div className="setUpParametersTable expandable">
 				<table>
 					<tbody className="tableDateCentered">
 						<tr style={{ textAlign: 'center' }}>
@@ -343,8 +356,10 @@ const AddStrategyModal = props => {
 					</tbody>
 				</table>
 			</div>
-
-			<div className="setUpParametersTable">
+			<div className="addStrategyDropDown" onClick={e => expandTable(e)}>
+				Sell Leg 1
+			</div>
+			<div className="setUpParametersTable expandable">
 				<table>
 					<tbody className="tableDateCentered">
 						<tr style={{ textAlign: 'center' }}>
@@ -537,8 +552,10 @@ const AddStrategyModal = props => {
 					</tbody>
 				</table>
 			</div>
-
-			<div className="setUpParametersTable">
+			<div className="addStrategyDropDown" onClick={e => expandTable(e)}>
+				Buy Leg 2
+			</div>
+			<div className="setUpParametersTable expandable">
 				<table>
 					<tbody className="tableDateCentered">
 						<tr style={{ textAlign: 'center' }}>
@@ -731,8 +748,10 @@ const AddStrategyModal = props => {
 					</tbody>
 				</table>
 			</div>
-
-			<div className="setUpParametersTable">
+			<div className="addStrategyDropDown" onClick={e => expandTable(e)}>
+				Sell Leg 2
+			</div>
+			<div className="setUpParametersTable expandable">
 				<table>
 					<tbody className="tableDateCentered">
 						<tr style={{ textAlign: 'center' }}>

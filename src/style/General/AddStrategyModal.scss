@@ -1,0 +1,22 @@
+.expandable {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.2s ease-out;
+}
+
+.addStrategyDropDown {
+	border: 1px solid #3c3c3c;
+	border-radius: 4px;
+	background-image: url('../../assets/arrowDown.svg');
+	background-size: 3rem;
+	background-repeat: no-repeat;
+	background-position: right;
+	background-color: #212529;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	appearance: none;
+	padding: 1rem;
+	&.active {
+		background-color: #1c2026;
+	}
+}
