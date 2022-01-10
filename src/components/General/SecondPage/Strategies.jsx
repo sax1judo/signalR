@@ -143,7 +143,7 @@ const StrategiesTable = props => {
 		setSortField(key);
 	};
 	const getArbitrageStrategies = async () => {
-		await httpRequest(API.arbitrageStrategies + '?onlyLoaded=true', 'get').then(res => {
+		await httpRequest(API.arbitrageStrategies + '?pageId=1', 'get').then(res => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];

@@ -131,7 +131,7 @@ const CreatedProducts = props => {
 								{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
 									let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
 									return strategy !== 'additionalInfo' ? (
-										<td onClick={() => sortBy(strategy)} key={id}>
+										<td onClick={() => sortBy(strategy)} key={strategy + id}>
 											{title}
 											{sortField === strategy ? (
 												<img
@@ -152,7 +152,7 @@ const CreatedProducts = props => {
 							{tableData.displayedRecords.map((strategy, id) => {
 								return (
 									<tr
-										key={strategy.KnownName}
+										key={strategy.KnownName + id}
 										className={selectedStrategies.includes(strategy.KnownName) ? 'tableData activeRow' : 'tableData '}
 										onClick={() => selectStrategy(strategy.KnownName, strategy)}
 									>
@@ -162,7 +162,7 @@ const CreatedProducts = props => {
 												if (tableData) tableData = 'true';
 												else tableData = 'false';
 											}
-											return data !== 'additionalInfo' ? <td key={id}>{tableData}</td> : null;
+											return data !== 'additionalInfo' ? <td key={strategy.KnownName + id}>{tableData}</td> : null;
 										})}
 									</tr>
 								);

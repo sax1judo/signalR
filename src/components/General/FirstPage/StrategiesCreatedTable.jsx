@@ -33,7 +33,7 @@ const StrategiesCreatedTable = props => {
 	const [modalShow, setModalShow] = useState(false);
 
 	const getArbitrageStrategies = () => {
-		httpRequest(API.arbitrageStrategies + '?onlyLoaded=false', 'get').then(res => {
+		httpRequest(API.arbitrageStrategies , 'get').then(res => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];
@@ -219,7 +219,7 @@ const StrategiesCreatedTable = props => {
 								{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
 									let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
 									return strategy !== 'additionalInfo' ? (
-										<td onClick={() => sortBy(strategy)} key={id}>
+										<td onClick={() => sortBy(strategy)} key={id + 'tableHeader'}>
 											{title}
 											{sortField === strategy ? (
 												<img
@@ -240,7 +240,7 @@ const StrategiesCreatedTable = props => {
 							{tableData.displayedRecords.map((strategy, id) => {
 								return (
 									<tr
-										key={strategy.StrategyName}
+										key={strategy.StrategyName + id}
 										className={
 											selectedStrategies.includes(strategy.StrategyName) ? 'tableData activeRow' : 'tableData '
 										}
@@ -257,7 +257,7 @@ const StrategiesCreatedTable = props => {
 												strategyActiveColor = stateTableDataColor[tableData].color;
 											}
 											return data !== 'additionalInfo' ? (
-												<td key={id} style={{ backgroundColor: strategyActiveColor }}>
+												<td key={id + strategy + 'data'} style={{ backgroundColor: strategyActiveColor }}>
 													{tableData}
 												</td>
 											) : null;
