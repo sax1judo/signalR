@@ -16,12 +16,12 @@ import FifthPage from './components/Pages/FifthPage';
 const App = () => {
 	const [isLogged, setIsLogged] = useState(false);
 
-	const isLoggedAction = () => {
-		setIsLogged(true);
+	const isLoggedAction = (logged) => {
+		setIsLogged(logged);
 	};
 	return (
 		<Router>
-			{!isLogged ? <LoginModal isLoggedAction={isLoggedAction} /> : <Header />}
+			{!isLogged ? <LoginModal isLoggedAction={isLoggedAction} /> : <Header isLoggedAction={isLoggedAction}/>}
 			<div className="contentSection">
 				<Switch>
 					{/* PAGES START*/}

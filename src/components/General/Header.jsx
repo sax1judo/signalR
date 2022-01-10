@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import '../../style/General/Header.scss';
 import { NavLink } from 'react-router-dom';
 import ComponentWrapper from './ComponentWrapper';
+import { useHistory } from 'react-router-dom';
 
-const Header = () => {
+const Header = props => {
 	const [state, setState] = useState('');
 	const lastScroll = useRef(0);
+	const history = useHistory();
 	useEffect(() => {
 		if (window.innerWidth < 1000) setState('mobile');
 		else setState('desktop');
@@ -74,6 +76,26 @@ const Header = () => {
 								Auction Monitoring
 							</NavLink>
 						</li>
+						<p
+							style={{
+								position: 'absolute',
+								right: '0',
+								display: 'flex',
+								margin: 'auto',
+								height: '100%',
+								alignItems: 'center',
+								cursor: 'pointer',
+							}}
+							onClick={() => {
+								props.isLoggedAction(false);
+								history.push('/');
+							}}
+						>
+							{/* <NavLink activeClassName="is-active" to="/">
+								Log Out
+							</NavLink> */}
+							Log Out
+						</p>
 					</ul>
 				</div>
 			) : (
