@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import '../../../style/General/SecondPage/TickersTable.scss';
 import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
@@ -13,12 +13,14 @@ const StockTickersTable = props => {
 	const [tableData, setTableData] = useState({
 		properties: [],
 		totalRecords: [],
-		displayedRecords: [],
+		displayedRecords: [{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 }],
 		pageSize: 10,
 		page: 1,
 	});
-	const [sortField, setSortField] = useState('');
-	const [sortOrder, setSortOrder] = useState('dsc');
+	// const [sortField, setSortField] = useState('');
+	// const [sortOrder, setSortOrder] = useState('dsc');
+	const sortField = useRef('');
+	const sortOrder = useRef('dsc');
 
 	const setPostPerPage = pageSize => {
 		setTableData({
@@ -58,24 +60,30 @@ const StockTickersTable = props => {
 			});
 		}
 	};
-	const compareBy = key => {
-		let reverse = sortOrder === 'asc' ? 1 : -1;
-		sortOrder === 'asc' ? setSortOrder('desc') : setSortOrder('asc');
+	const compareBy = (key, tickerParam) => {
+		let reverse = sortOrder.current === 'asc' ? 1 : -1;
+		if (!tickerParam) {
+			sortOrder.current === 'asc' ? (sortOrder.current = 'desc') : (sortOrder.current = 'asc');
+		}
 		return function (a, b) {
 			if (a[key] < b[key]) return -1 * reverse;
 			if (a[key] > b[key]) return 1 * reverse;
 			return 0;
 		};
 	};
-	const sortBy = key => {
+	const sortBy = (key, tickerParam) => {
 		let arrayCopy = [...tableData.totalRecords];
-		arrayCopy.sort(compareBy(key));
+		arrayCopy.sort(compareBy(key, tickerParam));
 		setTableData({
 			...tableData,
 			totalRecords: arrayCopy,
 			displayedRecords: arrayCopy.slice((1 - 1) * parseFloat(tableData.pageSize), 1 * parseFloat(tableData.pageSize)),
 		});
-		setSortField(key);
+		sortField.current = key;
+	};
+	const sortLiveTicker = data => {
+		if (sortField.current !== '') data.sort(compareBy(sortField.current, true));
+		return data;
 	};
 	const setMobileData = passedMobileData => {
 		if (window.innerWidth < 1000) {
@@ -100,97 +108,66 @@ const StockTickersTable = props => {
 		};
 	}, []);
 
-	// //TICKERS DATA
-	// useEffect(() => {
-	// 	if (connection) {
-	// 		connection
-	// 			.start()
-	// 			.then(result => {
-	// 				console.log('Connected! u Tickerima');
-
-	// 				connection.on('ComparationPrices', message => {
-	// 					let newData = tableData.totalRecords;
-	// 					let { time_stamp, market, trading_app, bid_quantity, ask_quantity, ...newMessage } = JSON.parse(message);
-	// 					let swapped = false;
-
-	// 					if (newData.length === 0) {
-	// 						newData.push(newMessage);
-	// 					} else {
-	// 						for (let ticker in newData) {
-	// 							if (newData[ticker].ticker === newMessage.ticker) {
-	// 								newData[ticker] = newMessage;
-	// 								swapped = true;
-	// 								break;
-	// 							}
-	// 						}
-	// 						if (!swapped) {
-	// 							newData.push(newMessage);
-	// 						}
-	// 					}
-	// 					let data = setMobileData(newData);
-	// 					if (data === null) {
-	// 						setTableData({
-	// 							...tableData,
-	// 							totalRecords: newData,
-	// 							displayedRecords: newData.slice(
-	// 								(tableData.page - 1) * tableData.pageSize,
-	// 								tableData.page * tableData.pageSize,
-	// 							),
-	// 						});
-	// 					} else {
-	// 						setTableData({
-	// 							...tableData,
-	// 							count: data.length,
-	// 							totalRecords: data,
-	// 							displayedRecords: data.slice(
-	// 								(tableData.page - 1) * tableData.pageSize,
-	// 								tableData.page * tableData.pageSize,
-	// 							),
-	// 						});
-	// 					}
-	// 				});
-	// 			})
-	// 			.catch(e => console.log('Connection failed: ', e));
-	// 	}
-	// 	return () => {
-	// 		setConnection(null);
-	// 	};
-	// }, [connection]);
-
-	//MOCK DATA
+	//TICKERS DATA
 	useEffect(() => {
-		var data = [
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-			{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 },
-		];
-		setTableData({
-			...tableData,
-			count: data.length,
-			totalRecords: data,
-			displayedRecords: data.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
-		});
-	}, []);
+		if (connection) {
+			connection
+				.start()
+				.then(result => {
+					console.log('Connected! u Tickerima');
+
+					connection.on('StockPrices', message => {
+						let newData = tableData.totalRecords;
+						let { time_stamp, market, trading_app, bid_quantity, ask_quantity, ...newMessage } = JSON.parse(message);
+						let swapped = false;
+
+						if (newData.length === 0) {
+							newData.push(newMessage);
+						} else {
+							for (let ticker in newData) {
+								if (newData[ticker].ticker === newMessage.ticker) {
+									newData[ticker] = newMessage;
+									swapped = true;
+									break;
+								}
+							}
+							if (!swapped) {
+								newData.push(newMessage);
+							}
+						}
+						newData = sortLiveTicker(newData);
+						let data = setMobileData(newData);
+						if (data === null) {
+							setTableData({
+								...tableData,
+								totalRecords: newData,
+								displayedRecords: newData.slice(
+									(tableData.page - 1) * tableData.pageSize,
+									tableData.page * tableData.pageSize,
+								),
+							});
+						} else {
+							setTableData({
+								...tableData,
+								count: data.length,
+								totalRecords: data,
+								displayedRecords: data.slice(
+									(tableData.page - 1) * tableData.pageSize,
+									tableData.page * tableData.pageSize,
+								),
+							});
+						}
+					});
+				})
+				.catch(e => console.log('Connection failed: ', e));
+		}
+		return () => {
+			setConnection(null);
+		};
+	}, [connection]);
+
 	useEffect(() => {
-		console.log(tableData);
+		// console.log(tableData);
 	}, [tableData]);
 	return (
 		<div className="secondPageStrategyTable tickersTableWrapper" style={{ color: 'white' }}>
@@ -205,12 +182,12 @@ const StockTickersTable = props => {
 								{Object.keys(tableData.displayedRecords[0]).map((ticker, id) => {
 									let title = ticker.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
 									return (
-										<td onClick={() => sortBy(ticker)} key={id}>
+										<td onClick={() => sortBy(ticker, false)} key={id}>
 											{title}
-											{sortField === ticker ? (
+											{sortField.current === ticker ? (
 												<img
 													style={
-														sortOrder === 'asc'
+														sortOrder.current === 'asc'
 															? { height: '1.2rem', float: 'right', transform: 'rotate(180deg)' }
 															: { height: '1.2rem', float: 'right' }
 													}
