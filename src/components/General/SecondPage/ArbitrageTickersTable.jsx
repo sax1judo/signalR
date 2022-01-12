@@ -116,7 +116,7 @@ const ArbitrageTickersTable = props => {
 				.then(result => {
 					console.log('Connected! u Tickerima');
 
-					connection.on('ComparationPrices', message => {
+					connection.on('ArbitragePrices', message => {
 						let newData = tableData.totalRecords;
 						let { time_stamp, market, trading_app, bid_quantity, ask_quantity, ...newMessage } = JSON.parse(message);
 						let swapped = false;
