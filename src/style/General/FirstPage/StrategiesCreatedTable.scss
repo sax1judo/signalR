@@ -9,7 +9,6 @@
 
 		width: 100%;
 		max-width: 100%;
-	
 	}
 
 	th,
@@ -88,8 +87,94 @@
 		table {
 			font-size: 0.5rem;
 		}
-		.buttonsActionsWrapper{
+		.buttonsActionsWrapper {
 			margin-bottom: 1rem;
 		}
 	}
+}
+.loadPagesPopUpInputs,
+.loadPagesPopUpButtons {
+	font-size: 1.1rem;
+	display: flex;
+	justify-content: center;
+	gap: 8%;
+}
+
+.logLevelInsideWRapper {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	border-radius: 5px;
+	padding-left: 4px;
+	z-index: 1;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid rgb(43, 54, 64);
+	.level-container {
+		display: flex;
+		align-items: center;
+		position: relative;
+		padding: 1rem;
+		background: #242830;
+		cursor: pointer;
+		margin-right: 1rem;
+		padding-left: 3rem;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		border: 1px solid #31456e;
+		border-radius: 10px;
+	}
+}
+/* Hide the browser's default checkbox */
+.level-container input {
+	position: absolute;
+	opacity: 0;
+	cursor: pointer;
+	height: 0;
+	width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+	position: absolute;
+	top: 20%;
+	left: 5%;
+	height: 2rem;
+	width: 2rem;
+	border-radius: 6px;
+	background-color: rgb(44, 53, 68);
+}
+
+/* When the checkbox is checked, add a blue background */
+.level-container input:checked ~ .checkmark {
+	background-color: #28a745;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+	content: '';
+	position: absolute;
+	display: none;
+}
+
+/* Show the checkmark when checked */
+.level-container input:checked ~ .checkmark:after {
+	display: block;
+}
+
+/* Style the checkmark/indicator */
+.level-container .checkmark:after {
+	left: 40%;
+	top: 26%;
+	width: 5px;
+	height: 10px;
+	border: solid #08090d;
+	border-width: 0 3px 3px 0;
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	transform: rotate(45deg);
 }

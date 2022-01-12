@@ -9,6 +9,8 @@ import { API } from '../../../scripts/routes';
 import Pagination from '../Pagination';
 import DropDown from '../DropDown';
 import Loader from '../Loader';
+import PopUpModal from '../PopUpModal';
+import { Button } from 'react-bootstrap';
 
 const StrategiesCreatedTable = props => {
 	const stateTableDataColor = {
@@ -18,6 +20,11 @@ const StrategiesCreatedTable = props => {
 		INCYCLE: { color: '#0d6efd' },
 		LIMIT_REACHED: { color: '#ef3934' },
 	};
+	const loadActionPages = [
+		{ pageNumber: 1, pageName: 'Arbitrage Monitoring' },
+		{ pageNumber: 2, pageName: 'Stock Monitoring' },
+		{ pageNumber: 3, pageName: 'Auction Monitoring' },
+	];
 	const [tableData, setTableData] = useState({
 		totalRecordsNumber: null,
 		properties: [],
@@ -30,10 +37,11 @@ const StrategiesCreatedTable = props => {
 	const [sortOrder, setSortOrder] = useState('dsc');
 	const [selectedStrategies, setSelectedStrategies] = useState([]);
 	const [selectedStrategiesObject, setSelectedStrategiesObject] = useState([]);
-	const [modalShow, setModalShow] = useState(false);
+	const [modalLoadShow, setModalLoadShow] = useState(false);
+	const [loadPages, setLoadPages] = useState([]);
 
 	const getArbitrageStrategies = () => {
-		httpRequest(API.arbitrageStrategies , 'get').then(res => {
+		httpRequest(API.arbitrageStrategies, 'get').then(res => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];
@@ -150,10 +158,11 @@ const StrategiesCreatedTable = props => {
 			totalRecords.push(strategy);
 		}
 		for (let selectedStrategy of selectedStrategiesObjectCopy) {
-			await httpRequestStartStopStrategy(API.loadStrategy + `${selectedStrategy.StrategyName}`, 'put', 'true').then(
+			await httpRequestStartStopStrategy(API.loadStrategy + `${selectedStrategy.StrategyName}`, 'put', loadPages).then(
 				res => {
 					if (res.status === 200) {
 						getArbitrageStrategies();
+						setLoadPages([]);
 					}
 				},
 			);
@@ -219,7 +228,7 @@ const StrategiesCreatedTable = props => {
 								{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
 									let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
 									return strategy !== 'additionalInfo' ? (
-										<td onClick={() => sortBy(strategy)} key={id + 'tableHeader'}>
+										<td onClick={() => sortBy(strategy)} key={title + id}>
 											{title}
 											{sortField === strategy ? (
 												<img
@@ -256,8 +265,12 @@ const StrategiesCreatedTable = props => {
 											if (data === 'State') {
 												strategyActiveColor = stateTableDataColor[tableData].color;
 											}
+											let keyId =
+												data !== 'additionalInfo'
+													? strategy.StrategyName + id + tableData
+													: strategy.StrategyName + id + tableData.PointsAway;
 											return data !== 'additionalInfo' ? (
-												<td key={id + strategy + 'data'} style={{ backgroundColor: strategyActiveColor }}>
+												<td key={keyId} style={{ backgroundColor: strategyActiveColor }}>
 													{tableData}
 												</td>
 											) : null;
@@ -279,7 +292,7 @@ const StrategiesCreatedTable = props => {
 					</div>
 				</>
 			) : (
-				<Loader />
+				<Loader key={Math.random()} />
 			)}
 
 			<div className="buttonsActionsWrapper">
@@ -321,14 +334,14 @@ const StrategiesCreatedTable = props => {
 					className="btn "
 					disabled={selectedStrategies.length === 0 ? true : false}
 					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
-					onClick={() => loadStrategy()}
+					onClick={() => setModalLoadShow(true)}
 				>
 					Load Strategy
 				</button>
 				{/* <button
 					type="button"
 					className="btn"
-					onClick={() => setModalShow(true)}
+					onClick={() => setModalLoadShow(true)}
 					disabled={selectedStrategies.length === 0 ? true : false}
 					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
 				>
@@ -337,17 +350,69 @@ const StrategiesCreatedTable = props => {
 				<button type="button" className="btn  ">
 					Load All Strategies
 				</button>
-				<button type="button" className="btn" onClick={() => setModalShow(true)}>
+				<button type="button" className="btn" onClick={() => setModalLoadShow(true)}>
 					Delete All Strategies
 				</button> */}
 			</div>
 
-			<MyVerticallyCenteredModal
-				show={modalShow}
+			<PopUpModal
+				show={modalLoadShow}
 				onHide={param => {
-					setModalShow(false);
+					setModalLoadShow(false);
+					setLoadPages([]);
 				}}
-			/>
+			>
+				<div className="loadPagesPopUpInputs logLevelInsideWRapper">
+					{loadActionPages.map((page, id) => {
+						return (
+							<div key={page.pageName}>
+								<label className="level-container">
+									<div className="colorMark" style={{ backgroundColor: 'rgb(255,0,0)' }}></div>
+									{page.pageName}
+									<input
+										key={page.pageName + id}
+										type="checkbox"
+										defaultChecked={false}
+										id={page.pageName}
+										onChange={e => {
+											if (e.target.checked) {
+												setLoadPages(prev => {
+													return [...prev, page.pageNumber];
+												});
+											} else {
+												setLoadPages(prev => {
+													return prev.filter(item => item !== page.pageNumber);
+												});
+											}
+										}}
+									/>
+									<span className="checkMark"></span>
+								</label>
+							</div>
+						);
+					})}
+				</div>
+				<div className="loadPagesPopUpButtons">
+					<Button
+						variant="success"
+						onClick={() => {
+							loadStrategy();
+							setModalLoadShow(false);
+						}}
+					>
+						Confirm
+					</Button>
+					<Button
+						variant="danger"
+						onClick={() => {
+							setLoadPages([]);
+							setModalLoadShow(false);
+						}}
+					>
+						Cancel
+					</Button>
+				</div>
+			</PopUpModal>
 		</div>
 	);
 };
