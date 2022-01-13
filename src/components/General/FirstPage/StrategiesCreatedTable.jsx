@@ -11,6 +11,7 @@ import DropDown from '../DropDown';
 import Loader from '../Loader';
 import PopUpModal from '../PopUpModal';
 import { Button } from 'react-bootstrap';
+import { loadActionPages } from '../../../scripts/common';
 
 const StrategiesCreatedTable = props => {
 	const stateTableDataColor = {
@@ -20,11 +21,7 @@ const StrategiesCreatedTable = props => {
 		INCYCLE: { color: '#0d6efd' },
 		LIMIT_REACHED: { color: '#ef3934' },
 	};
-	const loadActionPages = [
-		{ pageNumber: 1, pageName: 'Arbitrage Monitoring' },
-		{ pageNumber: 2, pageName: 'Stock Monitoring' },
-		{ pageNumber: 3, pageName: 'Auction Monitoring' },
-	];
+	
 	const [tableData, setTableData] = useState({
 		totalRecordsNumber: null,
 		properties: [],
