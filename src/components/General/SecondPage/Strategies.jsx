@@ -173,8 +173,9 @@ const StrategiesTable = props => {
 							Leg2Ratio,
 						}))(exclObj[strategy]);
 						exclObj[strategy] = { StrategyName, additionalInfo, ...exclObj[strategy], spreadMkt };
-
-						modifyResponse.push(exclObj[strategy]);
+						// excluding properties from table row
+						let { Slippage, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load, ...obj } = exclObj[strategy];
+						modifyResponse.push(obj);
 					}
 				}
 			});
@@ -307,7 +308,8 @@ const StrategiesTable = props => {
 			totalRecords.push(strategy);
 		}
 		for (let selectedStrategy of selectedStrategiesObject) {
-			await httpRequestStartStopStrategy(API.loadStrategy + `${selectedStrategy.StrategyName}`, 'put', 'false').then(
+			const loadArray = selectedStrategy.additionalInfo.Load.filter(page => page != 1);
+			await httpRequestStartStopStrategy(API.loadStrategy + `${selectedStrategy.StrategyName}`, 'put', loadArray).then(
 				res => {
 					if (res.status === 200) {
 						for (let strategy in totalRecords) {
@@ -506,7 +508,7 @@ const StrategiesTable = props => {
 					style={layout === 'desktop' ? { display: 'block' } : { display: 'none' }}
 					type="button"
 					className="btn  addStrategyButton"
-					onClick={() => selectByType('Buy')}
+					onClick={() => selectByType('BUY')}
 				>
 					Select All Buys
 				</button>
@@ -514,7 +516,7 @@ const StrategiesTable = props => {
 					style={layout === 'desktop' ? { display: 'block' } : { display: 'none' }}
 					type="button"
 					className="btn  addStrategyButton"
-					onClick={() => selectByType('Sell')}
+					onClick={() => selectByType('SELL')}
 				>
 					Select All Sells
 				</button>
