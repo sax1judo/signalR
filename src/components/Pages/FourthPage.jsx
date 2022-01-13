@@ -44,7 +44,7 @@ const FourthPage = props => {
 			setConnection(null);
 		};
 	}, [connection]);
-	useEffect(() => {}, [arbitrageSpread, arbitrageQuantity]);
+	
 	return (
 		<div className="strategiesSecondPageWrapper">
 			<div className="futuresArbitrageStrategies">

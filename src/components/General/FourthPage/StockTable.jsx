@@ -143,7 +143,7 @@ const StockTable = props => {
 		});
 		setSortField(key);
 	};
-	const getArbitrageStrategies = async () => {
+	const getStockStrategies = async () => {
 		await httpRequest(API.arbitrageStrategies + '?pageId=2', 'get').then(res => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
@@ -296,7 +296,7 @@ const StockTable = props => {
 				'false',
 			).then(res => {
 				if (res.status === 200) {
-					getArbitrageStrategies();
+					getStockStrategies();
 				}
 			});
 		}
@@ -341,7 +341,7 @@ const StockTable = props => {
 			if (window.innerWidth < 1000) setLayout('mobile');
 			else setLayout('desktop');
 		});
-		getArbitrageStrategies();
+		getStockStrategies();
 	}, []);
 	//TICKERS DATA
 	useEffect(() => {
@@ -618,7 +618,7 @@ const StockTable = props => {
 					style={{ display: 'none' }}
 					type="button"
 					className="btn  addStrategyButton"
-					onClick={() => getArbitrageStrategies()}
+					onClick={() => getStockStrategies()}
 				>
 					Refresh
 				</button>

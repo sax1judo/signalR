@@ -1,103 +1,56 @@
 import React, { useEffect, useState } from 'react';
+import { HubConnectionBuilder } from '@microsoft/signalr';
 import { API } from '../../scripts/routes';
-import { httpRequest } from '../../scripts/http';
 import AuctionTickersTable from '../General/FifthPage/AuctionTickersTable';
 import AuctionTable from '../General/FifthPage/AuctionTable';
+import { useHistory } from 'react-router-dom';
 
 const FifthPage = props => {
-	const createdStrategies = [
-		{
-			satus: 'running',
-			strategyName: 'Buy ISP',
-			type: 'sell',
-			legOneTicker: 'ISP U21',
-			exchangeOne: 'TT',
-			legTwoTicker: 'ES U21',
-			exchangeTwo: 'IB',
-			quantityLegOne: 2,
-			quantityLegTwo: 3,
-			spreadSet: 2,
-			spreadMkt: 1.75,
-			tickers: [],
-		},
-		{
-			satus: 'running',
-			strategyName: 'sell ISP',
-			type: 'Buy',
-			legOneTicker: 'ISP U21',
-			exchangeOne: 'TT',
-			legTwoTicker: 'ES U21',
-			exchangeTwo: 'IB',
-			quantityLegOne: 2,
-			quantityLegTwo: 3,
-			spreadSet: 2,
-			spreadMkt: 1.75,
-			tickers: [
-				{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-				{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-			],
-		},
-		{
-			satus: 'paused',
-			strategyName: 'Buy ISsP',
-			type: 'Buy',
-			legOneTicker: 'ISP U21',
-			exchangeOne: 'TT',
-			legTwoTicker: 'ES U21',
-			exchangeTwo: 'IB',
-			quantityLegOne: 2,
-			quantityLegTwo: 3,
-			spreadSet: 2,
-			spreadMkt: 1.75,
-			tickers: [
-				{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-				{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-			],
-		},
-		{
-			satus: 'paused',
-			strategyName: 'Buy ISPr',
-			type: 'Buy',
-			legOneTicker: 'ISP U21',
-			exchangeOne: 'TT',
-			legTwoTicker: 'ES U21',
-			exchangeTwo: 'IB',
-			quantityLegOne: 2,
-			quantityLegTwo: 3,
-			spreadSet: 2,
-			spreadMkt: 1.75,
-			tickers: [
-				{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-				{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-			],
-		},
-		{
-			satus: 'stoped',
-			strategyName: 'SELL ISP',
-			type: 'Buy',
-			legOneTicker: 'ISP U21',
-			exchangeOne: 'TT',
-			legTwoTicker: 'ES U21',
-			exchangeTwo: 'IB',
-			quantityLegOne: 2,
-			quantityLegTwo: 3,
-			spreadSet: 2,
-			spreadMkt: 1.75,
-			tickers: [
-				{ tickerLegOne: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegOne: 10.0 },
-				{ tickerLegTwo: 'ISP U21', bid: 4255.0, ask: 41212.33, maxLimitLegTwo: 10.0 },
-			],
-		},
-	];
-	const arbitrageQuantity = null;
+	const [connection, setConnection] = useState(null);
+	const [arbitrageQuantity, setArbitrageQuantity] = useState(null);
+	const [arbitrageSpread, setArbitrageSpread] = useState(null);
 
+	//REDIRECT IF IT'S NOT LOGGED
+	const history = useHistory();
+	if (!props.isLogged) history.push('/');
+
+	useEffect(() => {
+		const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
+		setConnection(newConnection);
+
+		return () => {
+			setConnection(null);
+		};
+	}, []);
+
+	//TICKERS DATA
+	useEffect(() => {
+		if (connection) {
+			connection
+				.start()
+				.then(result => {
+					console.log('Connected!');
+
+					connection.on('AuctionQuantity', message => {
+						setArbitrageQuantity(JSON.parse(message));
+					});
+					connection.on('AuctionSpread', message => {
+						setArbitrageSpread(JSON.parse(message));
+					});
+				})
+				.catch(e => console.log('Connection failed: ', e));
+		}
+		return () => {
+			setConnection(null);
+		};
+	}, [connection]);
 	return (
 		<div className="strategiesSecondPageWrapper">
 			<div className="futuresArbitrageStrategies">
 				<h4 style={{ textAlign: 'center' }}>Auctions Arbitrage Monitoring</h4>
 				<AuctionTickersTable />
 				<div>
-					<AuctionTable arbitrageSpread={createdStrategies} arbitrageQuantity={arbitrageQuantity} />
+					<AuctionTable arbitrageSpread={arbitrageSpread} arbitrageQuantity={arbitrageQuantity} />
 				</div>
 			</div>
 			<div className="liveOrdersWrapper">
