@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import StrategiesTable from '../General/SecondPage/Strategies';
 import '../../style/Pages/SecondPage.scss';
 import LiveOrders from '../General/SecondPage/LiveOrders';
-import ConnectionMonitoring from '../General/SecondPage/ConnectionMonitoring';
 import ArbitrageTickersTable from '../General/SecondPage/ArbitrageTickersTable';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import { API } from '../../scripts/routes';

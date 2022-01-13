@@ -91,7 +91,7 @@
 				margin: auto;
 				padding: 5px;
 				&.collapsed {
-					margin-top: -16%;
+					margin-top: -25%;
 					animation: fadeOut;
 					animation-duration: 0.2s;
 					opacity: 0;
@@ -111,7 +111,7 @@
 					margin-top: 1rem;
 					margin-bottom: 1rem;
 					animation: fadeIn;
-					animation-duration: 0.4s;
+					animation-duration: 0.6s;
 					visibility: visible;
 					@keyframes fadeIn {
 						0% {
