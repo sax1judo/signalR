@@ -3,6 +3,12 @@ import '../../../style/General/SecondPage/StrategiesTable.scss';
 import { NavLink } from 'react-router-dom';
 import ComponentWrapper from '../../General/ComponentWrapper';
 import MyVerticallyCenteredModal from '../MyVerticallyCenteredModal';
+import sortIcon from '../../../assets/sortIcon.png';
+import sortAscIcon from '../../../assets/sortIconAsc.png';
+import Pagination from '../Pagination';
+import DropDown from '../DropDown';
+import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http';
+import { API } from '../../../scripts/routes';
 import Loader from '../Loader';
 
 const StockTable = props => {
@@ -26,10 +32,6 @@ const StockTable = props => {
 	const [sortField, setSortField] = useState('');
 	const [sortOrder, setSortOrder] = useState('dsc');
 	const [layout, setLayout] = useState('');
-
-	useEffect(() => {
-		console.log(selectedStrategiesObject);
-	}, [selectedStrategies, selectedStrategiesObject]);
 
 	const setPostPerPage = pageSize => {
 		setTableData({
@@ -118,7 +120,7 @@ const StockTable = props => {
 		}
 	};
 	const showTickerTable = name => {
-		let ticker = document.getElementById(name + 'ticker');
+		let ticker = document.getElementById(name + 'additionalInfo');
 		ticker.classList.toggle('expanded');
 		ticker.classList.toggle('collapsed');
 	};
@@ -142,7 +144,7 @@ const StockTable = props => {
 		setSortField(key);
 	};
 	const getArbitrageStrategies = async () => {
-		await httpRequest(API.arbitrageStrategies + '?pageId=1', 'get').then(res => {
+		await httpRequest(API.arbitrageStrategies + '?pageId=2', 'get').then(res => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];
@@ -171,9 +173,10 @@ const StockTable = props => {
 							Leg1Ratio,
 							Leg2Ratio,
 						}))(exclObj[strategy]);
-						exclObj[strategy] = { StrategyName, additionalInfo, ...exclObj[strategy], spreadMkt };
-
-						modifyResponse.push(exclObj[strategy]);
+						exclObj[strategy] = { StrategyName, ...exclObj[strategy], spreadMkt, additionalInfo };
+						// excluding properties from table row
+						let { Slippage, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load, ...obj } = exclObj[strategy];
+						modifyResponse.push(obj);
 					}
 				}
 			});
@@ -306,7 +309,8 @@ const StockTable = props => {
 			totalRecords.push(strategy);
 		}
 		for (let selectedStrategy of selectedStrategiesObject) {
-			await httpRequestStartStopStrategy(API.loadStrategy + `${selectedStrategy.StrategyName}`, 'put', 'false').then(
+			const loadArray = selectedStrategy.additionalInfo.Load.filter(page => page != 2);
+			await httpRequestStartStopStrategy(API.loadStrategy + `${selectedStrategy.StrategyName}`, 'put', loadArray).then(
 				res => {
 					if (res.status === 200) {
 						for (let strategy in totalRecords) {
@@ -337,8 +341,72 @@ const StockTable = props => {
 			if (window.innerWidth < 1000) setLayout('mobile');
 			else setLayout('desktop');
 		});
-		// getArbitrageStrategies();
+		getArbitrageStrategies();
 	}, []);
+	//TICKERS DATA
+	useEffect(() => {
+		let newData = tableData.totalRecords;
+		if (tableData.displayedRecords.length !== 0) {
+			for (let strategy in newData) {
+				if (newData[strategy].StrategyName.toUpperCase() === props.arbitrageQuantity.StrategyName) {
+					newData[strategy].Leg1Quantity = props.arbitrageQuantity.Leg1Quantity;
+					newData[strategy].Leg2Quantity = props.arbitrageQuantity.Leg2Quantity;
+					break;
+				}
+			}
+
+			let data = setMobileData(newData);
+			if (data === null) {
+				setTableData({
+					...tableData,
+					totalRecords: newData,
+					displayedRecords: newData.slice(
+						(tableData.page - 1) * tableData.pageSize,
+						tableData.page * tableData.pageSize,
+					),
+				});
+			} else {
+				setTableData({
+					...tableData,
+					count: data.length,
+					totalRecords: newData,
+					displayedRecords: data.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
+				});
+			}
+		}
+	}, [props.arbitrageQuantity]);
+	useEffect(() => {
+		let newData = tableData.totalRecords;
+		if (tableData.displayedRecords.length !== 0) {
+			for (let strategy in newData) {
+				if (newData[strategy].StrategyName.toUpperCase() === props.arbitrageSpread.StrategyName) {
+					newData[strategy].spreadMkt = props.arbitrageSpread.MarketSpread;
+					newData[strategy].State = props.arbitrageSpread.StrategyState;
+
+					break;
+				}
+			}
+			let data = setMobileData(newData);
+			if (data === null) {
+				setTableData({
+					...tableData,
+					totalRecords: newData,
+					displayedRecords: newData.slice(
+						(tableData.page - 1) * tableData.pageSize,
+						tableData.page * tableData.pageSize,
+					),
+				});
+			} else {
+				setTableData({
+					...tableData,
+					count: data.length,
+					totalRecords: newData,
+					displayedRecords: data.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
+				});
+			}
+		}
+	}, [props.arbitrageSpread]);
+
 	return (
 		<div className="secondPageStrategyTable">
 			{Object.keys(tableData.displayedRecords).length !== 0 ? (
@@ -346,37 +414,67 @@ const StockTable = props => {
 					<table>
 						<tbody className="tableDateCentered">
 							<tr className="tableHeaderColor">
-								<th colSpan="12">Strategies</th>
+								<th colSpan="17">Strategies</th>
 							</tr>
 							<tr className="tableHeaderColor">
-								{Object.keys(props.arbitrageSpread[0]).map((strategy, id) => {
+								{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
 									let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
-									return <td key={id}>{title}</td>;
+									return (
+										<td onClick={() => sortBy(strategy)} key={id}>
+											{title}
+											{sortField === strategy ? (
+												<img
+													style={
+														sortOrder === 'asc'
+															? { height: '1.2rem', float: 'right', transform: 'rotate(180deg)' }
+															: { height: '1.2rem', float: 'right' }
+													}
+													src={sortAscIcon}
+												></img>
+											) : (
+												<img style={{ height: '1.2rem', float: 'right' }} src={sortIcon}></img>
+											)}
+										</td>
+									);
 								})}
 							</tr>
-							{props.arbitrageSpread.map((strategy, id) => {
+							{tableData.displayedRecords.map((strategy, id) => {
 								return (
 									<ComponentWrapper>
 										<tr
-											key={strategy.strategyName}
+											key={strategy.StrategyName}
 											className={
-												selectedStrategies.includes(strategy.strategyName) ? 'tableData activeRow' : 'tableData '
+												selectedStrategies.includes(strategy.StrategyName) ? 'tableData activeRow' : 'tableData '
 											}
-											onClick={() => selectStrategy(strategy.strategyName, strategy)}
+											onClick={() => selectStrategy(strategy.StrategyName, strategy)}
 										>
 											{Object.keys(strategy).map((key, id) => {
-												return key !== 'tickers' ? (
-													<td key={id}>{strategy[key]}</td>
+												let tableData = strategy[key];
+												let strategyActiveColor = 'inherit';
+												if (typeof strategy[key] == 'boolean') {
+													if (tableData) tableData = 'true';
+													else tableData = 'false';
+												}
+												{
+													/* color for active and unactive strategy */
+												}
+												if (key === 'State') {
+													strategyActiveColor = stateTableDataColor[tableData].color;
+												}
+												return key !== 'additionalInfo' ? (
+													<td key={id} style={{ backgroundColor: strategyActiveColor }}>
+														{tableData}
+													</td>
 												) : (
 													<td>
 														<button
 															onClick={e => {
 																e.stopPropagation();
-																showTickerTable(strategy.strategyName);
+																showTickerTable(strategy.StrategyName);
 															}}
 															type="button"
 															className="btn addStrategyButton"
-															disabled={strategy.tickers.length === 0 ? true : false}
+															disabled={strategy.additionalInfo.length === 0 ? true : false}
 														>
 															Details
 														</button>
@@ -385,28 +483,22 @@ const StockTable = props => {
 											})}
 										</tr>
 										{/* Tickers collapsed table */}
-										{strategy.tickers.length === 0 ? null : (
+										{strategy.additionalInfo.length === 0 ? null : (
 											<tr className="expandedContainer" style={{ pointerEvents: 'none' }}>
 												<td colSpan={Object.keys(strategy).length}>
-													<table id={strategy.strategyName + 'ticker'} className="tickerTableWrapper collapsed">
+													<table id={strategy.StrategyName + 'additionalInfo'} className="tickerTableWrapper collapsed">
 														<tbody>
 															<tr>
 																<th colSpan={8} className="tableDateCentered">
-																	Tickers
+																	Additional Info
 																</th>
 															</tr>
 
-															{strategy.tickers.map((ticker, id) => {
+															{Object.keys(strategy.additionalInfo).map((key, id) => {
 																return (
 																	<tr id={'ticker' + id} key={id}>
-																		{Object.keys(ticker).map((key, id) => {
-																			return (
-																				<ComponentWrapper>
-																					<td key={id + 'tickerKey'}>{key}:</td>
-																					<td key={id + 'tickerValue'}>{ticker[key]}</td>
-																				</ComponentWrapper>
-																			);
-																		})}
+																		<td key={id + 'tickerKey'}>{key}:</td>
+																		<td key={id + 'tickerValue'}>{strategy.additionalInfo[key]}</td>
 																	</tr>
 																);
 															})}
@@ -455,7 +547,7 @@ const StockTable = props => {
 					style={layout === 'desktop' ? { display: 'block' } : { display: 'none' }}
 					type="button"
 					className="btn  addStrategyButton"
-					onClick={() => selectByType('Buy')}
+					onClick={() => selectByType('BUY')}
 				>
 					Select All Buys
 				</button>
@@ -463,7 +555,7 @@ const StockTable = props => {
 					style={layout === 'desktop' ? { display: 'block' } : { display: 'none' }}
 					type="button"
 					className="btn  addStrategyButton"
-					onClick={() => selectByType('Sell')}
+					onClick={() => selectByType('SELL')}
 				>
 					Select All Sells
 				</button>

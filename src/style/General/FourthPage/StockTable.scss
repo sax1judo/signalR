@@ -1,54 +1,5 @@
 .secondPageStrategyTable {
-	table {
-		background: #212529;
-		color: white;
-		font-size: 0.8rem;
-		border-spacing: 0;
-		border-collapse: collapse;
-		border-style: hidden;
-
-		width: 100%;
-		max-width: 100%;
-	}
-	.tableDateCentered {
-		text-align: center;
-	}
-	th,
-	td {
-		padding: 10px;
-		border: 1px solid #3c3c3c;
-		text-transform: capitalize;
-	}
-	.tableHeaderColor {
-		background: #1c2026;
-	}
-	.tableData {
-		cursor: pointer;
-		&:hover {
-			background: #383d44;
-		}
-	}
-	.activeRow {
-		background: #383d44;
-	}
-	input {
-		background: #1c2026;
-		border: 1px solid #3c3c3c;
-		color: WHITE;
-		padding: 0.3em 1.4em 0.4em 0.9em;
-		width: -webkit-fill-available;
-		&:hover {
-			background-color: #242830;
-			border-color: #6d6d6d;
-		}
-	}
-	.buttonsActionsWrapper {
-		display: grid;
-		grid-template-columns: repeat(5, 1fr);
-		gap: 10px;
-		grid-auto-rows: minmax(auto, auto);
-		margin-top: 2rem;
-	}
+	
 	.expandedContainer {
 		overflow: hidden;
 		td {
@@ -61,7 +12,7 @@
 				margin: auto;
 				padding: 5px;
 				&.collapsed {
-					margin-top: -16%;
+					margin-top: -25%;
 					animation: fadeOut;
 					animation-duration: 0.2s;
 					opacity: 0;
@@ -81,7 +32,7 @@
 					margin-top: 1rem;
 					margin-bottom: 1rem;
 					animation: fadeIn;
-					animation-duration: 0.4s;
+					animation-duration: 0.6s;
 					visibility: visible;
 					@keyframes fadeIn {
 						0% {
