@@ -21,6 +21,7 @@ export const API = {
 	getProductAliasFunctionNames: 'http://35.225.80.47:8080/arbitrage/products/productAliasFunctionNames',
 	getIbMarketDataTypes: 'http://35.225.80.47:8080/arbitrage/products/ib/marketDataTypes',
 	getProductDetails: 'http://35.225.80.47:8080/arbitrage/products/details/',
+	startStockCycle: 'http://35.225.80.47:8080/arbitrage/strategies/place/',
 
 	//LOCAL ENVIRONMENT
 	// trades: 'http://localhost:5000/trades',

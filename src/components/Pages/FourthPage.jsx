@@ -9,10 +9,17 @@ const FourthPage = props => {
 	const [connection, setConnection] = useState(null);
 	const [arbitrageQuantity, setArbitrageQuantity] = useState(null);
 	const [arbitrageSpread, setArbitrageSpread] = useState(null);
+	const [arbitrageTicker, setArbitrageTicker] = useState(null);
+	const [diffTicker, setDiffTicker] = useState(null);
+	const [diffTickerInput, setDiffTickerInput] = useState(null);
 
 	//REDIRECT IF IT'S NOT LOGGED
 	const history = useHistory();
 	if (!props.isLogged) history.push('/');
+
+	const handleDiffTickerInputChange = value => {
+		setDiffTickerInput(value);
+	};
 
 	useEffect(() => {
 		const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
@@ -22,8 +29,6 @@ const FourthPage = props => {
 			setConnection(null);
 		};
 	}, []);
-
-	//TICKERS DATA
 	useEffect(() => {
 		if (connection) {
 			connection
@@ -31,11 +36,17 @@ const FourthPage = props => {
 				.then(result => {
 					console.log('Connected!');
 
-					connection.on('ArbitrageQuantity', message => {
+					connection.on('StockQuantity', message => {
 						setArbitrageQuantity(JSON.parse(message));
 					});
-					connection.on('ArbitrageSpread', message => {
+					connection.on('StockSpread', message => {
 						setArbitrageSpread(JSON.parse(message));
+					});
+					connection.on('StockPrices', message => {
+						setArbitrageTicker(JSON.parse(message));
+					});
+					connection.on('DiffPrices', message => {
+						setDiffTicker(JSON.parse(message));
 					});
 				})
 				.catch(e => console.log('Connection failed: ', e));
@@ -44,14 +55,20 @@ const FourthPage = props => {
 			setConnection(null);
 		};
 	}, [connection]);
-	
+
 	return (
 		<div className="strategiesSecondPageWrapper">
 			<div className="futuresArbitrageStrategies">
 				<h4 style={{ textAlign: 'center' }}>Stocks Arbitrage Monitoring</h4>
-				<StockTickersTable />
+				<StockTickersTable diffTicker={diffTicker} handleDiffTickerInputChange={handleDiffTickerInputChange} />
 				<div>
-					<StockTable arbitrageSpread={arbitrageSpread} arbitrageQuantity={arbitrageQuantity}/>
+					<StockTable
+						arbitrageSpread={arbitrageSpread}
+						arbitrageQuantity={arbitrageQuantity}
+						arbitrageTicker={arbitrageTicker}
+						diffTicker={diffTicker}
+						diffTickerInput={diffTickerInput}
+					/>
 				</div>
 			</div>
 			<div className="liveOrdersWrapper">

@@ -9,7 +9,6 @@ import { HubConnectionBuilder } from '@microsoft/signalr';
 import Loader from '../Loader';
 
 const StockTickersTable = props => {
-	const [connection, setConnection] = useState(null);
 	const [tableData, setTableData] = useState({
 		properties: [],
 		totalRecords: [],
@@ -98,73 +97,83 @@ const StockTickersTable = props => {
 			return mobileData;
 		} else return null;
 	};
-	useEffect(() => {
-		setTimeout(() => {
-			const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
-			setConnection(newConnection);
-		}, 500);
-		return () => {
-			setConnection(null);
-		};
-	}, []);
+	const handleDlfferentialChange = (ticker, value) => {
+		setTableData(prevData => {
+			for (let tickers in prevData.displayedRecords) {
+				if (prevData.displayedRecords[tickers].ticker === ticker.ticker) {
+					prevData.displayedRecords[tickers].Differential = parseFloat(value);
+					prevData.displayedRecords[tickers].FxSpotAsk =
+						(prevData.displayedRecords[tickers].ask_price - parseFloat(value)) / 1000;
+					prevData.displayedRecords[tickers].FxSpotBid =
+						(prevData.displayedRecords[tickers].bid_price - parseFloat(value)) / 1000;
+				}
+			}
+			return { ...prevData };
+		});
+	};
 
 	//TICKERS DATA
 	useEffect(() => {
-		if (connection) {
-			connection
-				.start()
-				.then(result => {
-					console.log('Connected! u Tickerima');
+		if (props.diffTicker) {
+			let newData = tableData.totalRecords;
+			let { time_stamp, market, trading_app, bid_quantity, ask_quantity, position, amount, ...newMessage } =
+				props.diffTicker;
+			newMessage = { ...newMessage, Differential: 0, FxSpotBid: 0, FxSpotAsk: 0 };
+			let swapped = false;
 
-					connection.on('StockPrices', message => {
-						let newData = tableData.totalRecords;
-						let { time_stamp, market, trading_app, bid_quantity, ask_quantity, ...newMessage } = JSON.parse(message);
-						let swapped = false;
-
-						if (newData.length === 0) {
-							newData.push(newMessage);
-						} else {
-							for (let ticker in newData) {
-								if (newData[ticker].ticker === newMessage.ticker) {
-									newData[ticker] = newMessage;
-									swapped = true;
-									break;
-								}
-							}
-							if (!swapped) {
-								newData.push(newMessage);
-							}
+			if (newData.length === 0) {
+				newData.push(newMessage);
+			} else {
+				for (let ticker in newData) {
+					if (newData[ticker].ticker === newMessage.ticker) {
+						//Need this fix because of input field in table row.
+						// Think of better way of fixing it.
+						if (newData[ticker].bid_price !== newMessage.bid_price) {
+							newData[ticker].bid_price = newMessage.bid_price;
+							newData[ticker].FxSpotBid = (newMessage.bid_price - newData[ticker].Differential) / 1000;
 						}
-						newData = sortLiveTicker(newData);
-						let data = setMobileData(newData);
-						if (data === null) {
-							setTableData({
-								...tableData,
-								totalRecords: newData,
-								displayedRecords: newData.slice(
-									(tableData.page - 1) * tableData.pageSize,
-									tableData.page * tableData.pageSize,
-								),
-							});
-						} else {
-							setTableData({
-								...tableData,
-								count: data.length,
-								totalRecords: data,
-								displayedRecords: data.slice(
-									(tableData.page - 1) * tableData.pageSize,
-									tableData.page * tableData.pageSize,
-								),
-							});
+						if (newData[ticker].ask_price !== newMessage.ask_price) {
+							newData[ticker].ask_price = newMessage.ask_price;
+							newData[ticker].FxSpotAsk = (newMessage.ask_price - newData[ticker].Differential) / 1000;
 						}
-					});
-				})
-				.catch(e => console.log('Connection failed: ', e));
+						if (newData[ticker].last_price !== newMessage.last_price) {
+							newData[ticker].last_price = newMessage.last_price;
+						}
+						if (newData[ticker].position !== newMessage.position) {
+							newData[ticker].position = newMessage.position;
+						}
+						if (newData[ticker].amount !== newMessage.amount) {
+							newData[ticker].amount = newMessage.amount;
+						}
+						swapped = true;
+						break;
+					}
+				}
+				if (!swapped) {
+					newData.push(newMessage);
+				}
+			}
+			newData = sortLiveTicker(newData);
+			let data = setMobileData(newData);
+			if (data === null) {
+				setTableData({
+					...tableData,
+					totalRecords: newData,
+					displayedRecords: newData.slice(
+						(tableData.page - 1) * tableData.pageSize,
+						tableData.page * tableData.pageSize,
+					),
+				});
+			} else {
+				setTableData({
+					...tableData,
+					count: data.length,
+					totalRecords: data,
+					displayedRecords: data.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
+				});
+			}
 		}
-		return () => {
-			setConnection(null);
-		};
-	}, [connection]);
+	}, [props.diffTicker]);
 
 	useEffect(() => {
 		// console.log(tableData);
@@ -176,7 +185,7 @@ const StockTickersTable = props => {
 					<table>
 						<tbody className="tableDateCentered">
 							<tr className="tableHeaderColor">
-								<th colSpan="5">Tickers</th>
+								<th colSpan={Object.keys(tableData.displayedRecords[0]).length}>Tickers</th>
 							</tr>
 							<tr className="tableHeaderColor">
 								{Object.keys(tableData.displayedRecords[0]).map((ticker, id) => {
@@ -205,7 +214,20 @@ const StockTickersTable = props => {
 									<tr key={'tickerData' + id} className="tableData">
 										{Object.keys(ticker).map((key, id) => {
 											let tableData = ticker[key];
-											return <td key={id}>{tableData}</td>;
+											return key !== 'Differential' ? (
+												<td key={id}>{tableData}</td>
+											) : (
+												<td>
+													<input
+														type="number"
+														value={tableData}
+														onChange={e => {
+															handleDlfferentialChange(ticker, e.target.value);
+															props.handleDiffTickerInputChange(parseFloat(e.target.value));
+														}}
+													></input>
+												</td>
+											);
 										})}
 									</tr>
 								);

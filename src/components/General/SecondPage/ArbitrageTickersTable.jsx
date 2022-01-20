@@ -176,7 +176,7 @@ const ArbitrageTickersTable = props => {
 					<table>
 						<tbody className="tableDateCentered">
 							<tr className="tableHeaderColor">
-								<th colSpan="5">Tickers</th>
+								<th colSpan="6">Tickers</th>
 							</tr>
 							<tr className="tableHeaderColor">
 								{Object.keys(tableData.displayedRecords[0]).map((ticker, id) => {
