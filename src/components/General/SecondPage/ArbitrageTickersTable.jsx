@@ -98,72 +98,48 @@ const ArbitrageTickersTable = props => {
 			return mobileData;
 		} else return null;
 	};
-	useEffect(() => {
-		setTimeout(() => {
-			const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
-			setConnection(newConnection);
-		}, 500);
-		return () => {
-			setConnection(null);
-		};
-	}, []);
 
 	//TICKERS DATA
 	useEffect(() => {
-		if (connection) {
-			connection
-				.start()
-				.then(result => {
-					console.log('Connected! u Tickerima');
+		if (props.tickerMessage) {
+			let newData = tableData.totalRecords;
+			let { time_stamp, market, trading_app, bid_quantity, ask_quantity, ...newMessage } = props.tickerMessage;
+			let swapped = false;
 
-					connection.on('ArbitragePrices', message => {
-						let newData = tableData.totalRecords;
-						let { time_stamp, market, trading_app, bid_quantity, ask_quantity, ...newMessage } = JSON.parse(message);
-						let swapped = false;
-
-						if (newData.length === 0) {
-							newData.push(newMessage);
-						} else {
-							for (let ticker in newData) {
-								if (newData[ticker].ticker === newMessage.ticker) {
-									newData[ticker] = newMessage;
-									swapped = true;
-									break;
-								}
-							}
-							if (!swapped) {
-								newData.push(newMessage);
-							}
-						}
-						newData = sortLiveTicker(newData);
-						let data = setMobileData(newData);
-						if (data === null) {
-							setTableData({
-								...tableData,
-								totalRecords: newData,
-								displayedRecords: newData.slice(
-									(tableData.page - 1) * tableData.pageSize,
-									tableData.page * tableData.pageSize,
-								),
-							});
-						} else {
-							setTableData({
-								...tableData,
-								count: data.length,
-								totalRecords: data,
-								displayedRecords: data.slice(
-									(tableData.page - 1) * tableData.pageSize,
-									tableData.page * tableData.pageSize,
-								),
-							});
-						}
-					});
-				})
-				.catch(e => console.log('Connection failed: ', e));
+			if (newData.length === 0) {
+				newData.push(newMessage);
+			} else {
+				for (let ticker in newData) {
+					if (newData[ticker].ticker === newMessage.ticker) {
+						newData[ticker] = newMessage;
+						swapped = true;
+						break;
+					}
+				}
+				if (!swapped) {
+					newData.push(newMessage);
+				}
+			}
+			newData = sortLiveTicker(newData);
+			let data = setMobileData(newData);
+			if (data === null) {
+				setTableData({
+					...tableData,
+					totalRecords: newData,
+					displayedRecords: newData.slice(
+						(tableData.page - 1) * tableData.pageSize,
+						tableData.page * tableData.pageSize,
+					),
+				});
+			} else {
+				setTableData({
+					...tableData,
+					count: data.length,
+					totalRecords: data,
+					displayedRecords: data.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
+				});
+			}
 		}
-		return () => {
-			setConnection(null);
-		};
 	}, [connection]);
 
 	useEffect(() => {

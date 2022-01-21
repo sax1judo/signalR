@@ -4,6 +4,7 @@ import { API } from '../../scripts/routes';
 import AuctionTickersTable from '../General/FifthPage/AuctionTickersTable';
 import AuctionTable from '../General/FifthPage/AuctionTable';
 import { useHistory } from 'react-router-dom';
+import LiveOrders from '../General/SecondPage/LiveOrders';
 
 const FifthPage = props => {
 	const [connection, setConnection] = useState(null);
@@ -55,7 +56,9 @@ const FifthPage = props => {
 			</div>
 			<div className="liveOrdersWrapper">
 				<h4 style={{ textAlign: 'center' }}>Auction Live Orders</h4>
-				<div>{/* <AuctionLiveOrders /> */}</div>
+				<div>
+					<LiveOrders ordersChannel="AuctionOrders" />
+				</div>
 			</div>
 		</div>
 	);

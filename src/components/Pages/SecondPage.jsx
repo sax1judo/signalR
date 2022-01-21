@@ -11,6 +11,7 @@ const SecondPage = props => {
 	const [connection, setConnection] = useState(null);
 	const [arbitrageQuantity, setArbitrageQuantity] = useState(null);
 	const [arbitrageSpread, setArbitrageSpread] = useState(null);
+	const [tickerMessage, setTickerMessage] = useState(null);
 
 	//REDIRECT IF IT'S NOT LOGGED
 	const history = useHistory();
@@ -39,6 +40,9 @@ const SecondPage = props => {
 					connection.on('ArbitrageSpread', message => {
 						setArbitrageSpread(JSON.parse(message));
 					});
+					connection.on('ArbitragePrices', message => {
+						setTickerMessage(JSON.parse(message));
+					});
 				})
 				.catch(e => console.log('Connection failed: ', e));
 		}
@@ -60,7 +64,7 @@ const SecondPage = props => {
 			<div className="liveOrdersWrapper">
 				<h4 style={{ textAlign: 'center' }}>Live Orders</h4>
 				<div>
-					<LiveOrders />
+					<LiveOrders ordersChannel="ArbitrageOrders" tickerMessage={tickerMessage}/>
 				</div>
 			</div>
 		</div>

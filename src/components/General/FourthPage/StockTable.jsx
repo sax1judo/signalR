@@ -302,14 +302,14 @@ const StockTable = props => {
 		});
 		getStockStrategies();
 	}, []);
-	//TICKERS DATA
+	
 	useEffect(() => {
 		let newData = tableData.totalRecords;
 		if (tableData.displayedRecords.length !== 0) {
 			for (let strategy in newData) {
-				if (newData[strategy].StrategyName.toUpperCase() === props.arbitrageQuantity.StrategyName) {
-					newData[strategy].Leg1Quantity = props.arbitrageQuantity.Leg1Quantity;
-					newData[strategy].Leg2Quantity = props.arbitrageQuantity.Leg2Quantity;
+				if (newData[strategy].StrategyName.toUpperCase() === props.stockQuantity.StrategyName) {
+					newData[strategy].Leg1Quantity = props.stockQuantity.Leg1Quantity;
+					newData[strategy].Leg2Quantity = props.stockQuantity.Leg2Quantity;
 					break;
 				}
 			}
@@ -333,14 +333,14 @@ const StockTable = props => {
 				});
 			}
 		}
-	}, [props.arbitrageQuantity]);
+	}, [props.stockQuantity]);
 	useEffect(() => {
 		let newData = tableData.totalRecords;
 		if (tableData.displayedRecords.length !== 0) {
 			for (let strategy in newData) {
-				if (newData[strategy].StrategyName.toUpperCase() === props.arbitrageSpread.StrategyName) {
-					newData[strategy].spreadMkt = props.arbitrageSpread.MarketSpread;
-					newData[strategy].State = props.arbitrageSpread.StrategyState;
+				if (newData[strategy].StrategyName.toUpperCase() === props.stockSpread.StrategyName) {
+					newData[strategy].spreadMkt = props.stockSpread.MarketSpread;
+					newData[strategy].State = props.stockSpread.StrategyState;
 
 					//Nikolica fix
 					if (newData[strategy].State === 'ACTIVE') {
@@ -378,23 +378,23 @@ const StockTable = props => {
 				});
 			}
 		}
-	}, [props.arbitrageSpread]);
+	}, [props.stockSpread]);
 	useEffect(() => {
 		let newData = tableData.totalRecords;
 		if (tableData.displayedRecords.length !== 0) {
 			for (let strategy in newData) {
-				if (newData[strategy].Leg1Ticker === props.arbitrageTicker.ticker) {
-					newData[strategy].Leg1LastPrice = props.arbitrageTicker.last_price;
-					newData[strategy].Leg1BidPrice = props.arbitrageTicker.bid_price;
-					newData[strategy].Leg1AskPrice = props.arbitrageTicker.ask_price;
-					newData[strategy].additionalInfo.Leg1TickerAmount = props.arbitrageTicker.amount;
-					newData[strategy].additionalInfo.Leg1TickerPosition = props.arbitrageTicker.position;
-				} else if (newData[strategy].Leg2Ticker === props.arbitrageTicker.ticker) {
-					newData[strategy].Leg2LastPrice = props.arbitrageTicker.last_price;
-					newData[strategy].Leg2BidPrice = props.arbitrageTicker.bid_price;
-					newData[strategy].Leg2AskPrice = props.arbitrageTicker.ask_price;
-					newData[strategy].additionalInfo.Leg2TickerAmount = props.arbitrageTicker.amount;
-					newData[strategy].additionalInfo.Leg2TickerPosition = props.arbitrageTicker.position;
+				if (newData[strategy].Leg1Ticker === props.stockTicker.ticker) {
+					newData[strategy].Leg1LastPrice = props.stockTicker.last_price;
+					newData[strategy].Leg1BidPrice = props.stockTicker.bid_price;
+					newData[strategy].Leg1AskPrice = props.stockTicker.ask_price;
+					newData[strategy].additionalInfo.Leg1TickerAmount = props.stockTicker.amount;
+					newData[strategy].additionalInfo.Leg1TickerPosition = props.stockTicker.position;
+				} else if (newData[strategy].Leg2Ticker === props.stockTicker.ticker) {
+					newData[strategy].Leg2LastPrice = props.stockTicker.last_price;
+					newData[strategy].Leg2BidPrice = props.stockTicker.bid_price;
+					newData[strategy].Leg2AskPrice = props.stockTicker.ask_price;
+					newData[strategy].additionalInfo.Leg2TickerAmount = props.stockTicker.amount;
+					newData[strategy].additionalInfo.Leg2TickerPosition = props.stockTicker.position;
 				}
 			}
 			let data = setMobileData(newData);
@@ -416,7 +416,7 @@ const StockTable = props => {
 				});
 			}
 		}
-	}, [props.arbitrageTicker]);
+	}, [props.stockTicker]);
 	useEffect(() => {
 		if (props.diffTicker) {
 			let FxSpotBid = (props.diffTicker.bid_price - props.diffTickerInput) / 1000;
@@ -434,7 +434,7 @@ const StockTable = props => {
 									((prevData.displayedRecords[strategy].Leg1AskPrice * FxSpotAsk) / ratio -
 										prevData.displayedRecords[strategy].Leg2BidPrice) /
 									prevData.displayedRecords[strategy].Leg2BidPrice
-							  ).toFixed(5) + '%'
+							  ).toFixed(5)
 							: 'NaN';
 
 					prevData.displayedRecords[strategy].SpreadSell =
@@ -443,7 +443,7 @@ const StockTable = props => {
 									((prevData.displayedRecords[strategy].Leg1BidPrice * FxSpotBid) / ratio -
 										prevData.displayedRecords[strategy].Leg2AskPrice) /
 									prevData.displayedRecords[strategy].Leg2AskPrice
-							  ).toFixed(5) + '%'
+							  ).toFixed(5)
 							: 'NaN';
 				}
 				return { ...prevData };
@@ -462,6 +462,8 @@ const StockTable = props => {
 							<tr className="tableHeaderColor">
 								{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
 									let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
+									if (title === 'additional Info') title = 'Details';
+									if (title === 'Spread Buy' || title === 'Spread Sell') title = title + ' (%)';
 									return (
 										<td onClick={() => sortBy(strategy)} key={id}>
 											{title}

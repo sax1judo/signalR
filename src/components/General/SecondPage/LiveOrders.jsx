@@ -41,9 +41,9 @@ const LiveOrders = props => {
 			connection
 				.start()
 				.then(result => {
-					console.log('Connected!');
+					console.log(`Connected ${props.ordersChannel} !`);
 
-					connection.on('ArbitrageOrders', message => {
+					connection.on(props.ordersChannel, message => {
 						let newData = data.liveOrders;
 						let newMessagePreParsed = JSON.parse(message);
 						let newMessage;

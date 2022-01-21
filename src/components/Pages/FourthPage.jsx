@@ -4,12 +4,13 @@ import { API } from '../../scripts/routes';
 import StockTickersTable from '../General/FourthPage/StockTickersTable';
 import StockTable from '../General/FourthPage/StockTable';
 import { useHistory } from 'react-router-dom';
+import LiveOrders from '../General/SecondPage/LiveOrders';
 
 const FourthPage = props => {
 	const [connection, setConnection] = useState(null);
-	const [arbitrageQuantity, setArbitrageQuantity] = useState(null);
-	const [arbitrageSpread, setArbitrageSpread] = useState(null);
-	const [arbitrageTicker, setArbitrageTicker] = useState(null);
+	const [stockQuantity, setStockQuantity] = useState(null);
+	const [stockSpread, setStockSpread] = useState(null);
+	const [stockTicker, setStockTicker] = useState(null);
 	const [diffTicker, setDiffTicker] = useState(null);
 	const [diffTickerInput, setDiffTickerInput] = useState(null);
 
@@ -37,13 +38,13 @@ const FourthPage = props => {
 					console.log('Connected!');
 
 					connection.on('StockQuantity', message => {
-						setArbitrageQuantity(JSON.parse(message));
+						setStockQuantity(JSON.parse(message));
 					});
 					connection.on('StockSpread', message => {
-						setArbitrageSpread(JSON.parse(message));
+						setStockSpread(JSON.parse(message));
 					});
 					connection.on('StockPrices', message => {
-						setArbitrageTicker(JSON.parse(message));
+						setStockTicker(JSON.parse(message));
 					});
 					connection.on('DiffPrices', message => {
 						setDiffTicker(JSON.parse(message));
@@ -63,9 +64,9 @@ const FourthPage = props => {
 				<StockTickersTable diffTicker={diffTicker} handleDiffTickerInputChange={handleDiffTickerInputChange} />
 				<div>
 					<StockTable
-						arbitrageSpread={arbitrageSpread}
-						arbitrageQuantity={arbitrageQuantity}
-						arbitrageTicker={arbitrageTicker}
+						stockSpread={stockSpread}
+						stockQuantity={stockQuantity}
+						stockTicker={stockTicker}
 						diffTicker={diffTicker}
 						diffTickerInput={diffTickerInput}
 					/>
@@ -73,7 +74,9 @@ const FourthPage = props => {
 			</div>
 			<div className="liveOrdersWrapper">
 				<h4 style={{ textAlign: 'center' }}>Stock Live Orders</h4>
-				<div>{/* <StockLiveOrders /> */}</div>
+				<div>
+					<LiveOrders ordersChannel="StockOrders" />
+				</div>
 			</div>
 		</div>
 	);
