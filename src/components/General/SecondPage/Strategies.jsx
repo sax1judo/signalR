@@ -118,11 +118,6 @@ const StrategiesTable = props => {
 			setSelectedStrategiesObject(strategiesObject);
 		}
 	};
-	const showTickerTable = name => {
-		let ticker = document.getElementById(name + 'ticker');
-		ticker.classList.toggle('expanded');
-		ticker.classList.toggle('collapsed');
-	};
 	const compareBy = key => {
 		let reverse = sortOrder === 'asc' ? 1 : -1;
 		sortOrder === 'asc' ? setSortOrder('desc') : setSortOrder('asc');
@@ -143,7 +138,7 @@ const StrategiesTable = props => {
 		setSortField(key);
 	};
 	const getArbitrageStrategies = async () => {
-		await httpRequest(API.arbitrageStrategies + '?pageId=1', 'get').then(res => {
+		await httpRequest(API.arbitrageStrategies + '/read' + '/1' + '?onlyLoad=true', 'get').then(res => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];
@@ -308,27 +303,28 @@ const StrategiesTable = props => {
 			totalRecords.push(strategy);
 		}
 		for (let selectedStrategy of selectedStrategiesObject) {
-			const loadArray = selectedStrategy.additionalInfo.Load.filter(page => page != 1);
-			await httpRequestStartStopStrategy(API.loadStrategy + `${selectedStrategy.StrategyName}`, 'put', loadArray).then(
-				res => {
-					if (res.status === 200) {
-						for (let strategy in totalRecords) {
-							if (totalRecords[strategy].StrategyName === selectedStrategy.StrategyName) {
-								totalRecords.splice(strategy, 1);
-								break;
-							}
+			await httpRequestStartStopStrategy(
+				API.loadStrategy + `${selectedStrategy.StrategyType}/` + `${selectedStrategy.StrategyName}`,
+				'put',
+				'false',
+			).then(res => {
+				if (res.status === 200) {
+					for (let strategy in totalRecords) {
+						if (totalRecords[strategy].StrategyName === selectedStrategy.StrategyName) {
+							totalRecords.splice(strategy, 1);
+							break;
 						}
-						setTableData({
-							...tableData,
-							totalRecords: totalRecords,
-							displayedRecords: totalRecords.slice(
-								(tableData.page - 1) * tableData.pageSize,
-								tableData.page * tableData.pageSize,
-							),
-						});
 					}
-				},
-			);
+					setTableData({
+						...tableData,
+						totalRecords: totalRecords,
+						displayedRecords: totalRecords.slice(
+							(tableData.page - 1) * tableData.pageSize,
+							tableData.page * tableData.pageSize,
+						),
+					});
+				}
+			});
 		}
 		setSelectedStrategies([]);
 		setSelectedStrategiesObject([]);
