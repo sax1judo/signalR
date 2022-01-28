@@ -5,6 +5,7 @@ import TableFieldDropDown from '../TableFieldDropDown';
 import { httpRequest } from '../../../scripts/http';
 import { API } from '../../../scripts/routes';
 import { NavLink } from 'react-router-dom';
+import { loadActionPages } from '../../../scripts/common';
 
 const AddStrategyTable = props => {
 	const exchangeDropdownOne = ['IB', 'TT'];
@@ -12,18 +13,13 @@ const AddStrategyTable = props => {
 	const [addStrategyButton, setAddStrategyButtton] = useState(false);
 	const [tickerLegOneOptions, setTickerLegOneOptions] = useState([]);
 	const [tickerLegTwoOptions, setTickerLegTwoOptions] = useState([]);
+	const [strategyTypes, setStrategyTypes] = useState([]);
 	const [state, setState] = useState({
 		datebase: {
 			legOne: { exchange: '', ticker: '' },
 			legTwo: { exchange: '', ticker: '' },
 		},
-		// parameters: {
-		// 	clip: '',
-		// 	limitBuy: '',
-		// 	limitSell: '',
-		// 	LimitPerDay:'',
-		// 	pointsAway: '',
-		// },
+		strategyType: null,
 	});
 	const countDecimals = value => {
 		if (Math.floor(value.valueOf()) === value.valueOf()) return 0;
@@ -49,22 +45,7 @@ const AddStrategyTable = props => {
 				if (res.status === 200) setTickerLegTwoOptions(res.data);
 			});
 	}, [state.datebase.legTwo.exchange]);
-
 	useEffect(() => {
-		// let cntParameters = 0;
-		// let formValidation = document.getElementsByClassName('invalid-feedback');
-		// if (formValidation.length === 0) {
-		// 	for (let formFields in state.parameters) {
-		// 		if (state.parameters[formFields] !== '') cntParameters++;
-		// 	}
-		// 	// number of keys for now is for
-		// 	if (cntParameters ===Object.keys(state.parameters).length) {
-		// 		setAddStrategyButtton(true);
-		// 	} else {
-		// 		setAddStrategyButtton(false);
-		// 	}
-		// } else setAddStrategyButtton(false);
-
 		if (
 			state.datebase.legOne.exchange !== '' &&
 			state.datebase.legTwo.exchange !== '' &&
@@ -74,6 +55,13 @@ const AddStrategyTable = props => {
 			setAddStrategyButtton(true);
 		else setAddStrategyButtton(false);
 	}, [state]);
+	useEffect(() => {
+		let types = [];
+		for (let strategyType of loadActionPages) {
+			types.push(strategyType.strategyType);
+		}
+		setStrategyTypes(types);
+	}, []);
 	return (
 		<ComponentWrapper>
 			<div className="setUpDatabaseTable">
@@ -165,163 +153,31 @@ const AddStrategyTable = props => {
 								/>
 							</td>
 						</tr>
+						<tr>
+							<td>Strategy Type</td>
+							<td>
+								<TableFieldDropDown
+									options={strategyTypes}
+									inputChanged={e => {
+										let type = loadActionPages.filter(startegy => startegy.strategyType === e);
+										e !== '...'
+											? setState({
+													...state,
+													strategyType: type[0].pageNumber,
+											  })
+											: setState({
+													...state,
+													strategyType: '',
+											  });
+									}}
+								/>
+							</td>
+						</tr>
 
 						{/* table data */}
 					</tbody>
 				</table>
 			</div>
-
-			{/* <div className="setUpParametersTable">
-				<table>
-					<tbody className="tableDateCentered">
-						<tr>
-							<th colSpan="4" className="tableHeaderColor">
-								Parameters
-							</th>
-						</tr>
-
-						<tr>
-							<td>Limit Buy:</td>
-							<td>
-								<input
-									type="number"
-									value={state.parameters.limitBuy}
-									onChange={e =>
-										setState({
-											...state,
-											parameters: { ...state.parameters, limitBuy: e.target.value },
-										})
-									}
-								/>
-								{state.parameters.limitBuy !== '' ? (
-									parseFloat(state.parameters.limitBuy) > 0 &&
-									Number.isInteger(parseFloat(state.parameters.limitBuy)) ? (
-										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											Looks good!
-										</div>
-									) : (
-										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											{parseFloat(state.parameters.limitBuy) > 0
-												? 'Please type integer value.'
-												: 'Please type greater than zero.'}
-										</div>
-									)
-								) : null}
-							</td>
-							<td>Clip:</td>
-							<td>
-								<input
-									type="number"
-									value={state.parameters.clip}
-									onChange={e =>
-										setState({
-											...state,
-											parameters: { ...state.parameters, clip: e.target.value },
-										})
-									}
-								/>
-								{state.parameters.clip !== '' ? (
-									parseFloat(state.parameters.clip) > 0 && Number.isInteger(parseFloat(state.parameters.clip)) ? (
-										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											Looks good!
-										</div>
-									) : (
-										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											{parseFloat(state.parameters.clip) > 0
-												? 'Please type integer value.'
-												: 'Please type greater than zero.'}
-										</div>
-									)
-								) : null}
-							</td>
-						</tr>
-
-						<tr>
-							<td>Limit Sell:</td>
-							<td>
-								<input
-									type="number"
-									value={state.parameters.limitSell}
-									onChange={e =>
-										setState({
-											...state,
-											parameters: { ...state.parameters, limitSell: e.target.value },
-										})
-									}
-								/>
-								{state.parameters.limitSell !== '' ? (
-									parseFloat(state.parameters.limitSell) > 0 &&
-									Number.isInteger(parseFloat(state.parameters.limitSell)) ? (
-										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											Looks good!
-										</div>
-									) : (
-										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											{parseFloat(state.parameters.limitSell) > 0
-												? 'Please type integer value.'
-												: 'Please type greater than zero.'}
-										</div>
-									)
-								) : null}
-							</td>
-							<td>Points Away:</td>
-							<td>
-								<input
-									type="number"
-									value={state.parameters.pointsAway}
-									onChange={e =>
-										setState({
-											...state,
-											parameters: { ...state.parameters, pointsAway: e.target.value },
-										})
-									}
-								/>
-								{state.parameters.pointsAway !== '' ? (
-									countDecimals(state.parameters.pointsAway) == 2 ? (
-										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											Looks good!
-										</div>
-									) : (
-										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											Please type floating number with two decimals.
-										</div>
-									)
-								) : null}
-							</td>
-						</tr>
-						<tr>
-							<td>Limit Per Day:</td>
-							<td>
-								<input
-									type="number"
-									value={state.parameters.LimitPerDay}
-									onChange={e =>
-										setState({
-											...state,
-											parameters: { ...state.parameters, LimitPerDay: e.target.value },
-										})
-									}
-								/>
-								{state.parameters.LimitPerDay !== '' ? (
-									parseFloat(state.parameters.LimitPerDay) > 0 &&
-									Number.isInteger(parseFloat(state.parameters.LimitPerDay)) ? (
-										<div className="valid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											Looks good!
-										</div>
-									) : (
-										<div className="invalid-feedback" style={{ display: 'block', position: 'absolute', bottom: '0' }}>
-											{parseFloat(state.parameters.LimitPerDay) > 0
-												? 'Please type integer value.'
-												: 'Please type greater than zero.'}
-										</div>
-									)
-								) : null}
-							</td>
-							
-						</tr>
-					</tbody>
-				</table>
-			</div> */}
 
 			<button
 				type="button"

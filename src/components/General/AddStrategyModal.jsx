@@ -98,7 +98,7 @@ const AddStrategyModal = props => {
 		history.goBack();
 	};
 	const addStrategy = () => {
-		httpRequest(API.arbitrageStrategies, 'put', formData).then(res => {
+		httpRequest(API.arbitrageStrategies+'/create', 'put', formData).then(res => {
 			if (res.status === 200) goToPreviousPath();
 		});
 	};
@@ -123,6 +123,7 @@ const AddStrategyModal = props => {
 				leg1Exchange: location.data.datebase.legOne.exchange,
 				leg2Ticker: location.data.datebase.legTwo.ticker,
 				leg2Exchange: location.data.datebase.legTwo.exchange,
+				strategyType:location.data.strategyType
 			},
 			SellLeg1: {
 				...formData.SellLeg1,
@@ -130,6 +131,7 @@ const AddStrategyModal = props => {
 				leg1Exchange: location.data.datebase.legOne.exchange,
 				leg2Ticker: location.data.datebase.legTwo.ticker,
 				leg2Exchange: location.data.datebase.legTwo.exchange,
+				strategyType:location.data.strategyType
 			},
 			BuyLeg2: {
 				...formData.BuyLeg2,
@@ -137,6 +139,7 @@ const AddStrategyModal = props => {
 				leg1Exchange: location.data.datebase.legTwo.exchange,
 				leg2Ticker: location.data.datebase.legOne.ticker,
 				leg2Exchange: location.data.datebase.legOne.exchange,
+				strategyType:location.data.strategyType
 			},
 			SellLeg2: {
 				...formData.SellLeg2,
@@ -144,6 +147,7 @@ const AddStrategyModal = props => {
 				leg1Exchange: location.data.datebase.legTwo.exchange,
 				leg2Ticker: location.data.datebase.legOne.ticker,
 				leg2Exchange: location.data.datebase.legOne.exchange,
+				strategyType:location.data.strategyType
 			},
 		});
 	}, []);
