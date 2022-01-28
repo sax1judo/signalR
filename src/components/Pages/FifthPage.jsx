@@ -6,14 +6,21 @@ import AuctionTable from '../General/FifthPage/AuctionTable';
 import { useHistory } from 'react-router-dom';
 import LiveOrders from '../General/SecondPage/LiveOrders';
 
-const FifthPage = props => {
+const FourthPage = props => {
 	const [connection, setConnection] = useState(null);
-	const [arbitrageQuantity, setArbitrageQuantity] = useState(null);
-	const [arbitrageSpread, setArbitrageSpread] = useState(null);
+	const [auctionQuantity, setAuctionQuantity] = useState(null);
+	const [auctionSpread, setAuctionSpread] = useState(null);
+	const [auctionTicker, setAuctionTicker] = useState(null);
+	const [diffTicker, setDiffTicker] = useState(null);
+	const [diffTickerInput, setDiffTickerInput] = useState(null);
 
 	//REDIRECT IF IT'S NOT LOGGED
 	const history = useHistory();
 	if (!props.isLogged) history.push('/');
+
+	const handleDiffTickerInputChange = value => {
+		setDiffTickerInput(value);
+	};
 
 	useEffect(() => {
 		const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
@@ -23,8 +30,6 @@ const FifthPage = props => {
 			setConnection(null);
 		};
 	}, []);
-
-	//TICKERS DATA
 	useEffect(() => {
 		if (connection) {
 			connection
@@ -33,10 +38,16 @@ const FifthPage = props => {
 					console.log('Connected!');
 
 					connection.on('AuctionQuantity', message => {
-						setArbitrageQuantity(JSON.parse(message));
+						setAuctionQuantity(JSON.parse(message));
 					});
 					connection.on('AuctionSpread', message => {
-						setArbitrageSpread(JSON.parse(message));
+						setAuctionSpread(JSON.parse(message));
+					});
+					connection.on('AuctionPrices', message => {
+						setAuctionTicker(JSON.parse(message));
+					});
+					connection.on('DiffPrices', message => {
+						setDiffTicker(JSON.parse(message));
 					});
 				})
 				.catch(e => console.log('Connection failed: ', e));
@@ -45,13 +56,20 @@ const FifthPage = props => {
 			setConnection(null);
 		};
 	}, [connection]);
+
 	return (
 		<div className="strategiesSecondPageWrapper">
 			<div className="futuresArbitrageStrategies">
-				<h4 style={{ textAlign: 'center' }}>Auctions Arbitrage Monitoring</h4>
-				<AuctionTickersTable />
+				<h4 style={{ textAlign: 'center' }}>Auction Arbitrage Monitoring</h4>
+				<AuctionTickersTable diffTicker={diffTicker} handleDiffTickerInputChange={handleDiffTickerInputChange} />
 				<div>
-					<AuctionTable arbitrageSpread={arbitrageSpread} arbitrageQuantity={arbitrageQuantity} />
+					<AuctionTable
+						auctionSpread={auctionSpread}
+						auctionQuantity={auctionQuantity}
+						auctionTicker={auctionTicker}
+						diffTicker={diffTicker}
+						diffTickerInput={diffTickerInput}
+					/>
 				</div>
 			</div>
 			<div className="liveOrdersWrapper">
@@ -63,4 +81,4 @@ const FifthPage = props => {
 		</div>
 	);
 };
-export default FifthPage;
+export default FourthPage;

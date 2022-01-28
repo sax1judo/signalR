@@ -4,16 +4,17 @@ import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
 import Pagination from '../Pagination';
 import DropDown from '../DropDown';
-import { API } from '../../../scripts/routes';
-import { HubConnectionBuilder } from '@microsoft/signalr';
 import Loader from '../Loader';
+import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http';
+import { API } from '../../../scripts/routes';
 
 const AuctionTickersTable = props => {
-	const [connection, setConnection] = useState(null);
 	const [tableData, setTableData] = useState({
 		properties: [],
 		totalRecords: [],
-		displayedRecords: [{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 }],
+		displayedRecords: [
+			{ ticker: 'none', bidPrice: '-', askPrice: '-', lastPrice: '-', FxSpotAsk: '-', FxSpotBid: '-' },
+		],
 		pageSize: 10,
 		page: 1,
 	});
@@ -98,73 +99,104 @@ const AuctionTickersTable = props => {
 			return mobileData;
 		} else return null;
 	};
-	useEffect(() => {
-		setTimeout(() => {
-			const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
-			setConnection(newConnection);
-		}, 500);
-		return () => {
-			setConnection(null);
-		};
-	}, []);
+	const handleDlfferentialChange = (ticker, value) => {
+		setTableData(prevData => {
+			for (let tickers in prevData.displayedRecords) {
+				if (prevData.displayedRecords[tickers].ticker === ticker.ticker) {
+					prevData.displayedRecords[tickers].Differential = parseFloat(value);
+					prevData.displayedRecords[tickers].FxSpotAsk =
+						(prevData.displayedRecords[tickers].ask_price - parseFloat(value)) / 1000;
+					prevData.displayedRecords[tickers].FxSpotBid =
+						(prevData.displayedRecords[tickers].bid_price - parseFloat(value)) / 1000;
+				}
+			}
+			return { ...prevData };
+		});
+	};
+	const getDifferential = async tickerName => {
+		const data = await httpRequest(API.differential + '3/' + tickerName, 'get');
+		return data.data;
+	};
+	const putDifferential = async (ticker, value) => {
+		let parsedValue = parseFloat(value);
+		const data = await httpRequestStartStopStrategy(API.differential + '3/' + ticker.ticker, 'put', parsedValue);
 
+		if (data.status === 200) {
+			handleDlfferentialChange(ticker, parsedValue);
+			props.handleDiffTickerInputChange(parseFloat(parsedValue));
+		}
+	};
 	//TICKERS DATA
 	useEffect(() => {
-		if (connection) {
-			connection
-				.start()
-				.then(result => {
-					console.log('Connected! u Tickerima');
+		if (props.diffTicker) {
+			const setTickersData = async () => {
+				let newData = tableData.totalRecords;
+				let { time_stamp, market, trading_app, bid_quantity, ask_quantity, position, amount, ...newMessage } =
+					props.diffTicker;
+				let differential = await getDifferential(newMessage.ticker);
+				newMessage = { ...newMessage, Differential: differential, FxSpotBid: 0, FxSpotAsk: 0 };
+				let swapped = false;
 
-					connection.on('AuctionPrices', message => {
-						let newData = tableData.totalRecords;
-						let { time_stamp, market, trading_app, bid_quantity, ask_quantity, ...newMessage } = JSON.parse(message);
-						let swapped = false;
-
-						if (newData.length === 0) {
-							newData.push(newMessage);
-						} else {
-							for (let ticker in newData) {
-								if (newData[ticker].ticker === newMessage.ticker) {
-									newData[ticker] = newMessage;
-									swapped = true;
-									break;
-								}
+				if (newData.length === 0) {
+					newMessage.FxSpotBid = (newMessage.bid_price - newMessage.Differential) / 1000;
+					newMessage.FxSpotAsk = (newMessage.ask_price - newMessage.Differential) / 1000;
+					newData.push(newMessage);
+				} else {
+					for (let ticker in newData) {
+						if (newData[ticker].ticker === newMessage.ticker) {
+							//Need this fix because of input field in table row.
+							// Think of better way of fixing it.
+							if (newData[ticker].bid_price !== newMessage.bid_price) {
+								newData[ticker].bid_price = newMessage.bid_price;
+								newData[ticker].FxSpotBid = (newMessage.bid_price - newData[ticker].Differential) / 1000;
 							}
-							if (!swapped) {
-								newData.push(newMessage);
+							if (newData[ticker].ask_price !== newMessage.ask_price) {
+								newData[ticker].ask_price = newMessage.ask_price;
+								newData[ticker].FxSpotAsk = (newMessage.ask_price - newData[ticker].Differential) / 1000;
 							}
+							if (newData[ticker].last_price !== newMessage.last_price) {
+								newData[ticker].last_price = newMessage.last_price;
+							}
+							if (newData[ticker].position !== newMessage.position) {
+								newData[ticker].position = newMessage.position;
+							}
+							if (newData[ticker].amount !== newMessage.amount) {
+								newData[ticker].amount = newMessage.amount;
+							}
+							swapped = true;
+							break;
 						}
-						newData = sortLiveTicker(newData);
-						let data = setMobileData(newData);
-						if (data === null) {
-							setTableData({
-								...tableData,
-								totalRecords: newData,
-								displayedRecords: newData.slice(
-									(tableData.page - 1) * tableData.pageSize,
-									tableData.page * tableData.pageSize,
-								),
-							});
-						} else {
-							setTableData({
-								...tableData,
-								count: data.length,
-								totalRecords: data,
-								displayedRecords: data.slice(
-									(tableData.page - 1) * tableData.pageSize,
-									tableData.page * tableData.pageSize,
-								),
-							});
-						}
+					}
+					if (!swapped) {
+						newData.push(newMessage);
+					}
+				}
+				newData = sortLiveTicker(newData);
+				let data = setMobileData(newData);
+				if (data === null) {
+					setTableData({
+						...tableData,
+						totalRecords: newData,
+						displayedRecords: newData.slice(
+							(tableData.page - 1) * tableData.pageSize,
+							tableData.page * tableData.pageSize,
+						),
 					});
-				})
-				.catch(e => console.log('Connection failed: ', e));
+				} else {
+					setTableData({
+						...tableData,
+						count: data.length,
+						totalRecords: data,
+						displayedRecords: data.slice(
+							(tableData.page - 1) * tableData.pageSize,
+							tableData.page * tableData.pageSize,
+						),
+					});
+				}
+			};
+			setTickersData();
 		}
-		return () => {
-			setConnection(null);
-		};
-	}, [connection]);
+	}, [props.diffTicker]);
 
 	useEffect(() => {
 		// console.log(tableData);
@@ -176,7 +208,7 @@ const AuctionTickersTable = props => {
 					<table>
 						<tbody className="tableDateCentered">
 							<tr className="tableHeaderColor">
-								<th colSpan="5">Tickers</th>
+								<th colSpan={Object.keys(tableData.displayedRecords[0]).length}>Tickers</th>
 							</tr>
 							<tr className="tableHeaderColor">
 								{Object.keys(tableData.displayedRecords[0]).map((ticker, id) => {
@@ -205,7 +237,19 @@ const AuctionTickersTable = props => {
 									<tr key={'tickerData' + id} className="tableData">
 										{Object.keys(ticker).map((key, id) => {
 											let tableData = ticker[key];
-											return <td key={id}>{tableData}</td>;
+											return key !== 'Differential' ? (
+												<td key={id}>{tableData}</td>
+											) : (
+												<td>
+													<input
+														type="number"
+														value={tableData}
+														onChange={e => {
+															putDifferential(ticker, e.target.value);
+														}}
+													></input>
+												</td>
+											);
 										})}
 									</tr>
 								);

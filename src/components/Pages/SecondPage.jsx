@@ -56,7 +56,7 @@ const SecondPage = props => {
 			<div className="futuresArbitrageStrategies">
 				<h4 style={{ textAlign: 'center' }}>Futures Arbitrage Monitoring</h4>
 				{/* <ConnectionMonitoring /> */}
-				<ArbitrageTickersTable />
+				<ArbitrageTickersTable tickerMessage={tickerMessage} />
 				<div>
 					<StrategiesTable arbitrageSpread={arbitrageSpread} arbitrageQuantity={arbitrageQuantity} />
 				</div>
@@ -64,7 +64,7 @@ const SecondPage = props => {
 			<div className="liveOrdersWrapper">
 				<h4 style={{ textAlign: 'center' }}>Live Orders</h4>
 				<div>
-					<LiveOrders ordersChannel="ArbitrageOrders" tickerMessage={tickerMessage}/>
+					<LiveOrders ordersChannel="ArbitrageOrders" tickerMessage={tickerMessage} />
 				</div>
 			</div>
 		</div>

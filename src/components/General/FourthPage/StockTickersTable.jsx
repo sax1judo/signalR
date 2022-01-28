@@ -4,15 +4,17 @@ import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
 import Pagination from '../Pagination';
 import DropDown from '../DropDown';
-import { API } from '../../../scripts/routes';
-import { HubConnectionBuilder } from '@microsoft/signalr';
 import Loader from '../Loader';
+import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http';
+import { API } from '../../../scripts/routes';
 
 const StockTickersTable = props => {
 	const [tableData, setTableData] = useState({
 		properties: [],
 		totalRecords: [],
-		displayedRecords: [{ ticker: 'none', bidPrice: 0, askPrice: 0, lastPrice: 0 }],
+		displayedRecords: [
+			{ ticker: 'none', bidPrice: '-', askPrice: '-', lastPrice: '-', FxSpotAsk: '-', FxSpotBid: '-' },
+		],
 		pageSize: 10,
 		page: 1,
 	});
@@ -111,67 +113,88 @@ const StockTickersTable = props => {
 			return { ...prevData };
 		});
 	};
+	const getDifferential = async tickerName => {
+		const data = await httpRequest(API.differential + '2/' + tickerName, 'get');
+		return data.data;
+	};
+	const putDifferential = async (ticker, value) => {
+		let parsedValue = parseFloat(value);
+		const data = await httpRequestStartStopStrategy(API.stockDifferential + '2/' + ticker.ticker, 'put', parsedValue);
 
+		if (data.status === 200) {
+			handleDlfferentialChange(ticker, parsedValue);
+			props.handleDiffTickerInputChange(parseFloat(parsedValue));
+		}
+	};
 	//TICKERS DATA
 	useEffect(() => {
 		if (props.diffTicker) {
-			let newData = tableData.totalRecords;
-			let { time_stamp, market, trading_app, bid_quantity, ask_quantity, position, amount, ...newMessage } =
-				props.diffTicker;
-			newMessage = { ...newMessage, Differential: 0, FxSpotBid: 0, FxSpotAsk: 0 };
-			let swapped = false;
+			const setTickersData = async () => {
+				let newData = tableData.totalRecords;
+				let { time_stamp, market, trading_app, bid_quantity, ask_quantity, position, amount, ...newMessage } =
+					props.diffTicker;
+				let differential = await getDifferential(newMessage.ticker);
+				newMessage = { ...newMessage, Differential: differential, FxSpotBid: 0, FxSpotAsk: 0 };
+				let swapped = false;
 
-			if (newData.length === 0) {
-				newData.push(newMessage);
-			} else {
-				for (let ticker in newData) {
-					if (newData[ticker].ticker === newMessage.ticker) {
-						//Need this fix because of input field in table row.
-						// Think of better way of fixing it.
-						if (newData[ticker].bid_price !== newMessage.bid_price) {
-							newData[ticker].bid_price = newMessage.bid_price;
-							newData[ticker].FxSpotBid = (newMessage.bid_price - newData[ticker].Differential) / 1000;
+				if (newData.length === 0) {
+					newMessage.FxSpotBid = (newMessage.bid_price - newMessage.Differential) / 1000;
+					newMessage.FxSpotAsk = (newMessage.ask_price - newMessage.Differential) / 1000;
+					newData.push(newMessage);
+				} else {
+					for (let ticker in newData) {
+						if (newData[ticker].ticker === newMessage.ticker) {
+							//Need this fix because of input field in table row.
+							// Think of better way of fixing it.
+							if (newData[ticker].bid_price !== newMessage.bid_price) {
+								newData[ticker].bid_price = newMessage.bid_price;
+								newData[ticker].FxSpotBid = (newMessage.bid_price - newData[ticker].Differential) / 1000;
+							}
+							if (newData[ticker].ask_price !== newMessage.ask_price) {
+								newData[ticker].ask_price = newMessage.ask_price;
+								newData[ticker].FxSpotAsk = (newMessage.ask_price - newData[ticker].Differential) / 1000;
+							}
+							if (newData[ticker].last_price !== newMessage.last_price) {
+								newData[ticker].last_price = newMessage.last_price;
+							}
+							if (newData[ticker].position !== newMessage.position) {
+								newData[ticker].position = newMessage.position;
+							}
+							if (newData[ticker].amount !== newMessage.amount) {
+								newData[ticker].amount = newMessage.amount;
+							}
+							swapped = true;
+							break;
 						}
-						if (newData[ticker].ask_price !== newMessage.ask_price) {
-							newData[ticker].ask_price = newMessage.ask_price;
-							newData[ticker].FxSpotAsk = (newMessage.ask_price - newData[ticker].Differential) / 1000;
-						}
-						if (newData[ticker].last_price !== newMessage.last_price) {
-							newData[ticker].last_price = newMessage.last_price;
-						}
-						if (newData[ticker].position !== newMessage.position) {
-							newData[ticker].position = newMessage.position;
-						}
-						if (newData[ticker].amount !== newMessage.amount) {
-							newData[ticker].amount = newMessage.amount;
-						}
-						swapped = true;
-						break;
+					}
+					if (!swapped) {
+						newData.push(newMessage);
 					}
 				}
-				if (!swapped) {
-					newData.push(newMessage);
+				newData = sortLiveTicker(newData);
+				let data = setMobileData(newData);
+				if (data === null) {
+					setTableData({
+						...tableData,
+						totalRecords: newData,
+						displayedRecords: newData.slice(
+							(tableData.page - 1) * tableData.pageSize,
+							tableData.page * tableData.pageSize,
+						),
+					});
+				} else {
+					setTableData({
+						...tableData,
+						count: data.length,
+						totalRecords: data,
+						displayedRecords: data.slice(
+							(tableData.page - 1) * tableData.pageSize,
+							tableData.page * tableData.pageSize,
+						),
+					});
 				}
-			}
-			newData = sortLiveTicker(newData);
-			let data = setMobileData(newData);
-			if (data === null) {
-				setTableData({
-					...tableData,
-					totalRecords: newData,
-					displayedRecords: newData.slice(
-						(tableData.page - 1) * tableData.pageSize,
-						tableData.page * tableData.pageSize,
-					),
-				});
-			} else {
-				setTableData({
-					...tableData,
-					count: data.length,
-					totalRecords: data,
-					displayedRecords: data.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
-				});
-			}
+			};
+			setTickersData();
 		}
 	}, [props.diffTicker]);
 
@@ -222,8 +245,7 @@ const StockTickersTable = props => {
 														type="number"
 														value={tableData}
 														onChange={e => {
-															handleDlfferentialChange(ticker, e.target.value);
-															props.handleDiffTickerInputChange(parseFloat(e.target.value));
+															putDifferential(ticker, e.target.value);
 														}}
 													></input>
 												</td>

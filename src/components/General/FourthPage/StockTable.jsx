@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import '../../../style/General/SecondPage/StrategiesTable.scss';
-import { NavLink } from 'react-router-dom';
 import ComponentWrapper from '../../General/ComponentWrapper';
-import MyVerticallyCenteredModal from '../MyVerticallyCenteredModal';
 import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
 import Pagination from '../Pagination';
 import DropDown from '../DropDown';
-import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http';
+import { httpRequest } from '../../../scripts/http';
 import { API } from '../../../scripts/routes';
 import Loader from '../Loader';
 
@@ -121,32 +119,13 @@ const StockTable = props => {
 		setSortField(key);
 	};
 	const getStockStrategies = async () => {
-		await httpRequest(API.arbitrageStrategies + '?pageId=2', 'get').then(res => {
+		await httpRequest(API.arbitrageStrategies + '/read' + '/2' + '?onlyLoad=true', 'get').then(res => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];
 				let { Slippage, LimitBuy, LimitSell, LimitPerDay, PointsAway, Load, ...exclObj } = obj;
 				for (let strategy in exclObj) {
 					if (exclObj[strategy] !== null) {
-						//Nikolica fix
-						if (exclObj[strategy].State === 'ACTIVE') {
-							httpRequestStartStopStrategy(
-								API.startStopStrategy +
-									`${exclObj[strategy].Leg1Action + exclObj[strategy].Leg1Ticker + '_' + exclObj[strategy].Leg2Ticker}`,
-								'put',
-								'false',
-							)
-								.then(res => {
-									if (res.status === 200) {
-										getStockStrategies();
-									}
-								})
-								.catch(err => {
-									console.log(err.response.status);
-								});
-							return;
-						}
-						//Nikolica fix
 						let StrategyName =
 							exclObj[strategy].Leg1Action + exclObj[strategy].Leg1Ticker + '_' + exclObj[strategy].Leg2Ticker;
 						let spreadMkt = 0;
@@ -293,6 +272,38 @@ const StockTable = props => {
 			}
 		});
 	};
+	const unloadStrategy = async () => {
+		let totalRecords = [];
+		for (let strategy of tableData.totalRecords) {
+			totalRecords.push(strategy);
+		}
+		for (let selectedStrategy of selectedStrategiesObject) {
+			await httpRequestStartStopStrategy(
+				API.loadStrategy + `${selectedStrategy.StrategyType}/` + `${selectedStrategy.StrategyName}`,
+				'put',
+				'false',
+			).then(res => {
+				if (res.status === 200) {
+					for (let strategy in totalRecords) {
+						if (totalRecords[strategy].StrategyName === selectedStrategy.StrategyName) {
+							totalRecords.splice(strategy, 1);
+							break;
+						}
+					}
+					setTableData({
+						...tableData,
+						totalRecords: totalRecords,
+						displayedRecords: totalRecords.slice(
+							(tableData.page - 1) * tableData.pageSize,
+							tableData.page * tableData.pageSize,
+						),
+					});
+				}
+			});
+		}
+		setSelectedStrategies([]);
+		setSelectedStrategiesObject([]);
+	};
 	useEffect(() => {
 		if (window.innerWidth < 1000) setLayout('mobile');
 		else setLayout('desktop');
@@ -302,7 +313,7 @@ const StockTable = props => {
 		});
 		getStockStrategies();
 	}, []);
-	
+
 	useEffect(() => {
 		let newData = tableData.totalRecords;
 		if (tableData.displayedRecords.length !== 0) {
@@ -341,21 +352,6 @@ const StockTable = props => {
 				if (newData[strategy].StrategyName.toUpperCase() === props.stockSpread.StrategyName) {
 					newData[strategy].spreadMkt = props.stockSpread.MarketSpread;
 					newData[strategy].State = props.stockSpread.StrategyState;
-
-					//Nikolica fix
-					if (newData[strategy].State === 'ACTIVE') {
-						httpRequestStartStopStrategy(API.startStopStrategy + `${newData[strategy].StrategyName}`, 'put', 'false')
-							.then(res => {
-								if (res.status === 200) {
-									getStockStrategies();
-								}
-							})
-							.catch(err => {
-								console.log(err.response.status);
-							});
-						return;
-					}
-					//Nikolica fix
 					break;
 				}
 			}
@@ -381,6 +377,8 @@ const StockTable = props => {
 	}, [props.stockSpread]);
 	useEffect(() => {
 		let newData = tableData.totalRecords;
+		let overalLong = 0;
+		let overalShort = 0;
 		if (tableData.displayedRecords.length !== 0) {
 			for (let strategy in newData) {
 				if (newData[strategy].Leg1Ticker === props.stockTicker.ticker) {
@@ -457,7 +455,7 @@ const StockTable = props => {
 					<table>
 						<tbody className="tableDateCentered">
 							<tr className="tableHeaderColor">
-								<th colSpan="17">Strategies</th>
+								<th colSpan={Object.keys(tableData.displayedRecords[0]).length}>Strategies</th>
 							</tr>
 							<tr className="tableHeaderColor">
 								{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
@@ -564,7 +562,7 @@ const StockTable = props => {
 																<td>{strategy.additionalInfo.Leg1TickerPosition}</td>
 															</tr>
 															<tr>
-																<td>Amounty</td>
+																<td>Amount ($)</td>
 																<td>{strategy.additionalInfo.Leg1TickerAmount}</td>
 															</tr>
 															<tr>
@@ -575,7 +573,7 @@ const StockTable = props => {
 																		className="btn  addStrategyButton"
 																		onClick={() => handleStartCycle(strategy)}
 																	>
-																		Start Cycle
+																		Place
 																	</button>
 																</td>
 															</tr>
@@ -602,6 +600,11 @@ const StockTable = props => {
 							/>
 						</div>
 					)}
+					<div className={layout === 'desktop' ? 'buttonsActionsWrapper' : 'buttonsActionsWrapper mobile'}>
+						<button type="button" className="btn  addStrategyButton" onClick={() => unloadStrategy()}>
+							Unload Startegy
+						</button>
+					</div>
 				</>
 			) : (
 				<Loader />
