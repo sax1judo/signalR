@@ -35,7 +35,11 @@ const ModifyStrategyModal = props => {
 			Leg2Ratio,
 		}))(formData);
 		console.log(data);
-		httpRequest(API.arbitrageStrategies + `/${formData.strategyName}`, 'put', data).then(res => {
+		httpRequest(
+			API.arbitrageStrategies + '/update' + `/${formData.StrategyType}` + `/${formData.strategyName}`,
+			'put',
+			data,
+		).then(res => {
 			if (res.status === 200) {
 				goToPreviousPath();
 			}
@@ -48,6 +52,7 @@ const ModifyStrategyModal = props => {
 			spread: location.strategy[0].Spread,
 			strategyName: location.strategy[0].StrategyName,
 			active: location.strategy[0].StrategyActive,
+			StrategyType: location.strategy[0].StrategyType,
 			LimitBuy: location.strategy[0].additionalInfo.LimitBuy,
 			LimitSell: location.strategy[0].additionalInfo.LimitSell,
 			LimitPerDay: location.strategy[0].additionalInfo.LimitPerDay,
