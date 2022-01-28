@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../../../style/General/FirstPage/StrategiesCreatedTable.scss';
 import { NavLink } from 'react-router-dom';
-import MyVerticallyCenteredModal from '../MyVerticallyCenteredModal';
 import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
 import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http';
@@ -9,9 +8,6 @@ import { API } from '../../../scripts/routes';
 import Pagination from '../Pagination';
 import DropDown from '../DropDown';
 import Loader from '../Loader';
-import PopUpModal from '../PopUpModal';
-import { Button } from 'react-bootstrap';
-import { loadActionPages } from '../../../scripts/common';
 
 const StrategiesCreatedTable = props => {
 	const stateTableDataColor = {
@@ -21,12 +17,12 @@ const StrategiesCreatedTable = props => {
 		INCYCLE: { color: '#0d6efd' },
 		LIMIT_REACHED: { color: '#ef3934' },
 	};
-	
+
 	const [tableData, setTableData] = useState({
 		totalRecordsNumber: null,
 		properties: [],
 		totalRecords: [],
-		displayedRecords: [{}],
+		displayedRecords: [],
 		pageSize: 10,
 		page: 1,
 	});
@@ -34,39 +30,39 @@ const StrategiesCreatedTable = props => {
 	const [sortOrder, setSortOrder] = useState('dsc');
 	const [selectedStrategies, setSelectedStrategies] = useState([]);
 	const [selectedStrategiesObject, setSelectedStrategiesObject] = useState([]);
-	const [modalLoadShow, setModalLoadShow] = useState(false);
-	const [loadPages, setLoadPages] = useState([]);
 
 	const getArbitrageStrategies = () => {
-		httpRequest(API.arbitrageStrategies, 'get').then(res => {
+		httpRequest(API.arbitrageStrategies + '/read/' + `${props.pageNumber}` + '?onlyLoad=false', 'get').then(res => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
 				let obj = res.data[strategyKey];
 				for (let strategy in obj) {
-					let StrategyName = obj[strategy].Leg1Action + obj[strategy].Leg1Ticker + '_' + obj[strategy].Leg2Ticker;
-					let additionalInfo = (({
-						Slippage,
-						LimitBuy,
-						LimitSell,
-						LimitPerDay,
-						PointsAway,
-						Load,
-						Leg1Ratio,
-						Leg2Ratio,
-					}) => ({
-						Slippage,
-						LimitBuy,
-						LimitSell,
-						LimitPerDay,
-						PointsAway,
-						Load,
-						Leg1Ratio,
-						Leg2Ratio,
-					}))(obj[strategy]);
+					if (obj[strategy] !== null) {
+						let StrategyName = obj[strategy].Leg1Action + obj[strategy].Leg1Ticker + '_' + obj[strategy].Leg2Ticker;
+						let additionalInfo = (({
+							Slippage,
+							LimitBuy,
+							LimitSell,
+							LimitPerDay,
+							PointsAway,
+							Load,
+							Leg1Ratio,
+							Leg2Ratio,
+						}) => ({
+							Slippage,
+							LimitBuy,
+							LimitSell,
+							LimitPerDay,
+							PointsAway,
+							Load,
+							Leg1Ratio,
+							Leg2Ratio,
+						}))(obj[strategy]);
 
-					obj[strategy] = { StrategyName, additionalInfo, ...obj[strategy] };
+						obj[strategy] = { StrategyName, additionalInfo, ...obj[strategy] };
 
-					modifyResponse.push(obj[strategy]);
+						modifyResponse.push(obj[strategy]);
+					}
 				}
 			});
 			setTableData({
@@ -121,7 +117,7 @@ const StrategiesCreatedTable = props => {
 		});
 		setSortField(key);
 	};
-	const startStopStrategy = async startStopParam => {
+	const loadStrategy = async param => {
 		let selectedStrategiesObjectCopy = [];
 		let totalRecords = [];
 		for (let strategy of selectedStrategiesObject) {
@@ -132,37 +128,14 @@ const StrategiesCreatedTable = props => {
 		}
 		for (let selectedStrategy of selectedStrategiesObjectCopy) {
 			await httpRequestStartStopStrategy(
-				API.startStopStrategy + `${selectedStrategy.StrategyName}`,
+				API.loadStrategy + `${selectedStrategy.StrategyType}/` + `${selectedStrategy.StrategyName}`,
 				'put',
-				startStopParam === 'stop' ? 'false' : 'true',
+				param,
 			).then(res => {
 				if (res.status === 200) {
 					getArbitrageStrategies();
 				}
 			});
-		}
-
-		setSelectedStrategies([]);
-		setSelectedStrategiesObject([]);
-	};
-	const loadStrategy = async () => {
-		let selectedStrategiesObjectCopy = [];
-		let totalRecords = [];
-		for (let strategy of selectedStrategiesObject) {
-			selectedStrategiesObjectCopy.push(strategy);
-		}
-		for (let strategy of tableData.totalRecords) {
-			totalRecords.push(strategy);
-		}
-		for (let selectedStrategy of selectedStrategiesObjectCopy) {
-			await httpRequestStartStopStrategy(API.loadStrategy + `${selectedStrategy.StrategyName}`, 'put', loadPages).then(
-				res => {
-					if (res.status === 200) {
-						getArbitrageStrategies();
-						setLoadPages([]);
-					}
-				},
-			);
 		}
 		setSelectedStrategies([]);
 		setSelectedStrategiesObject([]);
@@ -219,7 +192,7 @@ const StrategiesCreatedTable = props => {
 					<table>
 						<tbody className="tableDateCentered">
 							<tr className="tableHeaderColor">
-								<th colSpan={Object.keys(tableData.displayedRecords[0]).length}>Strategies Created</th>
+								<th colSpan={Object.keys(tableData.displayedRecords[0]).length}>{props.pageName} Strategies </th>
 							</tr>
 							<tr className="tableHeaderColor">
 								{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
@@ -287,129 +260,46 @@ const StrategiesCreatedTable = props => {
 							setPostsPerPage={setPostPerPage}
 						/>
 					</div>
+
+					<div className="buttonsActionsWrapper">
+						<button
+							type="button"
+							className="btn linkButton"
+							disabled={selectedStrategies.length === 1 ? false : true}
+							style={selectedStrategies.length === 1 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
+						>
+							<NavLink
+								to={{
+									pathname: '/modifyStrategy',
+									strategy: selectedStrategiesObject,
+								}}
+							>
+								Modify
+							</NavLink>
+						</button>
+						<button
+							type="button"
+							className="btn "
+							disabled={selectedStrategies.length === 0 ? true : false}
+							style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+							onClick={() => loadStrategy(true)}
+						>
+							Load Strategy
+						</button>
+						<button
+							type="button"
+							className="btn "
+							disabled={selectedStrategies.length === 0 ? true : false}
+							style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+							onClick={() => loadStrategy(false)}
+						>
+							Unload Strategy
+						</button>
+					</div>
 				</>
 			) : (
 				<Loader key={Math.random()} />
 			)}
-
-			<div className="buttonsActionsWrapper">
-				<button
-					type="button"
-					className="btn linkButton"
-					disabled={selectedStrategies.length === 1 ? false : true}
-					style={selectedStrategies.length === 1 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
-				>
-					<NavLink
-						to={{
-							pathname: '/modifyStrategy',
-							strategy: selectedStrategiesObject,
-						}}
-					>
-						Modify
-					</NavLink>
-				</button>
-				<button
-					type="button"
-					className="btn "
-					disabled={selectedStrategies.length !== 0 ? false : true}
-					style={selectedStrategies.length !== 0 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
-					onClick={() => startStopStrategy('start')}
-				>
-					Start Strategy
-				</button>
-				<button
-					type="button"
-					className="btn "
-					disabled={selectedStrategies.length !== 0 ? false : true}
-					style={selectedStrategies.length !== 0 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
-					onClick={() => startStopStrategy('stop')}
-				>
-					Stop Strategy
-				</button>
-				<button
-					type="button"
-					className="btn "
-					disabled={selectedStrategies.length === 0 ? true : false}
-					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
-					onClick={() => setModalLoadShow(true)}
-				>
-					Load Strategy
-				</button>
-				{/* <button
-					type="button"
-					className="btn"
-					onClick={() => setModalLoadShow(true)}
-					disabled={selectedStrategies.length === 0 ? true : false}
-					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
-				>
-					Delete Strategy
-				</button>
-				<button type="button" className="btn  ">
-					Load All Strategies
-				</button>
-				<button type="button" className="btn" onClick={() => setModalLoadShow(true)}>
-					Delete All Strategies
-				</button> */}
-			</div>
-
-			<PopUpModal
-				show={modalLoadShow}
-				onHide={param => {
-					setModalLoadShow(false);
-					setLoadPages([]);
-				}}
-			>
-				<div className="loadPagesPopUpInputs logLevelInsideWRapper">
-					{loadActionPages.map((page, id) => {
-						return (
-							<div key={page.pageName}>
-								<label className="level-container">
-									<div className="colorMark" style={{ backgroundColor: 'rgb(255,0,0)' }}></div>
-									{page.pageName}
-									<input
-										key={page.pageName + id}
-										type="checkbox"
-										defaultChecked={false}
-										id={page.pageName}
-										onChange={e => {
-											if (e.target.checked) {
-												setLoadPages(prev => {
-													return [...prev, page.pageNumber];
-												});
-											} else {
-												setLoadPages(prev => {
-													return prev.filter(item => item !== page.pageNumber);
-												});
-											}
-										}}
-									/>
-									<span className="checkMark"></span>
-								</label>
-							</div>
-						);
-					})}
-				</div>
-				<div className="loadPagesPopUpButtons">
-					<Button
-						variant="success"
-						onClick={() => {
-							loadStrategy();
-							setModalLoadShow(false);
-						}}
-					>
-						Confirm
-					</Button>
-					<Button
-						variant="danger"
-						onClick={() => {
-							setLoadPages([]);
-							setModalLoadShow(false);
-						}}
-					>
-						Cancel
-					</Button>
-				</div>
-			</PopUpModal>
 		</div>
 	);
 };
