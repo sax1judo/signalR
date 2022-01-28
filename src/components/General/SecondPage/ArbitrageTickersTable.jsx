@@ -140,7 +140,7 @@ const ArbitrageTickersTable = props => {
 				});
 			}
 		}
-	}, [connection]);
+	}, [props.tickerMessage]);
 
 	useEffect(() => {
 		// console.log(tableData);
