@@ -7,8 +7,10 @@ export const API = {
 	getProductAliasFunctionNames: 'http://35.225.80.47:8080/products/productAliasFunctionNames',
 	getIbMarketDataTypes: 'http://35.225.80.47:8080/products/ib/marketDataTypes',
 	getProductDetails: 'http://35.225.80.47:8080/products/details/',
-	startStockCycle: 'http://35.225.80.47:8080/strategies/place/2/',
+	startCycle: 'http://35.225.80.47:8080/strategies/place/',
 	differential: 'http://35.225.80.47:8080/strategies/differential/',
+	tenminutes: 'http://35.225.80.47:8080/strategies/tenminutes/3/',
+
 
 	//LOCAL ENVIRONMENT
 	// trades: 'http://localhost:5000/trades',
