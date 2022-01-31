@@ -5,9 +5,10 @@ import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
 import Pagination from '../Pagination';
 import DropDown from '../DropDown';
-import { httpRequest } from '../../../scripts/http';
+import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http';
 import { API } from '../../../scripts/routes';
 import Loader from '../Loader';
+import { getUnique } from '../../../scripts/common';
 
 const AuctionTable = props => {
 	const stateTableDataColor = {
@@ -29,6 +30,7 @@ const AuctionTable = props => {
 	const [sortField, setSortField] = useState('');
 	const [sortOrder, setSortOrder] = useState('dsc');
 	const [layout, setLayout] = useState('');
+	const [overall, setOverall] = useState({ long: 0, short: 0 });
 
 	const setPostPerPage = pageSize => {
 		setTableData({
@@ -132,13 +134,17 @@ const AuctionTable = props => {
 						// this data will be conneted to ticker data channel
 						let tickersDataObj = {
 							Leg1LastPrice: 0,
+							Leg1LastPrice10Min: 0,
 							Leg1BidPrice: 0,
 							Leg1AskPrice: 0,
 							Leg2LastPrice: 0,
+							Leg2LastPrice10Min: 0,
 							Leg2BidPrice: 0,
 							Leg2AskPrice: 0,
+							Spread10Min: 0,
 							SpreadBuy: 0,
 							SpreadSell: 0,
+							Diff: 0,
 						};
 						//
 						let additionalInfo = (({
@@ -162,7 +168,7 @@ const AuctionTable = props => {
 						}))(exclObj[strategy]);
 						additionalInfo = {
 							...additionalInfo,
-							Leg1QuantityBuyInput: 0,
+							Leg1QuantityBuySellInput: 0,
 							Leg1QuantitySellInput: 0,
 							Leg1TickerAmount: 0,
 							Leg1TickerPosition: 0,
@@ -244,9 +250,7 @@ const AuctionTable = props => {
 		setTableData(prevData => {
 			for (let strategy in prevData.displayedRecords) {
 				if (prevData.displayedRecords[strategy].StrategyName === strategyName) {
-					sellBuy
-						? (prevData.displayedRecords[strategy].additionalInfo.Leg1QuantityBuyInput = parseFloat(inputValue))
-						: (prevData.displayedRecords[strategy].additionalInfo.Leg1QuantitySellInput = parseFloat(inputValue));
+					prevData.displayedRecords[strategy].additionalInfo.Leg1QuantityBuySellInput = parseFloat(inputValue);
 				}
 			}
 			return { ...prevData };
@@ -254,19 +258,18 @@ const AuctionTable = props => {
 	};
 	const handleStartCycle = async strategy => {
 		let data = { leg1Quantity: 0, leg1Price: 0, leg2Quantity: 0, leg2Price: 0 };
-		data.leg1Quantity = strategy.additionalInfo.Leg1QuantityBuyInput;
+		data.leg1Quantity = strategy.additionalInfo.Leg1QuantityBuySellInput;
 		data.leg2Quantity =
-			(strategy.additionalInfo.Leg1QuantityBuyInput * strategy.additionalInfo.Leg2Ratio) /
+			(strategy.additionalInfo.Leg1QuantityBuySellInput * strategy.additionalInfo.Leg2Ratio) /
 			strategy.additionalInfo.Leg1Ratio;
-
 		if (strategy.Leg1Action === 'BUY') {
 			data.leg1Price = strategy.Leg1AskPrice;
-			data.leg2Price = strategy.Leg2BidPrice;
+			data.leg2Price = strategy.Leg2AskPrice * 0.9;
 		} else {
 			data.leg1Price = strategy.Leg1BidPrice;
-			data.leg2Price = strategy.Leg2AskPrice;
+			data.leg2Price = strategy.Leg2AskPrice * 1.1;
 		}
-		await httpRequest(API.startStockCycle + `${strategy.StrategyName}`, 'put', data).then(res => {
+		httpRequest(API.startCycle + '3/' + `${strategy.StrategyName}`, 'put', data).then(res => {
 			if (res.status === 200) {
 				getAuctionStrategies();
 			}
@@ -377,42 +380,64 @@ const AuctionTable = props => {
 	}, [props.auctionSpread]);
 	useEffect(() => {
 		let newData = tableData.totalRecords;
+		let overalAmountArray = [];
+		let positiveSume = 0;
+		let negativeSume = 0;
+
 		if (tableData.displayedRecords.length !== 0) {
-			for (let strategy in newData) {
-				if (newData[strategy].Leg1Ticker === props.auctionTicker.ticker) {
-					newData[strategy].Leg1LastPrice = props.auctionTicker.last_price;
-					newData[strategy].Leg1BidPrice = props.auctionTicker.bid_price;
-					newData[strategy].Leg1AskPrice = props.auctionTicker.ask_price;
-					newData[strategy].additionalInfo.Leg1TickerAmount = props.auctionTicker.amount;
-					newData[strategy].additionalInfo.Leg1TickerPosition = props.auctionTicker.position;
-				} else if (newData[strategy].Leg2Ticker === props.auctionTicker.ticker) {
-					newData[strategy].Leg2LastPrice = props.auctionTicker.last_price;
-					newData[strategy].Leg2BidPrice = props.auctionTicker.bid_price;
-					newData[strategy].Leg2AskPrice = props.auctionTicker.ask_price;
-					newData[strategy].additionalInfo.Leg2TickerAmount = props.auctionTicker.amount;
-					newData[strategy].additionalInfo.Leg2TickerPosition = props.stockTicker.position;
+			httpRequest(API.tenminutes + props.auctionTicker.ticker, 'get').then(res => {
+				for (let strategy in newData) {
+					if (newData[strategy].Leg1Ticker === props.auctionTicker.ticker) {
+						newData[strategy].Leg1LastPrice = props.auctionTicker.last_price;
+						newData[strategy].Leg1LastPrice10Min = res.data.last_price;
+						newData[strategy].Leg1BidPrice = props.auctionTicker.bid_price;
+						newData[strategy].Leg1AskPrice = props.auctionTicker.ask_price;
+						newData[strategy].additionalInfo.Leg1TickerAmount = props.auctionTicker.amount;
+						newData[strategy].additionalInfo.Leg1TickerPosition = props.auctionTicker.position;
+						overalAmountArray.push(props.auctionTicker.amount);
+					} else if (newData[strategy].Leg2Ticker === props.auctionTicker.ticker) {
+						newData[strategy].Leg2LastPrice = props.auctionTicker.last_price;
+						newData[strategy].Leg2LastPrice10Min = res.data.last_price;
+						newData[strategy].Leg2BidPrice = props.auctionTicker.bid_price;
+						newData[strategy].Leg2AskPrice = props.auctionTicker.ask_price;
+						newData[strategy].additionalInfo.Leg2TickerAmount = props.auctionTicker.amount;
+						newData[strategy].additionalInfo.Leg2TickerPosition = props.auctionTicker.position;
+					}
 				}
-			}
-			let data = setMobileData(newData);
-			if (data === null) {
-				setTableData({
-					...tableData,
-					totalRecords: newData,
-					displayedRecords: newData.slice(
-						(tableData.page - 1) * tableData.pageSize,
-						tableData.page * tableData.pageSize,
-					),
-				});
-			} else {
-				setTableData({
-					...tableData,
-					count: data.length,
-					totalRecords: newData,
-					displayedRecords: data.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
-				});
-			}
+				if (overalAmountArray.length !== 0) {
+					let uniqueArr = getUnique(overalAmountArray);
+					uniqueArr.map(value => {
+						if (value > 0) positiveSume = positiveSume + value;
+						else negativeSume = negativeSume - value;
+					});
+					if (negativeSume === 0) {
+						setOverall({ ...overall, long: positiveSume });
+					} else setOverall({ ...overall, short: negativeSume });
+				}
+				let data = setMobileData(newData);
+				if (data === null) {
+					setTableData({
+						...tableData,
+						totalRecords: newData,
+						displayedRecords: newData.slice(
+							(tableData.page - 1) * tableData.pageSize,
+							tableData.page * tableData.pageSize,
+						),
+					});
+				} else {
+					setTableData({
+						...tableData,
+						count: data.length,
+						totalRecords: newData,
+						displayedRecords: data.slice(
+							(tableData.page - 1) * tableData.pageSize,
+							tableData.page * tableData.pageSize,
+						),
+					});
+				}
+			});
 		}
-	}, [props.stockTicker]);
+	}, [props.auctionTicker]);
 	useEffect(() => {
 		if (props.diffTicker) {
 			let FxSpotBid = (props.diffTicker.bid_price - props.diffTickerInput) / 1000;
@@ -423,6 +448,15 @@ const AuctionTable = props => {
 					let ratio =
 						prevData.displayedRecords[strategy].additionalInfo.Leg2Ratio /
 						prevData.displayedRecords[strategy].additionalInfo.Leg1Ratio;
+
+					prevData.displayedRecords[strategy].Spread10Min =
+						prevData.displayedRecords[strategy].Leg2LastPrice10Min != 0
+							? (
+									((prevData.displayedRecords[strategy].Leg1LastPrice10Min * FxSpotAsk) / ratio -
+										prevData.displayedRecords[strategy].Leg2LastPrice10Min) /
+									prevData.displayedRecords[strategy].Leg2LastPrice10Min
+							  ).toFixed(5)
+							: 'NaN';
 
 					prevData.displayedRecords[strategy].SpreadBuy =
 						prevData.displayedRecords[strategy].Leg2BidPrice != 0
@@ -441,6 +475,9 @@ const AuctionTable = props => {
 									prevData.displayedRecords[strategy].Leg2AskPrice
 							  ).toFixed(5)
 							: 'NaN';
+					prevData.displayedRecords[strategy].Diff = (
+						prevData.displayedRecords[strategy].Spread10Min - prevData.displayedRecords[strategy].SpreadBuy
+					).toFixed(5);
 				}
 				return { ...prevData };
 			});
@@ -450,6 +487,11 @@ const AuctionTable = props => {
 		<div className="secondPageStrategyTable">
 			{Object.keys(tableData.displayedRecords).length !== 0 ? (
 				<>
+					<div style={{ float: 'right', marginBottom: '0.5rem' }}>
+						Overall Long : {overall.long} $<br></br>
+						Overal Short : {overall.short} $
+					</div>
+
 					<table>
 						<tbody className="tableDateCentered">
 							<tr className="tableHeaderColor">
@@ -459,7 +501,13 @@ const AuctionTable = props => {
 								{Object.keys(tableData.displayedRecords[0]).map((strategy, id) => {
 									let title = strategy.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
 									if (title === 'additional Info') title = 'Details';
-									if (title === 'Spread Buy' || title === 'Spread Sell') title = title + ' (%)';
+									if (
+										title === 'Spread Buy' ||
+										title === 'Spread Sell' ||
+										title === 'Diff' ||
+										title === 'Spread 10 Min'
+									)
+										title = title + ' (%)';
 									return (
 										<td onClick={() => sortBy(strategy)} key={id}>
 											{title}
@@ -541,7 +589,7 @@ const AuctionTable = props => {
 																<td>
 																	<input
 																		type="number"
-																		value={strategy.additionalInfo.Leg1QuantityBuyInput}
+																		value={strategy.additionalInfo.Leg1QuantityBuySellInput}
 																		onChange={e =>
 																			handleAdditionalInputFieldChange(strategy.StrategyName, true, e.target.value)
 																		}
@@ -551,8 +599,16 @@ const AuctionTable = props => {
 															<tr>
 																<td>Leg 2 Quantity</td>
 																<td>
-																	{(strategy.additionalInfo.Leg1QuantityBuyInput * strategy.additionalInfo.Leg2Ratio) /
+																	{(strategy.additionalInfo.Leg1QuantityBuySellInput * strategy.additionalInfo.Leg2Ratio) /
 																		strategy.additionalInfo.Leg1Ratio}
+																</td>
+															</tr>
+															<tr>
+																<td>Leg 2 Price</td>
+																<td>
+																	{strategy.Leg1Action === 'BUY'
+																		? strategy.Leg2AskPrice * 0.9
+																		: strategy.Leg2AskPrice * 1.1}
 																</td>
 															</tr>
 															<tr>

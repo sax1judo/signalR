@@ -5,9 +5,10 @@ import sortIcon from '../../../assets/sortIcon.png';
 import sortAscIcon from '../../../assets/sortIconAsc.png';
 import Pagination from '../Pagination';
 import DropDown from '../DropDown';
-import { httpRequest } from '../../../scripts/http';
+import { httpRequest ,httpRequestStartStopStrategy} from '../../../scripts/http';
 import { API } from '../../../scripts/routes';
 import Loader from '../Loader';
+import { getUnique } from '../../../scripts/common';
 
 const StockTable = props => {
 	const stateTableDataColor = {
@@ -29,6 +30,7 @@ const StockTable = props => {
 	const [sortField, setSortField] = useState('');
 	const [sortOrder, setSortOrder] = useState('dsc');
 	const [layout, setLayout] = useState('');
+	const [overall, setOverall] = useState({ long: 0, short: 0 });
 
 	const setPostPerPage = pageSize => {
 		setTableData({
@@ -266,7 +268,7 @@ const StockTable = props => {
 			data.leg1Price = strategy.Leg1BidPrice;
 			data.leg2Price = strategy.Leg2AskPrice;
 		}
-		await httpRequest(API.startStockCycle + `${strategy.StrategyName}`, 'put', data).then(res => {
+		await httpRequest(API.startCycle + '2/' + `${strategy.StrategyName}`, 'put', data).then(res => {
 			if (res.status === 200) {
 				getStockStrategies();
 			}
@@ -377,8 +379,9 @@ const StockTable = props => {
 	}, [props.stockSpread]);
 	useEffect(() => {
 		let newData = tableData.totalRecords;
-		let overalLong = 0;
-		let overalShort = 0;
+		let overalAmountArray = [];
+		let positiveSume = 0;
+		let negativeSume = 0;
 		if (tableData.displayedRecords.length !== 0) {
 			for (let strategy in newData) {
 				if (newData[strategy].Leg1Ticker === props.stockTicker.ticker) {
@@ -387,6 +390,7 @@ const StockTable = props => {
 					newData[strategy].Leg1AskPrice = props.stockTicker.ask_price;
 					newData[strategy].additionalInfo.Leg1TickerAmount = props.stockTicker.amount;
 					newData[strategy].additionalInfo.Leg1TickerPosition = props.stockTicker.position;
+					overalAmountArray.push(props.stockTicker.amount);
 				} else if (newData[strategy].Leg2Ticker === props.stockTicker.ticker) {
 					newData[strategy].Leg2LastPrice = props.stockTicker.last_price;
 					newData[strategy].Leg2BidPrice = props.stockTicker.bid_price;
@@ -394,6 +398,16 @@ const StockTable = props => {
 					newData[strategy].additionalInfo.Leg2TickerAmount = props.stockTicker.amount;
 					newData[strategy].additionalInfo.Leg2TickerPosition = props.stockTicker.position;
 				}
+			}
+			if (overalAmountArray.length !== 0) {
+				let uniqueArr = getUnique(overalAmountArray);
+				uniqueArr.map(value => {
+					if (value > 0) positiveSume = positiveSume + value;
+					else negativeSume = negativeSume + value;
+				});
+				if (negativeSume === 0) {
+					setOverall({ ...overall, long: positiveSume });
+				} else setOverall({ ...overall, short: negativeSume });
 			}
 			let data = setMobileData(newData);
 			if (data === null) {
@@ -452,6 +466,10 @@ const StockTable = props => {
 		<div className="secondPageStrategyTable">
 			{Object.keys(tableData.displayedRecords).length !== 0 ? (
 				<>
+					<div style={{ float: 'right', marginBottom: '0.5rem' }}>
+						Overall Long : {overall.long} $<br></br>
+						Overal Short : {overall.short} $
+					</div>
 					<table>
 						<tbody className="tableDateCentered">
 							<tr className="tableHeaderColor">
