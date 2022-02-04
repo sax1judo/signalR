@@ -3,6 +3,13 @@ import '../../style/General/Header.scss';
 import { NavLink } from 'react-router-dom';
 import ComponentWrapper from './ComponentWrapper';
 import { useHistory } from 'react-router-dom';
+import hideNavbarIcon from '../../assets/hideNavbar.svg'
+import strategiesIcon from '../../assets/strategies.svg'
+import productsIcon from '../../assets/products.svg'
+import arbitrageMonitoringIcon from '../../assets/arbitrageMonitoring.svg'
+import stockMonitoringIcon from '../../assets/stockMonitoring.svg'
+import auctionMonitoring from '../../assets/auctionMonitoring.svg'
+import logOutIcon from '../../assets/logOut.svg'
 
 const Header = props => {
 	const [state, setState] = useState('');
@@ -29,7 +36,7 @@ const Header = props => {
 					<div
 						ref={headerHideBtn}
 						className="hideNavigation"
-						style={{ backgroundImage: `url('../../assets/hideNavbar.svg')` }}
+						style={{ backgroundImage: `url(${hideNavbarIcon})`, }}
 						onClick={() => {
 							header.current.classList.toggle('headerVisibility');
 							headerHideBtn.current.classList.toggle('headerButtonRotate');
@@ -42,7 +49,7 @@ const Header = props => {
 							</NavLink>
 							<div
 								className="navbarIcon"
-								style={{ backgroundImage: `url('../../assets/strategies.svg')` }}
+								style={{ backgroundImage: `url(${strategiesIcon})` }}
 								onClick={() => {
 									history.push('/strategies');
 								}}
@@ -56,7 +63,7 @@ const Header = props => {
 							</NavLink>
 							<div
 								className="navbarIcon"
-								style={{ backgroundImage: `url('../../assets/products.svg')` }}
+								style={{ backgroundImage: `url(${productsIcon})` }}
 								onClick={() => {
 									history.push('/products');
 								}}
@@ -70,7 +77,7 @@ const Header = props => {
 							</NavLink>
 							<div
 								className="navbarIcon"
-								style={{ backgroundImage: `url('../../assets/arbitrageMonitoring.svg')` }}
+								style={{ backgroundImage: `url(${arbitrageMonitoringIcon})` }}
 								onClick={() => {
 									history.push('/arbitrageMonitoring');
 								}}
@@ -84,7 +91,7 @@ const Header = props => {
 							</NavLink>
 							<div
 								className="navbarIcon"
-								style={{ backgroundImage: `url('../../assets/stockMonitoring.svg')` }}
+								style={{ backgroundImage: `url(${stockMonitoringIcon})` }}
 								onClick={() => {
 									history.push('/stockArbitrage');
 								}}
@@ -98,7 +105,7 @@ const Header = props => {
 							</NavLink>
 							<div
 								className="navbarIcon"
-								style={{ backgroundImage: `url('../../assets/auctionMonitoring.svg')` }}
+								style={{ backgroundImage: `url(${auctionMonitoring})` }}
 								onClick={() => {
 									history.push('/auctionArbitrage');
 								}}
@@ -119,7 +126,7 @@ const Header = props => {
 							</NavLink> */}
 								Log Out
 							</p>
-							<div className="navbarIcon" style={{ backgroundImage: `url('../../assets/logOut.svg')` }}>
+							<div className="navbarIcon" style={{ backgroundImage: `url(${logOutIcon})` }}>
 								{' '}
 							</div>
 						</li>
@@ -151,7 +158,7 @@ const Header = props => {
 								</NavLink>
 								<div
 									className="navbarIcon"
-									style={{ backgroundImage: `url('../../assets/strategies.svg')` }}
+									style={{ backgroundImage: `url(${strategiesIcon})` }}
 									onClick={() => {
 										history.push('/strategies');
 									}}
@@ -170,7 +177,7 @@ const Header = props => {
 								</NavLink>
 								<div
 									className="navbarIcon"
-									style={{ backgroundImage: `url('../../assets/products.svg')` }}
+									style={{ backgroundImage: `url(${productsIcon})` }}
 									onClick={() => {
 										history.push('/products');
 									}}
@@ -188,7 +195,7 @@ const Header = props => {
 								</NavLink>
 								<div
 									className="navbarIcon"
-									style={{ backgroundImage: `url('../../assets/arbitrageMonitoring.svg')` }}
+									style={{ backgroundImage: `url(${arbitrageMonitoringIcon})` }}
 									onClick={() => {
 										history.push('/arbitrageMonitoring');
 									}}
@@ -206,7 +213,7 @@ const Header = props => {
 								</NavLink>
 								<div
 									className="navbarIcon"
-									style={{ backgroundImage: `url('../../assets/stockMonitoring.svg')` }}
+									style={{ backgroundImage: `url(${stockMonitoringIcon})` }}
 									onClick={() => {
 										history.push('/stockArbitrage');
 									}}
@@ -224,7 +231,7 @@ const Header = props => {
 								</NavLink>
 								<div
 									className="navbarIcon"
-									style={{ backgroundImage: `url('../../assets/auctionMonitoring.svg')` }}
+									style={{ backgroundImage: `url(${auctionMonitoring})` }}
 									onClick={() => {
 										history.push('/auctionArbitrage');
 									}}
