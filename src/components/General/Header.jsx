@@ -6,8 +6,9 @@ import { useHistory } from 'react-router-dom';
 
 const Header = props => {
 	const [state, setState] = useState('');
-	const lastScroll = useRef(0);
 	const history = useHistory();
+	const header = useRef();
+	const headerHideBtn = useRef();
 	useEffect(() => {
 		if (window.innerWidth < 1000) setState('mobile');
 		else setState('desktop');
@@ -15,87 +16,113 @@ const Header = props => {
 			if (window.innerWidth < 1000) setState('mobile');
 			else setState('desktop');
 		});
-
-		window.addEventListener('scroll', () => {
-			const currentScroll = window.pageYOffset;
-			const scrollUp = 'scroll-up';
-			const scrollDown = 'scroll-down';
-			let headerElem = document.getElementById('header');
-			if (window.innerWidth > 1000) {
-				if (currentScroll <= 0) {
-					headerElem.classList.remove(scrollUp);
-					return;
-				}
-				if (currentScroll > lastScroll.current && !headerElem.classList.contains(scrollDown)) {
-					// down
-					headerElem.classList.remove(scrollUp);
-					headerElem.classList.add(scrollDown);
-					// lottiePlayer.play();
-				} else if (currentScroll < lastScroll.current && headerElem.classList.contains(scrollDown)) {
-					// up
-					headerElem.classList.remove(scrollDown);
-					headerElem.classList.add(scrollUp);
-					// lottiePlayer.stop();
-				}
-				lastScroll.current = currentScroll;
-			}
-		});
 	}, []);
 	useEffect(() => {}, [state]);
 
 	return (
 		<ComponentWrapper>
 			{state === 'desktop' ? (
-				<div id="header" className="header">
+				<div ref={header} id="header" className="header">
 					<div className="logo">
 						<NavLink exact to="/strategies"></NavLink>
 					</div>
+					<div
+						ref={headerHideBtn}
+						className="hideNavigation"
+						style={{ backgroundImage: `url('../../assets/hideNavbar.svg')` }}
+						onClick={() => {
+							header.current.classList.toggle('headerVisibility');
+							headerHideBtn.current.classList.toggle('headerButtonRotate');
+						}}
+					></div>
 					<ul className="navigationLinks">
 						<li>
 							<NavLink activeClassName="is-active" exact to="/strategies">
 								Strategies
 							</NavLink>
+							<div
+								className="navbarIcon"
+								style={{ backgroundImage: `url('../../assets/strategies.svg')` }}
+								onClick={() => {
+									history.push('/strategies');
+								}}
+							>
+								{' '}
+							</div>
 						</li>
 						<li>
 							<NavLink activeClassName="is-active" exact to="/products">
 								Products
 							</NavLink>
+							<div
+								className="navbarIcon"
+								style={{ backgroundImage: `url('../../assets/products.svg')` }}
+								onClick={() => {
+									history.push('/products');
+								}}
+							>
+								{' '}
+							</div>
 						</li>
 						<li>
 							<NavLink activeClassName="is-active" to="/arbitrageMonitoring">
 								Arbitrage Monitoring
 							</NavLink>
+							<div
+								className="navbarIcon"
+								style={{ backgroundImage: `url('../../assets/arbitrageMonitoring.svg')` }}
+								onClick={() => {
+									history.push('/arbitrageMonitoring');
+								}}
+							>
+								{' '}
+							</div>
 						</li>
 						<li>
 							<NavLink activeClassName="is-active" to="/stockArbitrage">
 								Stock Monitoring
 							</NavLink>
+							<div
+								className="navbarIcon"
+								style={{ backgroundImage: `url('../../assets/stockMonitoring.svg')` }}
+								onClick={() => {
+									history.push('/stockArbitrage');
+								}}
+							>
+								{' '}
+							</div>
 						</li>
 						<li>
 							<NavLink activeClassName="is-active" to="/auctionArbitrage">
 								Auction Monitoring
 							</NavLink>
+							<div
+								className="navbarIcon"
+								style={{ backgroundImage: `url('../../assets/auctionMonitoring.svg')` }}
+								onClick={() => {
+									history.push('/auctionArbitrage');
+								}}
+							>
+								{' '}
+							</div>
 						</li>
-						<p
-							style={{
-								position: 'absolute',
-								right: '0',
-								display: 'flex',
-								margin: 'auto',
-								height: '100%',
-								alignItems: 'center',
-								cursor: 'pointer',
-							}}
+						<li
+							style={{ position: 'absolute', bottom: '0', width: '100%' }}
 							onClick={() => {
 								props.isLoggedAction(false);
 								history.push('/');
 							}}
 						>
-							{/* <NavLink activeClassName="is-active" to="/">
+							<p>
+								{/* <NavLink activeClassName="is-active" to="/">
 								Log Out
 							</NavLink> */}
-							Log Out
-						</p>
+								Log Out
+							</p>
+							<div className="navbarIcon" style={{ backgroundImage: `url('../../assets/logOut.svg')` }}>
+								{' '}
+							</div>
+						</li>
 					</ul>
 				</div>
 			) : (
@@ -113,7 +140,7 @@ const Header = props => {
 					</nav>
 					<div id="mobileNavigationWrapper" className="mobileNavigationWrapper">
 						<ul className="navigationLinks">
-							<li>
+							<li >
 								<NavLink
 									activeClassName="is-active"
 									exact
@@ -122,6 +149,15 @@ const Header = props => {
 								>
 									Strategies
 								</NavLink>
+								<div
+									className="navbarIcon"
+									style={{ backgroundImage: `url('../../assets/strategies.svg')` }}
+									onClick={() => {
+										history.push('/strategies');
+									}}
+								>
+									{' '}
+								</div>
 							</li>
 							<li>
 								<NavLink
@@ -132,6 +168,15 @@ const Header = props => {
 								>
 									Products
 								</NavLink>
+								<div
+									className="navbarIcon"
+									style={{ backgroundImage: `url('../../assets/products.svg')` }}
+									onClick={() => {
+										history.push('/products');
+									}}
+								>
+									{' '}
+								</div>
 							</li>
 							<li>
 								<NavLink
@@ -141,6 +186,15 @@ const Header = props => {
 								>
 									Arbitrage Monitoring
 								</NavLink>
+								<div
+									className="navbarIcon"
+									style={{ backgroundImage: `url('../../assets/arbitrageMonitoring.svg')` }}
+									onClick={() => {
+										history.push('/arbitrageMonitoring');
+									}}
+								>
+									{' '}
+								</div>
 							</li>
 							<li>
 								<NavLink
@@ -150,6 +204,15 @@ const Header = props => {
 								>
 									Stock Monitoring
 								</NavLink>
+								<div
+									className="navbarIcon"
+									style={{ backgroundImage: `url('../../assets/stockMonitoring.svg')` }}
+									onClick={() => {
+										history.push('/stockArbitrage');
+									}}
+								>
+									{' '}
+								</div>
 							</li>
 							<li>
 								<NavLink
@@ -159,6 +222,15 @@ const Header = props => {
 								>
 									Auction Monitoring
 								</NavLink>
+								<div
+									className="navbarIcon"
+									style={{ backgroundImage: `url('../../assets/auctionMonitoring.svg')` }}
+									onClick={() => {
+										history.push('/auctionArbitrage');
+									}}
+								>
+									{' '}
+								</div>
 							</li>
 						</ul>
 					</div>

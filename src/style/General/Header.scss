@@ -1,18 +1,21 @@
 .header {
-	width: 100%;
+	height: 100%;
+	width: 14%;
+	min-width: 330px;
+	display: flex;
+	flex-direction: column;
 	font-size: 1.2rem;
 	position: fixed;
 	top: 0;
 	z-index: 1;
 	transition: transform 0.3s;
+	background-color: #1c2026;
 	.logo {
-		position: absolute;
-		left: 1%;
 		background: url('../../assets/trussinvLogo.png');
 		background-size: contain;
-		width: 10%;
 		background-repeat: no-repeat;
-		height: 100%;
+		margin-top: 1.5rem;
+		height: 3%;
 		background-position: center;
 		a {
 			width: 100%;
@@ -20,23 +23,103 @@
 			position: absolute;
 		}
 	}
+	.hideNavigation {
+		position: absolute;
+		top: 50%;
+		height: 100px;
+		width: 20%;
+		right: -11%;
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: contain;
+		border-radius: 50%;
+		animation: rotateHeaderBack;
+		transform: rotate(180deg);
+		background-color: #1c2026;
+		&:hover {
+			transform: rotate(180deg) scale(1.1);
+			cursor: pointer;
+		}
+		&.headerButtonRotate {
+			animation: rotateHeader;
+			transform: rotate(0);
+			animation-duration: 0.2s;
+			@keyframes rotateHeader {
+				0% {
+					transform: rotate(180deg);
+				}
+				10% {
+					transform: rotate(162deg);
+				}
+				20% {
+					transform: rotate(144deg);
+				}
+				30% {
+					transform: rotate(126deg);
+				}
+				40% {
+					transform: rotate(108deg);
+				}
+				50% {
+					transform: rotate(90deg);
+				}
+				60% {
+					transform: rotate(72deg);
+				}
+				70% {
+					transform: rotate(54deg);
+				}
+				80% {
+					transform: rotate(36deg);
+				}
+				90% {
+					transform: rotate(18deg);
+				}
+				100% {
+					transform: rotate(0);
+				}
+			}
+		}
+	}
 	.navigationLinks {
 		list-style-type: none;
 		margin: 0;
+		margin-top: 2rem;
 		padding: 0;
 		overflow: hidden;
-		background-color: #1c2026;
 		display: flex;
 		justify-content: center;
+		flex-direction: column;
 
 		li {
 			float: left;
 			position: relative;
-			margin-left: 1%;
-			margin-right: 1%;
+			margin-right: 1rem;
+			margin-bottom: 1rem;
+			display: flex;
+			justify-content: space-between;
+			flex-direction: row;
+			align-items: center;
+			.navbarIcon {
+				width: 40px;
+				height: 40px;
+				margin-right: 1rem;
+				background-size: contain;
+				background-repeat: no-repeat;
+				&:hover {
+					transform: scale(1.1);
+					cursor: pointer;
+				}
+			}
+			p {
+				padding: 15px 26px;
+				cursor: pointer;
+				margin: 0;
+			}
 		}
 
-		li a {
+		li a,
+		li p {
 			display: block;
 			color: white;
 			text-align: center;
@@ -49,7 +132,7 @@
 				position: absolute;
 				top: 95%;
 				height: 2px;
-				background: #0077ff;
+				background: #e57e43;
 				-webkit-transition: all 0.5s ease;
 				-moz-transition: all 0.5s ease;
 				transition: all 0.5s ease;
@@ -58,9 +141,9 @@
 			}
 			&:hover:after {
 				width: 100%;
-				-webkit-transition: all 0.8s ease;
-				-moz-transition: all 0.8s ease;
-				transition: all 0.8s ease;
+				-webkit-transition: all 0.5s ease;
+				-moz-transition: all 0.5s ease;
+				transition: all 0.5s ease;
 			}
 		}
 		.is-active {
@@ -69,14 +152,16 @@
 				display: block;
 				width: 100%;
 				position: absolute;
-				top: 95%;
-				height: 2px;
-				background: #0077ff;
+				top: 15%;
+				height: 41px;
+				background: #e57e43;
 				-webkit-transition: all 0.5s ease;
 				-moz-transition: all 0.5s ease;
 				transition: all 0.5s ease;
 				left: 50%; /*Add this*/
 				transform: translate(-50%, 0); /*Add this*/
+				z-index: -1;
+				border-radius: 10px;
 			}
 		}
 	}
@@ -86,7 +171,11 @@
 	&.scroll-up {
 		transform: none;
 	}
+	&.headerVisibility {
+		transform: translate3d(-100%, 0, 0);
+	}
 }
+
 .headerMobile {
 	width: 100%;
 	font-size: 0.7rem;
@@ -127,9 +216,17 @@
 			margin: auto;
 			padding: 0;
 			border-radius: 4px;
+			.navbarIcon {
+				width: 20px;
+				height: 20px;
+				margin-right: 1rem;
+				background-size: contain;
+				background-repeat: no-repeat;
+			}
 			li {
 				display: flex;
-				justify-content: center;
+				align-items: center;
+				justify-content: space-between;
 			}
 			li a {
 				display: block;
