@@ -22,6 +22,7 @@ const AuctionTickersTable = props => {
 	// const [sortOrder, setSortOrder] = useState('dsc');
 	const sortField = useRef('');
 	const sortOrder = useRef('dsc');
+	const ticker = useRef(1);
 
 	const setPostPerPage = pageSize => {
 		setTableData({
@@ -133,13 +134,10 @@ const AuctionTickersTable = props => {
 				let newData = tableData.totalRecords;
 				let { time_stamp, market, trading_app, bid_quantity, ask_quantity, position, amount, ...newMessage } =
 					props.diffTicker;
-				let differential = await getDifferential(newMessage.ticker);
-				newMessage = { ...newMessage, Differential: differential, FxSpotBid: 0, FxSpotAsk: 0 };
+				newMessage = { ...newMessage, Differential: 0, FxSpotBid: 0, FxSpotAsk: 0 };
 				let swapped = false;
 
 				if (newData.length === 0) {
-					newMessage.FxSpotBid = (newMessage.bid_price - newMessage.Differential) / 1000;
-					newMessage.FxSpotAsk = (newMessage.ask_price - newMessage.Differential) / 1000;
 					newData.push(newMessage);
 				} else {
 					for (let ticker in newData) {
@@ -199,7 +197,20 @@ const AuctionTickersTable = props => {
 	}, [props.diffTicker]);
 
 	useEffect(() => {
-		// console.log(tableData);
+		if (tableData.totalRecords.length === ticker.current) {
+			setTableData(prevData => {
+				for (let ticker in prevData.displayedRecords) {
+					getDifferential(prevData.displayedRecords[ticker].ticker).then(res => {
+						prevData.displayedRecords[ticker].Differential = res;
+						prevData.displayedRecords[ticker].FxSpotBid = (ticker.bid_price - res) / 1000;
+						prevData.displayedRecords[ticker].FxSpotAsk = (ticker.ask_price - res) / 1000;
+						props.handleDiffTickerInputChange(res);
+					});
+				}
+				return { ...prevData };
+			});
+			ticker.current = ticker.current + 1;
+		}
 	}, [tableData]);
 	return (
 		<div className="secondPageStrategyTable tickersTableWrapper" style={{ color: 'white' }}>

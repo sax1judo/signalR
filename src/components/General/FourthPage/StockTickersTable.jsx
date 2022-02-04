@@ -22,6 +22,7 @@ const StockTickersTable = props => {
 	// const [sortOrder, setSortOrder] = useState('dsc');
 	const sortField = useRef('');
 	const sortOrder = useRef('dsc');
+	const ticker = useRef(1);
 
 	const setPostPerPage = pageSize => {
 		setTableData({
@@ -119,7 +120,7 @@ const StockTickersTable = props => {
 	};
 	const putDifferential = async (ticker, value) => {
 		let parsedValue = parseFloat(value);
-		const data = await httpRequestStartStopStrategy(API.stockDifferential + '2/' + ticker.ticker, 'put', parsedValue);
+		const data = await httpRequestStartStopStrategy(API.differential + '2/' + ticker.ticker, 'put', parsedValue);
 
 		if (data.status === 200) {
 			handleDlfferentialChange(ticker, parsedValue);
@@ -199,7 +200,20 @@ const StockTickersTable = props => {
 	}, [props.diffTicker]);
 
 	useEffect(() => {
-		// console.log(tableData);
+		if (tableData.totalRecords.length === ticker.current) {
+			setTableData(prevData => {
+				for (let ticker in prevData.displayedRecords) {
+					getDifferential(prevData.displayedRecords[ticker].ticker).then(res => {
+						prevData.displayedRecords[ticker].Differential = res;
+						prevData.displayedRecords[ticker].FxSpotBid = (ticker.bid_price - res) / 1000;
+						prevData.displayedRecords[ticker].FxSpotAsk = (ticker.ask_price - res) / 1000;
+						props.handleDiffTickerInputChange(res);
+					});
+				}
+				return { ...prevData };
+			});
+			ticker.current = ticker.current + 1;
+		}
 	}, [tableData]);
 	return (
 		<div className="secondPageStrategyTable tickersTableWrapper" style={{ color: 'white' }}>

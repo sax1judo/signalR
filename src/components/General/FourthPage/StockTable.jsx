@@ -436,25 +436,26 @@ const StockTable = props => {
 
 			setTableData(prevData => {
 				for (let strategy in prevData.displayedRecords) {
+					let singleStrategy  = prevData.displayedRecords[strategy]
 					let ratio =
-						prevData.displayedRecords[strategy].additionalInfo.Leg2Ratio /
-						prevData.displayedRecords[strategy].additionalInfo.Leg1Ratio;
+						singleStrategy.additionalInfo.Leg2Ratio /
+						singleStrategy.additionalInfo.Leg1Ratio;
 
-					prevData.displayedRecords[strategy].SpreadBuy =
-						prevData.displayedRecords[strategy].Leg2BidPrice != 0
+					singleStrategy.SpreadBuy =
+						singleStrategy.Leg2BidPrice != 0
 							? (
-									((prevData.displayedRecords[strategy].Leg1AskPrice * FxSpotAsk) / ratio -
-										prevData.displayedRecords[strategy].Leg2BidPrice) /
-									prevData.displayedRecords[strategy].Leg2BidPrice
+									((singleStrategy.Leg1AskPrice * FxSpotAsk) / ratio -
+										singleStrategy.Leg2BidPrice) /
+									singleStrategy.Leg2BidPrice
 							  ).toFixed(5)
 							: 'NaN';
 
-					prevData.displayedRecords[strategy].SpreadSell =
-						prevData.displayedRecords[strategy].Leg2AskPrice != 0
+					singleStrategy.SpreadSell =
+						singleStrategy.Leg2AskPrice != 0
 							? (
-									((prevData.displayedRecords[strategy].Leg1BidPrice * FxSpotBid) / ratio -
-										prevData.displayedRecords[strategy].Leg2AskPrice) /
-									prevData.displayedRecords[strategy].Leg2AskPrice
+									((singleStrategy.Leg1BidPrice * FxSpotBid) / ratio -
+										singleStrategy.Leg2AskPrice) /
+									singleStrategy.Leg2AskPrice
 							  ).toFixed(5)
 							: 'NaN';
 				}

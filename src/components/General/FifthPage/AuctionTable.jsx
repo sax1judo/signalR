@@ -445,39 +445,40 @@ const AuctionTable = props => {
 
 			setTableData(prevData => {
 				for (let strategy in prevData.displayedRecords) {
+					let singleStrategy  = prevData.displayedRecords[strategy]
 					let ratio =
-						prevData.displayedRecords[strategy].additionalInfo.Leg2Ratio /
-						prevData.displayedRecords[strategy].additionalInfo.Leg1Ratio;
+						singleStrategy.additionalInfo.Leg2Ratio /
+						singleStrategy.additionalInfo.Leg1Ratio;
 
-					prevData.displayedRecords[strategy].Spread10Min =
-						prevData.displayedRecords[strategy].Leg2LastPrice10Min != 0
+					let spread10Min =
+						singleStrategy.Leg2LastPrice10Min != 0
 							? (
-									((prevData.displayedRecords[strategy].Leg1LastPrice10Min * FxSpotAsk) / ratio -
-										prevData.displayedRecords[strategy].Leg2LastPrice10Min) /
-									prevData.displayedRecords[strategy].Leg2LastPrice10Min
+									((singleStrategy.Leg1LastPrice10Min * FxSpotAsk) / ratio -
+										singleStrategy.Leg2LastPrice10Min) /
+									singleStrategy.Leg2LastPrice10Min
+							  ).toFixed(5)
+							: 'NaN';
+					let spreadBuy =
+						singleStrategy.Leg2BidPrice != 0
+							? (
+									((singleStrategy.Leg1AskPrice * FxSpotAsk) / ratio -
+										singleStrategy.Leg2BidPrice) /
+									singleStrategy.Leg2BidPrice
+							  ).toFixed(5)
+							: 'NaN';
+					let spreadSell =
+						singleStrategy.Leg2AskPrice != 0
+							? (
+									((singleStrategy.Leg1BidPrice * FxSpotBid) / ratio -
+										singleStrategy.Leg2AskPrice) /
+									singleStrategy.Leg2AskPrice
 							  ).toFixed(5)
 							: 'NaN';
 
-					prevData.displayedRecords[strategy].SpreadBuy =
-						prevData.displayedRecords[strategy].Leg2BidPrice != 0
-							? (
-									((prevData.displayedRecords[strategy].Leg1AskPrice * FxSpotAsk) / ratio -
-										prevData.displayedRecords[strategy].Leg2BidPrice) /
-									prevData.displayedRecords[strategy].Leg2BidPrice
-							  ).toFixed(5)
-							: 'NaN';
-
-					prevData.displayedRecords[strategy].SpreadSell =
-						prevData.displayedRecords[strategy].Leg2AskPrice != 0
-							? (
-									((prevData.displayedRecords[strategy].Leg1BidPrice * FxSpotBid) / ratio -
-										prevData.displayedRecords[strategy].Leg2AskPrice) /
-									prevData.displayedRecords[strategy].Leg2AskPrice
-							  ).toFixed(5)
-							: 'NaN';
-					prevData.displayedRecords[strategy].Diff = (
-						prevData.displayedRecords[strategy].Spread10Min - prevData.displayedRecords[strategy].SpreadBuy
-					).toFixed(5);
+					singleStrategy.Spread10Min = spread10Min;
+					singleStrategy.SpreadBuy = spreadBuy;
+					singleStrategy.SpreadSell = spreadSell;
+					singleStrategy.Diff = (spread10Min - spreadBuy).toFixed(5);
 				}
 				return { ...prevData };
 			});
@@ -599,7 +600,8 @@ const AuctionTable = props => {
 															<tr>
 																<td>Leg 2 Quantity</td>
 																<td>
-																	{(strategy.additionalInfo.Leg1QuantityBuySellInput * strategy.additionalInfo.Leg2Ratio) /
+																	{(strategy.additionalInfo.Leg1QuantityBuySellInput *
+																		strategy.additionalInfo.Leg2Ratio) /
 																		strategy.additionalInfo.Leg1Ratio}
 																</td>
 															</tr>
@@ -607,8 +609,8 @@ const AuctionTable = props => {
 																<td>Leg 2 Price</td>
 																<td>
 																	{strategy.Leg1Action === 'BUY'
-																		? strategy.Leg2AskPrice * 0.9
-																		: strategy.Leg2AskPrice * 1.1}
+																		? (strategy.Leg2AskPrice * 0.9).toFixed(5)
+																		: (strategy.Leg2AskPrice * 1.1).toFixed(5)}
 																</td>
 															</tr>
 															<tr>
