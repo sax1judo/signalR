@@ -130,7 +130,7 @@ const StockTable = props => {
 					if (exclObj[strategy] !== null) {
 						let StrategyName =
 							exclObj[strategy].Leg1Action + exclObj[strategy].Leg1Ticker + '_' + exclObj[strategy].Leg2Ticker;
-						let spreadMkt = 0;
+						// let spreadMkt = 0;
 						// this data will be conneted to ticker data channel
 						let tickersDataObj = {
 							Leg1LastPrice: 0,
@@ -152,6 +152,7 @@ const StockTable = props => {
 							Load,
 							Leg1Ratio,
 							Leg2Ratio,
+							StrategyType
 						}) => ({
 							Slippage,
 							LimitBuy,
@@ -161,6 +162,7 @@ const StockTable = props => {
 							Load,
 							Leg1Ratio,
 							Leg2Ratio,
+							StrategyType
 						}))(exclObj[strategy]);
 						additionalInfo = {
 							...additionalInfo,
@@ -170,8 +172,9 @@ const StockTable = props => {
 							Leg1TickerPosition: 0,
 							Leg2TickerAmount: 0,
 							Leg2TickerPosition: 0,
+							SpreadMkt:0
 						};
-						exclObj[strategy] = { StrategyName, ...exclObj[strategy], spreadMkt, ...tickersDataObj, additionalInfo };
+						exclObj[strategy] = { StrategyName, ...exclObj[strategy],  ...tickersDataObj, additionalInfo };
 						// excluding properties from table row
 						let {
 							Slippage,
@@ -184,6 +187,7 @@ const StockTable = props => {
 							Leg2Ratio,
 							Leg1Quantity,
 							Leg2Quantity,
+							StrategyType,
 							...obj
 						} = exclObj[strategy];
 						modifyResponse.push(obj);
@@ -281,7 +285,7 @@ const StockTable = props => {
 		}
 		for (let selectedStrategy of selectedStrategiesObject) {
 			await httpRequestStartStopStrategy(
-				API.loadStrategy + `${selectedStrategy.StrategyType}/` + `${selectedStrategy.StrategyName}`,
+				API.loadStrategy + `${selectedStrategy.additionalInfo.StrategyType}/` + `${selectedStrategy.StrategyName}`,
 				'put',
 				'false',
 			).then(res => {
@@ -352,7 +356,7 @@ const StockTable = props => {
 		if (tableData.displayedRecords.length !== 0) {
 			for (let strategy in newData) {
 				if (newData[strategy].StrategyName.toUpperCase() === props.stockSpread.StrategyName) {
-					newData[strategy].spreadMkt = props.stockSpread.MarketSpread;
+					newData[strategy].additionalInfo.SpreadMkt = props.stockSpread.MarketSpread;
 					newData[strategy].State = props.stockSpread.StrategyState;
 					break;
 				}

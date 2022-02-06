@@ -156,6 +156,7 @@ const AuctionTable = props => {
 							Load,
 							Leg1Ratio,
 							Leg2Ratio,
+							StrategyType,
 						}) => ({
 							Slippage,
 							LimitBuy,
@@ -165,6 +166,7 @@ const AuctionTable = props => {
 							Load,
 							Leg1Ratio,
 							Leg2Ratio,
+							StrategyType,
 						}))(exclObj[strategy]);
 						additionalInfo = {
 							...additionalInfo,
@@ -174,8 +176,9 @@ const AuctionTable = props => {
 							Leg1TickerPosition: 0,
 							Leg2TickerAmount: 0,
 							Leg2TickerPosition: 0,
+							SpreadMkt: 0,
 						};
-						exclObj[strategy] = { StrategyName, ...exclObj[strategy], spreadMkt, ...tickersDataObj, additionalInfo };
+						exclObj[strategy] = { StrategyName, ...exclObj[strategy], ...tickersDataObj, additionalInfo };
 						// excluding properties from table row
 						let {
 							Slippage,
@@ -188,6 +191,7 @@ const AuctionTable = props => {
 							Leg2Ratio,
 							Leg1Quantity,
 							Leg2Quantity,
+							StrategyType,
 							...obj
 						} = exclObj[strategy];
 						modifyResponse.push(obj);
@@ -282,7 +286,7 @@ const AuctionTable = props => {
 		}
 		for (let selectedStrategy of selectedStrategiesObject) {
 			await httpRequestStartStopStrategy(
-				API.loadStrategy + `${selectedStrategy.StrategyType}/` + `${selectedStrategy.StrategyName}`,
+				API.loadStrategy + `${selectedStrategy.additionalInfo.StrategyType}/` + `${selectedStrategy.StrategyName}`,
 				'put',
 				'false',
 			).then(res => {
@@ -353,7 +357,7 @@ const AuctionTable = props => {
 		if (tableData.displayedRecords.length !== 0) {
 			for (let strategy in newData) {
 				if (newData[strategy].StrategyName.toUpperCase() === props.auctionSpread.StrategyName) {
-					newData[strategy].spreadMkt = props.auctionSpread.MarketSpread;
+					newData[strategy].additionalInfo.spreadMkt = props.auctionSpread.MarketSpread;
 					newData[strategy].State = props.auctionSpread.StrategyState;
 					break;
 				}
@@ -445,32 +449,27 @@ const AuctionTable = props => {
 
 			setTableData(prevData => {
 				for (let strategy in prevData.displayedRecords) {
-					let singleStrategy  = prevData.displayedRecords[strategy]
-					let ratio =
-						singleStrategy.additionalInfo.Leg2Ratio /
-						singleStrategy.additionalInfo.Leg1Ratio;
+					let singleStrategy = prevData.displayedRecords[strategy];
+					let ratio = singleStrategy.additionalInfo.Leg2Ratio / singleStrategy.additionalInfo.Leg1Ratio;
 
 					let spread10Min =
 						singleStrategy.Leg2LastPrice10Min != 0
 							? (
-									((singleStrategy.Leg1LastPrice10Min * FxSpotAsk) / ratio -
-										singleStrategy.Leg2LastPrice10Min) /
+									((singleStrategy.Leg1LastPrice10Min * FxSpotAsk) / ratio - singleStrategy.Leg2LastPrice10Min) /
 									singleStrategy.Leg2LastPrice10Min
 							  ).toFixed(5)
 							: 'NaN';
 					let spreadBuy =
 						singleStrategy.Leg2BidPrice != 0
 							? (
-									((singleStrategy.Leg1AskPrice * FxSpotAsk) / ratio -
-										singleStrategy.Leg2BidPrice) /
+									((singleStrategy.Leg1AskPrice * FxSpotAsk) / ratio - singleStrategy.Leg2BidPrice) /
 									singleStrategy.Leg2BidPrice
 							  ).toFixed(5)
 							: 'NaN';
 					let spreadSell =
 						singleStrategy.Leg2AskPrice != 0
 							? (
-									((singleStrategy.Leg1BidPrice * FxSpotBid) / ratio -
-										singleStrategy.Leg2AskPrice) /
+									((singleStrategy.Leg1BidPrice * FxSpotBid) / ratio - singleStrategy.Leg2AskPrice) /
 									singleStrategy.Leg2AskPrice
 							  ).toFixed(5)
 							: 'NaN';
