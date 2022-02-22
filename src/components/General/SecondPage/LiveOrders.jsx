@@ -9,6 +9,7 @@ import sortAscIcon from '../../../assets/sortIconAsc.png';
 const LiveOrders = props => {
 	const [connection, setConnection] = useState(null);
 	const [data, setData] = useState({ liveOrders: [] });
+	const [displayedData, setDisplayedData] = useState({ liveOrders: [] });
 	const [sortField, setSortField] = useState('');
 	const sortOrder = useRef('dsc');
 
@@ -35,6 +36,14 @@ const LiveOrders = props => {
 			setConnection(null);
 		};
 	}, []);
+	useEffect(() => {
+		let copyData = [];
+		for (let order in data.liveOrders) {
+			copyData.push(data.liveOrders[order]);
+		}
+		let sortedData = sortBy(copyData, sortField, sortOrder.current);
+		setDisplayedData({ liveOrders: sortedData });
+	}, [data]);
 
 	useEffect(() => {
 		if (connection) {
@@ -44,38 +53,35 @@ const LiveOrders = props => {
 					console.log(`Connected ${props.ordersChannel} !`);
 
 					connection.on(props.ordersChannel, message => {
-						let newData = data.liveOrders;
-						let newMessagePreParsed = JSON.parse(message);
-						let newMessage;
+						setData(prevData => {
+							let newData = prevData;
+							let newMessagePreParsed = JSON.parse(message);
+							let newMessage;
 
-						if (window.innerWidth < 1000) {
-							const { filled, ...exculeddMesage } = newMessagePreParsed;
-							newMessage = exculeddMesage;
-						} else newMessage = JSON.parse(message);
-						let swapped = false;
+							if (window.innerWidth < 1000) {
+								const { filled, ...exculeddMesage } = newMessagePreParsed;
+								newMessage = exculeddMesage;
+							} else newMessage = JSON.parse(message);
+							let swapped = false;
 
-						if (newData.length === 0) {
-							newData.push(newMessage);
-						} else {
-							for (let order in newData) {
-								if (newData[order].id === newMessage.id) {
-									newData[order] = newMessage;
-									swapped = true;
-									break;
+							if (newData.liveOrders.length === 0) {
+								newData.liveOrders.push(newMessage);
+							} else {
+								for (let order in newData.liveOrders) {
+									if (newData.liveOrders[order].id === newMessage.id) {
+										newData.liveOrders[order] = newMessage;
+										swapped = true;
+										break;
+									}
+								}
+								if (!swapped) {
+									newData.liveOrders.unshift(newMessage);
 								}
 							}
-							if (!swapped) {
-								if (sortOrder.current === 'asc') newData.push(newMessage);
-								else newData.unshift(newMessage);
-							}
-						}
-						if (sortOrder.current === 'asc') {
-							let sortedData = sortBy(newData, 'timestamp', 'asc');
-							setData({ liveOrders: sortedData });
-						} else {
-							let sortedData = sortBy(newData, 'timestamp', 'dsc');
-							setData({ liveOrders: sortedData });
-						}
+							if (newData.liveOrders.length > 100) newData.liveOrders.splice(-1);
+
+							return { ...newData };
+						});
 					});
 				})
 				.catch(e => console.log('Connection failed: ', e));
@@ -86,15 +92,15 @@ const LiveOrders = props => {
 	}, [connection]);
 
 	return (
-		<div className="setUpAddStrategyTable">
-			{data.liveOrders.length !== 0 ? (
+		<div className="setUpAddStrategyTable liveOrdersTable">
+			{displayedData.liveOrders.length !== 0 ? (
 				<table>
 					<tbody className="tableDateCentered">
-						<tr className="tableHeaderColor">
-							<th colSpan="9">Live Orders</th>
+						<tr className="tableHeaderColor stickyHeader">
+							<th colSpan={Object.keys(displayedData.liveOrders[0]).length}>Live Orders</th>
 						</tr>
-						<tr className="tableHeaderColor">
-							{Object.keys(data.liveOrders[0]).map((liveOrders, id) => {
+						<tr className="tableHeaderColor stickyColl">
+							{Object.keys(displayedData.liveOrders[0]).map((liveOrders, id) => {
 								let title = liveOrders.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g).join(' ');
 								return title === 'id' ? null : (
 									<th
@@ -104,8 +110,8 @@ const LiveOrders = props => {
 											} else {
 												sortOrder.current = 'dsc';
 											}
-											let sortedData = sortBy(data.liveOrders, liveOrders, sortOrder.current);
-											setData({ liveOrders: sortedData });
+											let sortedData = sortBy(displayedData.liveOrders, liveOrders, sortOrder.current);
+											setDisplayedData({ liveOrders: sortedData });
 										}}
 										key={id}
 									>
@@ -126,7 +132,7 @@ const LiveOrders = props => {
 								);
 							})}
 						</tr>
-						{data.liveOrders.map((liveOrders, id) => {
+						{displayedData.liveOrders.map((liveOrders, id) => {
 							return (
 								<tr key={liveOrders.strategy + id + 'liveOrders'}>
 									{Object.keys(liveOrders).map((data, id) => {

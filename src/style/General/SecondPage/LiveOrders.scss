@@ -9,6 +9,19 @@
 		text-align: center;
 	}
 }
+.liveOrdersTable {
+	max-height: 30rem;
+	overflow-y: auto;
+	position: relative;
+	.stickyHeader {
+		position: sticky;
+		top: 0;
+	}
+	.stickyColl{
+		position: sticky;
+		top: 9%;
+	}
+}
 @media screen and (max-width: 1140px) {
 	.setUpAddStrategyTable {
 		overflow-x: scroll;
