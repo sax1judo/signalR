@@ -1,0 +1,59 @@
+.connectionMonitoringWrapper {
+	display: flex;
+	flex-direction: row;
+	width: 25%;
+	table {
+		background: #212529;
+		color: white;
+		font-size: 0.8rem;
+		border-spacing: 0;
+		border-collapse: collapse;
+		border-style: hidden;
+		text-align: center;
+		width: 100%;
+		max-width: 100%;
+		table-layout: fixed;
+	}
+	.tableDateCentered {
+		text-align: center;
+	}
+	th,
+	td {
+		padding: 10px;
+		border: 1px solid #3c3c3c;
+		text-transform: capitalize;
+	}
+	.tableHeaderColor {
+		background: #1c2026;
+	}
+	.connectionInfoData {
+		display: flex;
+		justify-content: space-between;
+		position: relative;
+	}
+	.connectionInfoIcon {
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: contain;
+		position: absolute;
+		right: 0;
+		top: 16%;
+		height: 70%;
+		width: 30%;
+		margin: auto;
+	}
+}
+@media screen and (max-width: 1500px) {
+	.connectionMonitoringWrapper {
+		width: 50%;
+	}
+}
+@media screen and (max-width: 1000px) {
+	.connectionMonitoringWrapper {
+		width: 90%;
+		margin: auto;
+		table{
+			font-size: 0.6rem;
+		}
+	}
+}

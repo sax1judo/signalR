@@ -1,0 +1,56 @@
+.secondPageStrategyTable {
+	
+	.expandedContainer {
+		overflow: hidden;
+		td {
+			padding: 0;
+			border: none;
+
+			.tickerTableWrapper {
+				transition: 0.4s;
+				width: 70%;
+				margin: auto;
+				padding: 5px;
+				&.collapsed {
+					margin-top: -25%;
+					animation: fadeOut;
+					animation-duration: 0.2s;
+					opacity: 0;
+					visibility: collapse;
+					@keyframes fadeOut {
+						0% {
+							opacity: 1;
+							transform: scale(1);
+						}
+						100% {
+							transform: scale(0);
+							opacity: 0;
+						}
+					}
+				}
+				&.expanded {
+					margin-top: 1rem;
+					margin-bottom: 1rem;
+					animation: fadeIn;
+					animation-duration: 0.6s;
+					visibility: visible;
+					@keyframes fadeIn {
+						0% {
+							opacity: 0;
+							transform: scale(0.1);
+						}
+						100% {
+							transform: scale(1);
+							opacity: 1;
+						}
+					}
+				}
+				td {
+					padding: 15px;
+					border: 1px solid #3c3c3c;
+					text-transform: capitalize;
+				}
+			}
+		}
+	}
+}

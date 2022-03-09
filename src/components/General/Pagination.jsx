@@ -13,7 +13,10 @@ const Pagination = props => {
 			<ul className="pagination">
 				{pageNumbers.length <= 1 ? null : (
 					<ComponentWrapper>
-						<li className={props.activePage !== 1 ? 'page-item ' : 'page-item disabled'}>
+						<li
+							className="page-item "
+							style={props.activePage !== 1 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
+						>
 							<span className="page-link" onClick={() => props.paginate('previous')}>
 								Previous
 							</span>
@@ -25,7 +28,10 @@ const Pagination = props => {
 								</a>
 							</li>
 						))}
-						<li className={props.activePage !== pageNumbers.length ? 'page-item ' : 'page-item disabled'}>
+						<li
+							className="page-item "
+							style={props.activePage !== pageNumbers.length ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }}
+						>
 							<a className="page-link" onClick={() => props.paginate('next')}>
 								Next
 							</a>

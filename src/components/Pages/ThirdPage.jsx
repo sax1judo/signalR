@@ -1,90 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import Pagination from '../General/Pagination';
-import DropDown from '../General/DropDown';
 import { httpRequest } from '../../scripts/http';
 import { API } from '../../scripts/routes';
-import GetTradesTable from '../General/GetTradesTable';
+import AddProductTable from '../General/ThirdPage/AddProductTable';
+import CreatedProducts from '../General/ThirdPage/CreatedProducts';
+import { useHistory } from 'react-router-dom';
 
 const ThirdPage = props => {
-	const [tableData, setTableData] = useState({
-		totalRecordsNumber: null,
-		properties: [],
-		totalRecords: [],
-		displayedRecords: [],
-		pageSize: 5,
-		page: 1,
-	});
+	const [ibProducts, setIbProducts] = useState([]);
+	const [ttProducts, setTtProducts] = useState([]);
 
-	const paginate = pageNumber => {
-		if (pageNumber === 'next') {
-			setTableData({
-				...tableData,
-				page: tableData.page + 1,
-				displayedRecords: tableData.totalRecords.slice(
-					(tableData.page + 1 - 1) * tableData.pageSize,
-					(tableData.page + 1) * tableData.pageSize,
-				),
+	//REDIRECT IF IT'S NOT LOGGED
+	const history = useHistory();
+	if (!props.isLogged) history.push('/');
+	
+	const getProducts = () => {
+		httpRequest(API.getProductDetails + 'ib', 'get').then(res => {
+			var ibProducts = [];
+			Object.keys(res.data).map(prducts => {
+				let obj = {};
+				ibProducts.push(res.data[prducts]);
 			});
-		} else if (pageNumber === 'previous') {
-			setTableData({
-				...tableData,
-				page: tableData.page - 1,
-				displayedRecords: tableData.totalRecords.slice(
-					(tableData.page - 1 - 1) * tableData.pageSize,
-					(tableData.page - 1) * tableData.pageSize,
-				),
+			setIbProducts(ibProducts);
+		});
+		httpRequest(API.getProductDetails + 'tt', 'get').then(res => {
+			var ttProducts = [];
+			Object.keys(res.data).map(prducts => {
+				ttProducts.push(res.data[prducts]);
 			});
-		} else {
-			setTableData({
-				...tableData,
-				page: pageNumber,
-				displayedRecords: tableData.totalRecords.slice(
-					(pageNumber - 1) * tableData.pageSize,
-					pageNumber * tableData.pageSize,
-				),
-			});
-		}
-	};
-	const setPostPerPage = pageSize => {
-		setTableData({
-			...tableData,
-			pageSize: parseFloat(pageSize),
-			page: 1,
-			displayedRecords: tableData.totalRecords.slice((1 - 1) * parseFloat(pageSize), 1 * parseFloat(pageSize)),
+			setTtProducts(ttProducts);
 		});
 	};
-
 	useEffect(() => {
-		var tableProperties = [];
-		httpRequest(API.trades, 'get').then(res => {
-			if (res.length === 0) return;
-			Object.keys(res[0]).map(property => {
-				tableProperties.push(property);
-			});
-
-			setTableData({
-				...tableData,
-				properties: tableProperties,
-				totalRecords: res,
-				count: res.length,
-				displayedRecords: res.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
-			});
-		});
+		getProducts();
 	}, []);
 
-	useEffect(() => {}, [tableData]);
+	useEffect(() => {
+		// console.log(ttProducts)
+		// console.log(ibProducts)
+	}, [ttProducts, ibProducts]);
 
-	return tableData.totalRecords.length === 0 ? null : (
+	return (
 		<div>
-			<GetTradesTable tableData={tableData} />
-			<DropDown postsPerPage={tableData.pageSize} setPostsPerPage={setPostPerPage} />
-			<Pagination
-				postsPerPage={tableData.pageSize}
-				totalPosts={tableData.count}
-				paginate={paginate}
-				activePage={tableData.page}
-				setPostsPerPage={setPostPerPage}
-			/>
+			<div className="setupStrategyWrapper">
+				<h4 style={{ textAlign: 'center' }}>Add New Product</h4>
+				<AddProductTable />
+			</div>
+
+			<div className="createdStrategiesWrapper">
+				<h4 style={{ textAlign: 'center' }}>Created Products</h4>
+				<CreatedProducts title={'IB'} tableData={ibProducts} />
+				<CreatedProducts title={'TT'} tableData={ttProducts} />
+			</div>
 		</div>
 	);
 };

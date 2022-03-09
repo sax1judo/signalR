@@ -1,14 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import '../../style/General/DropDown.scss';
 
 const DropDown = props => {
 	const recordsPerPage = [5, 10, 15, 30, 50];
+	const [state, setstate] = useState(5);
+	
+	useEffect(() => {
+		setstate(props.postsPerPage);
+	}, []);
+	
+
 	return (
-		<div style={{ marginBottom: '1rem' }}>
+		<div className="dropDowmWrapper" style={{ marginBottom: '1rem' }}>
 			<select
-				onChange={e => props.setPostsPerPage(e.target.value)}
+				onChange={e => {
+					setstate(parseFloat(e.target.value));
+					props.setPostsPerPage(e.target.value);
+				}}
 				className="selectpicker page-item "
 				aria-label="Default select example"
-				style={{ marginRight: '2px', marginLeft: '2px', border: '1px solid #e6e2e2' }}
+				value={state}
 			>
 				{recordsPerPage.map((nmb, index) => {
 					return (

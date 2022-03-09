@@ -1,26 +1,32 @@
 import React, { useEffect, useState } from 'react';
+import StrategiesTable from '../General/SecondPage/Strategies';
+import '../../style/Pages/SecondPage.scss';
+import LiveOrders from '../General/SecondPage/LiveOrders';
+import ArbitrageTickersTable from '../General/SecondPage/ArbitrageTickersTable';
 import { HubConnectionBuilder } from '@microsoft/signalr';
-import LiveTrades from '../General/LiveTrades';
-import { httpRequest } from '../../scripts/http';
 import { API } from '../../scripts/routes';
+import { useHistory } from 'react-router-dom';
 
 const SecondPage = props => {
-	const [data, setData] = useState({});
 	const [connection, setConnection] = useState(null);
+	const [arbitrageQuantity, setArbitrageQuantity] = useState(null);
+	const [arbitrageSpread, setArbitrageSpread] = useState(null);
+	const [tickerMessage, setTickerMessage] = useState(null);
 
-	const forceMethod = record => {
-		httpRequest(API.trades, 'post', record).then(res => {
-		});
-	};
+	//REDIRECT IF IT'S NOT LOGGED
+	const history = useHistory();
+	if (!props.isLogged) history.push('/');
+
 	useEffect(() => {
 		const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
-
 		setConnection(newConnection);
+
 		return () => {
 			setConnection(null);
 		};
 	}, []);
 
+	//TICKERS DATA
 	useEffect(() => {
 		if (connection) {
 			connection
@@ -28,17 +34,39 @@ const SecondPage = props => {
 				.then(result => {
 					console.log('Connected!');
 
-					connection.on('TradesOverLimit', message => {
-						setData(JSON.parse(message));
+					connection.on('ArbitrageQuantity', message => {
+						setArbitrageQuantity(JSON.parse(message));
+					});
+					connection.on('ArbitrageSpread', message => {
+						setArbitrageSpread(JSON.parse(message));
+					});
+					connection.on('ArbitragePrices', message => {
+						setTickerMessage(JSON.parse(message));
 					});
 				})
 				.catch(e => console.log('Connection failed: ', e));
 		}
+		return () => {
+			setConnection(null);
+		};
 	}, [connection]);
-
+	useEffect(() => {}, [arbitrageSpread, arbitrageQuantity]);
 	return (
-		<div>
-			<LiveTrades tableData={data} forceMethod={forceMethod} />
+		<div className="strategiesSecondPageWrapper">
+			<div className="futuresArbitrageStrategies">
+				<h4 style={{ textAlign: 'center' }}>Futures Arbitrage Monitoring</h4>
+				{/* <ConnectionMonitoring /> */}
+				<ArbitrageTickersTable tickerMessage={tickerMessage} />
+				<div>
+					<StrategiesTable arbitrageSpread={arbitrageSpread} arbitrageQuantity={arbitrageQuantity} />
+				</div>
+			</div>
+			<div className="liveOrdersWrapper">
+				<h4 style={{ textAlign: 'center' }}>Live Orders</h4>
+				<div>
+					<LiveOrders ordersChannel="ArbitrageOrders" tickerMessage={tickerMessage} />
+				</div>
+			</div>
 		</div>
 	);
 };

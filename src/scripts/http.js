@@ -1,20 +1,29 @@
 import axios from 'axios';
 
 export const httpRequest = async (url, method, data) => {
-	return axios({
-		url: url,
-		method: method,
-		data: data,
-	})
-		.then(res => res.data)
-		.catch(err => console.error(err));
+	try {
+		const requestData = await axios({
+			url: url,
+			method: method,
+			data: data,
+		});
+		return requestData;
+	} catch (error) {
+		console.log(error);
+	}
 };
-export const exportExcelHttp = async url => {
-	return axios({
-		url: url,
-		method: 'GET',
-		responseType: 'blob',
-	})
-		.then(res => res)
-		.catch(err => console.error(err));
+export const httpRequestStartStopStrategy = async (url, method, data) => {
+	try {
+		const requestData = await axios({
+			url: url,
+			headers: {
+				'Content-Type': 'application/json-patch+json',
+			},
+			method: method,
+			data: data,
+		});
+		return requestData;
+	} catch (error) {
+		console.log(error);
+	}
 };

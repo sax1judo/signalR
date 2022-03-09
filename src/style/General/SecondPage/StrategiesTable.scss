@@ -1,0 +1,162 @@
+.secondPageStrategyTable {
+	overflow-x: auto;
+	table {
+		background: #212529;
+		color: white;
+		font-size: 0.8rem;
+		border-spacing: 0;
+		border-collapse: collapse;
+		border-style: hidden;
+		width: 100%;
+		max-width: 100%;
+	}
+	.tableDateCentered {
+		text-align: center;
+	}
+	th,
+	td {
+		padding: 14px;
+		border: 1px solid #3c3c3c;
+		text-transform: capitalize;
+	}
+	.tableHeaderColor {
+		background: #1c2026;
+		cursor: pointer;
+		img {
+			&:hover {
+				animation: scaleUp;
+				animation-duration: 0.5s;
+				@keyframes scaleUp {
+					0% {
+						transform: scale(1);
+					}
+					50% {
+						transform: scale(1.2);
+					}
+					100% {
+						transform: scale(1);
+					}
+				}
+			}
+		}
+	}
+	.tableData {
+		cursor: pointer;
+		
+	}
+	.activeRow {
+		background: #383d44;
+	}
+	input {
+		background: #1c2026;
+		border: 1px solid #3c3c3c;
+		color: WHITE;
+		padding: 0.3em 1.4em 0.4em 0.9em;
+		width: -webkit-fill-available;
+		&:hover {
+			background-color: #242830;
+			border-color: #6d6d6d;
+		}
+	}
+	.buttonsActionsWrapper {
+		display: grid;
+		grid-template-columns: repeat(5, 1fr);
+		gap: 10px;
+		grid-auto-rows: minmax(auto, auto);
+		margin-top: 2rem;
+		.linkButton {
+			display: flex;
+			padding: 0;
+			justify-content: center;
+			align-items: center;
+			vertical-align: middle;
+			a {
+				display: flex;
+				flex: 1;
+				justify-content: center;
+			}
+		}
+		&.mobile{
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+	.expandedContainer {
+		overflow: hidden;
+		td {
+			padding: 0;
+			border: none;
+
+			.tickerTableWrapper {
+				transition: 0.4s;
+				width: 50%;
+				margin: auto;
+				padding: 5px;
+				&.collapsed {
+					margin-top: -25%;
+					animation: fadeOut;
+					animation-duration: 0.2s;
+					opacity: 0;
+					visibility: collapse;
+					@keyframes fadeOut {
+						0% {
+							opacity: 1;
+							transform: scale(1);
+						}
+						100% {
+							transform: scale(0);
+							opacity: 0;
+						}
+					}
+				}
+				&.expanded {
+					margin-top: 1rem;
+					margin-bottom: 1rem;
+					animation: fadeIn;
+					animation-duration: 0.6s;
+					visibility: visible;
+					@keyframes fadeIn {
+						0% {
+							opacity: 0;
+							transform: scale(0.1);
+						}
+						100% {
+							transform: scale(1);
+							opacity: 1;
+						}
+					}
+				}
+				td {
+					padding: 15px;
+					border: 1px solid #3c3c3c;
+					text-transform: capitalize;
+					text-align: center;
+				}
+			}
+		}
+	}
+	.paginationWrapper {
+		display: flex;
+		justify-content: space-between;
+		margin-top: 1rem;
+	}
+}
+@media screen and (max-width: 1520px) {
+	.secondPageStrategyTable {
+		.buttonsActionsWrapper {
+			margin-bottom: 1rem;
+		}
+		table {
+			font-size: 0.6rem;
+		}
+	}
+}
+@media screen and (max-width: 1140px) {
+	.secondPageStrategyTable {
+		.buttonsActionsWrapper {
+			margin-bottom: 1rem;
+		}
+		table {
+			font-size: 0.4rem;
+		}
+	}
+}

@@ -1,0 +1,27 @@
+.loginModalWrapper {
+	margin-top: 12%;
+	width: 30rem;
+	padding: 1rem;
+	a {
+		color: white;
+		text-align: center;
+	}
+	.logo {
+		background: url('../../assets/trussinvLogo.png');
+		background-size: contain;
+		width: 60%;
+		background-repeat: no-repeat;
+		background-position: center;
+		height: 7rem;
+		margin: auto;
+	}
+}
+@media screen and (max-width: 1000px) {
+	.loginModalWrapper {
+		width: 80%;
+        overflow: hidden;
+        a {
+            font-size: 0.6rem;
+        }
+	}
+}

@@ -1,59 +1,60 @@
-import React from 'react';
-import { BrowserRouter as Router, Switch, Route, Link, NavLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import Header from './components/General/Header';
 import FirstPage from './components/Pages/FirstPage';
-import FourthPage from './components/Pages/FourthPage';
 import SecondPage from './components/Pages/SecondPage';
 import ThirdPage from './components/Pages/ThirdPage';
+import ModifyStrategyModal from './components/General/ModifyStrategyModal';
+import ModifyProductModal from './components/General/ModifyProductModal';
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import AddProductModal from './components/General/AddProductModal';
+import AddStrategyModal from './components/General/AddStrategyModal';
+import LoginModal from './components/General/LoginModal';
+import FourthPage from './components/Pages/FourthPage';
 import FifthPage from './components/Pages/FifthPage';
 
 const App = () => {
+	const [isLogged, setIsLogged] = useState(false);
+
+	const isLoggedAction = (logged) => {
+		setIsLogged(logged);
+	};
 	return (
 		<Router>
-			<div>
-				<ul className="navigationLinks">
-					<li>
-						<NavLink activeClassName="is-active" exact to="/">
-							Strategy States
-						</NavLink>
-					</li>
-					<li>
-						<NavLink activeClassName="is-active" to="/liveTrades">
-							Trades Over Limit
-						</NavLink>
-					</li>
-					<li>
-						<NavLink activeClassName="is-active" to="/trades">
-							Get Trades
-						</NavLink>
-					</li>
-					<li>
-						<NavLink activeClassName="is-active" to="/arbitrage">
-							Arbitrage
-						</NavLink>
-					</li>
-					<li>
-						<NavLink activeClassName="is-active" to="/logs">
-							Logs
-						</NavLink>
-					</li>
-				</ul>
-
+			{!isLogged ? <LoginModal isLoggedAction={isLoggedAction} /> : <Header isLoggedAction={isLoggedAction}/>}
+			<div className="contentSection">
 				<Switch>
-					<Route exact path="/">
-						<FirstPage />
+					{/* PAGES START*/}
+					<Route exact path="/strategies">
+						<FirstPage isLogged={isLogged} />
 					</Route>
-					<Route path="/liveTrades">
-						<SecondPage />
+					<Route path="/arbitrageMonitoring">
+						<SecondPage isLogged={isLogged} />
 					</Route>
-					<Route path="/trades">
-						<ThirdPage />
+					<Route path="/products">
+						<ThirdPage isLogged={isLogged} />
 					</Route>
-					<Route path="/arbitrage">
-						<FourthPage />
+					<Route path="/stockArbitrage">
+						<FourthPage isLogged={isLogged} />
 					</Route>
-					<Route path="/logs">
-						<FifthPage />
+					<Route path="/auctionArbitrage">
+						<FifthPage isLogged={isLogged} />
 					</Route>
+					{/* PAGES END*/}
+					{/* MODALS START*/}
+					<Route path="/modifyStrategy">
+						<ModifyStrategyModal isLogged={isLogged} />
+					</Route>
+					<Route path="/modifyProduct">
+						<ModifyProductModal isLogged={isLogged} />
+					</Route>
+					<Route path="/addProduct">
+						<AddProductModal isLogged={isLogged} />
+					</Route>
+					<Route path="/addStrategy">
+						<AddStrategyModal isLogged={isLogged} />
+					</Route>
+					{/* MODALS END*/}
 				</Switch>
 			</div>
 		</Router>

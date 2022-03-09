@@ -1,85 +1,84 @@
 import React, { useEffect, useState } from 'react';
+import { HubConnectionBuilder } from '@microsoft/signalr';
 import { API } from '../../scripts/routes';
-import Logs from '../General/Logs';
-import { httpRequest } from '../../scripts/http';
-import Pagination from '../General/Pagination';
-import DropDown from '../General/DropDown';
+import AuctionTickersTable from '../General/FifthPage/AuctionTickersTable';
+import AuctionTable from '../General/FifthPage/AuctionTable';
+import { useHistory } from 'react-router-dom';
+import LiveOrders from '../General/SecondPage/LiveOrders';
 
-const FifthPage = props => {
-	const [tableData, setTableData] = useState({
-		totalRecordsNumber: null,
-		properties: [],
-		totalRecords: [],
-		displayedRecords: [],
-		pageSize: 5,
-		page: 1,
-	});
-	const paginate = pageNumber => {
-		if (pageNumber === 'next') {
-			setTableData({
-				...tableData,
-				page: tableData.page + 1,
-				displayedRecords: tableData.totalRecords.slice(
-					(tableData.page + 1 - 1) * tableData.pageSize,
-					(tableData.page + 1) * tableData.pageSize,
-				),
-			});
-		} else if (pageNumber === 'previous') {
-			setTableData({
-				...tableData,
-				page: tableData.page - 1,
-				displayedRecords: tableData.totalRecords.slice(
-					(tableData.page - 1 - 1) * tableData.pageSize,
-					(tableData.page - 1) * tableData.pageSize,
-				),
-			});
-		} else {
-			setTableData({
-				...tableData,
-				page: pageNumber,
-				displayedRecords: tableData.totalRecords.slice(
-					(pageNumber - 1) * tableData.pageSize,
-					pageNumber * tableData.pageSize,
-				),
-			});
-		}
+const FourthPage = props => {
+	const [connection, setConnection] = useState(null);
+	const [auctionQuantity, setAuctionQuantity] = useState(null);
+	const [auctionSpread, setAuctionSpread] = useState(null);
+	const [auctionTicker, setAuctionTicker] = useState(null);
+	const [diffTicker, setDiffTicker] = useState(null);
+	const [diffTickerInput, setDiffTickerInput] = useState(null);
+
+	//REDIRECT IF IT'S NOT LOGGED
+	const history = useHistory();
+	if (!props.isLogged) history.push('/');
+
+	const handleDiffTickerInputChange = value => {
+		setDiffTickerInput(value);
 	};
-	const setPostPerPage = pageSize => {
-		setTableData({
-			...tableData,
-			pageSize: parseFloat(pageSize),
-			page: 1,
-			displayedRecords: tableData.totalRecords.slice((1 - 1) * parseFloat(pageSize), 1 * parseFloat(pageSize)),
-		});
-	};
+
 	useEffect(() => {
-		httpRequest(API.getLogs, 'get').then(res => {
-			console.log(res);
-			setTableData({
-				...tableData,
-				count: res.length,
-				totalRecords: res,
-				displayedRecords: res.slice((tableData.page - 1) * tableData.pageSize, tableData.page * tableData.pageSize),
-			});
-		});
+		const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
+		setConnection(newConnection);
+
+		return () => {
+			setConnection(null);
+		};
 	}, []);
+	useEffect(() => {
+		if (connection) {
+			connection
+				.start()
+				.then(result => {
+					console.log('Connected!');
+
+					connection.on('AuctionQuantity', message => {
+						setAuctionQuantity(JSON.parse(message));
+					});
+					connection.on('AuctionSpread', message => {
+						setAuctionSpread(JSON.parse(message));
+					});
+					connection.on('AuctionPrices', message => {
+						setAuctionTicker(JSON.parse(message));
+					});
+					connection.on('DiffPrices', message => {
+						setDiffTicker(JSON.parse(message));
+					});
+				})
+				.catch(e => console.log('Connection failed: ', e));
+		}
+		return () => {
+			setConnection(null);
+		};
+	}, [connection]);
 
 	return (
-		<>
-			{tableData.totalRecords.length === 0 ? null : (
+		<div className="strategiesSecondPageWrapper">
+			<div className="futuresArbitrageStrategies">
+				<h4 style={{ textAlign: 'center' }}>Auction Arbitrage Monitoring</h4>
+				<AuctionTickersTable diffTicker={diffTicker} handleDiffTickerInputChange={handleDiffTickerInputChange} />
 				<div>
-					<Logs logs={tableData.displayedRecords} />
-					<DropDown postsPerPage={tableData.pageSize} setPostsPerPage={setPostPerPage} />
-					<Pagination
-						postsPerPage={tableData.pageSize}
-						totalPosts={tableData.count}
-						paginate={paginate}
-						activePage={tableData.page}
-						setPostsPerPage={setPostPerPage}
+					<AuctionTable
+						auctionSpread={auctionSpread}
+						auctionQuantity={auctionQuantity}
+						auctionTicker={auctionTicker}
+						diffTicker={diffTicker}
+						diffTickerInput={diffTickerInput}
 					/>
 				</div>
-			)}
-		</>
+			</div>
+			<div className="liveOrdersWrapper">
+				<h4 style={{ textAlign: 'center' }}>Auction Live Orders</h4>
+				<div>
+					<LiveOrders ordersChannel="AuctionOrders" />
+				</div>
+			</div>
+		</div>
 	);
 };
-export default FifthPage;
+export default FourthPage;

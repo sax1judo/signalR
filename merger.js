@@ -11,6 +11,7 @@ if (!fs.existsSync('public')) {
 try {
 	copyDir('./src/assets', `./public/assets`);
 	copy('./src/index.html', `./public/index.html`);
+	copy('./src/scripts/config.json', `./public/config.json`);
 	console.log(`✔ MERGER DONE`);
 } catch (error) {
 	console.log(`❌ ${error}`);

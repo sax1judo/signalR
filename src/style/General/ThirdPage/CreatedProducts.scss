@@ -1,0 +1,13 @@
+@media screen and (max-width: 730px) {
+	.setUpAddStrategyTable {
+		.modifyStrategyButtonsWrapperProducts {
+			margin-bottom: 1rem;
+			display: flex!important;
+			justify-content: center!important;
+			button {
+				font-size: 0.5rem!important;
+				min-width: 38%!important;
+			}
+		}
+	}
+}
