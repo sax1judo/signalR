@@ -237,7 +237,7 @@ const StrategiesTable = props => {
 		}
 		for (let selectedStrategy of selectedStrategiesObjectCopy) {
 			await httpRequestStartStopStrategy(
-				API.startStopStrategy + `${selectedStrategy.StrategyName}`,
+				API.startStopStrategy+selectedStrategy.StrategyType + `/${selectedStrategy.StrategyName}`,
 				'put',
 				startStopParam === 'stop' ? 'false' : 'true',
 			)
@@ -529,9 +529,12 @@ const StrategiesTable = props => {
 					type="button"
 					className="btn  addStrategyButton"
 					disabled={selectedStrategies.length === 0 ? true : false}
-					style={selectedStrategies.length === 0 ? { pointerEvents: 'none' } : { pointerEvents: 'auto' }}
+					style={
+						selectedStrategies.length === 0
+							? { pointerEvents: 'none', backgroundColor: '#28a745' }
+							: { pointerEvents: 'auto', backgroundColor: '#28a745' }
+					}
 					onClick={() => startStopStrategy('start')}
-					style={{ backgroundColor: '#28a745' }}
 				>
 					Start Strategy
 				</button>

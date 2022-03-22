@@ -6,12 +6,14 @@ import SecondPage from './components/Pages/SecondPage';
 import ThirdPage from './components/Pages/ThirdPage';
 import ModifyStrategyModal from './components/General/ModifyStrategyModal';
 import ModifyProductModal from './components/General/ModifyProductModal';
+import ModifyCryptoModal from './components/General/ModifyCryptoModal';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import AddProductModal from './components/General/AddProductModal';
 import AddStrategyModal from './components/General/AddStrategyModal';
 import LoginModal from './components/General/LoginModal';
 import FourthPage from './components/Pages/FourthPage';
 import FifthPage from './components/Pages/FifthPage';
+import SixthPage from './components/Pages/SixthPage';
 
 const App = () => {
 	const [isLogged, setIsLogged] = useState(false);
@@ -40,6 +42,9 @@ const App = () => {
 					<Route path="/auctionArbitrage">
 						<FifthPage isLogged={isLogged} />
 					</Route>
+					<Route path="/cryptoArbitrage">
+						<SixthPage isLogged={isLogged} />
+					</Route>
 					{/* PAGES END*/}
 					{/* MODALS START*/}
 					<Route path="/modifyStrategy">
@@ -47,6 +52,9 @@ const App = () => {
 					</Route>
 					<Route path="/modifyProduct">
 						<ModifyProductModal isLogged={isLogged} />
+					</Route>
+					<Route path="/modifyCrypto">
+						<ModifyCryptoModal isLogged={isLogged} />
 					</Route>
 					<Route path="/addProduct">
 						<AddProductModal isLogged={isLogged} />

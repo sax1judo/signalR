@@ -10,21 +10,24 @@ const LoginModal = props => {
 		username: '',
 		password: '',
 	});
-    const history = useHistory();
+	const history = useHistory();
 
 	useEffect(() => {
 		// console.log(formData);
 	}, [formData]);
 
 	const loginAction = () => {
-
-        if(formData.username==='henrique' && formData.password==='henrique')
-        setTimeout(() => {
-			props.isLoggedAction(true)
-            history.push("/strategies");
-        }, 500);
-
-    };
+		if (formData.username === 'henrique' && formData.password === 'henrique')
+			setTimeout(() => {
+				props.isLoggedAction(true);
+				history.push('/strategies');
+			}, 500);
+	};
+	const onKeyUp = event => {
+		if (event.charCode === 13) {
+			loginAction();
+		}
+	};
 	return (
 		<div className="modifyStrategyWrapper loginModalWrapper">
 			<div className="logo"></div>
@@ -37,6 +40,7 @@ const LoginModal = props => {
 						username: e.target.value,
 					})
 				}
+				onKeyPress={e => onKeyUp(e)}
 			/>
 			<input
 				type="password"
@@ -48,6 +52,7 @@ const LoginModal = props => {
 						password: e.target.value,
 					})
 				}
+				onKeyPress={e => onKeyUp(e)}
 			/>
 			<a id="login-forgot-password" href="#">
 				Forgot password? Reset here!
