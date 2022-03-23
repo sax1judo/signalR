@@ -385,6 +385,21 @@ const CryptoTable = props => {
 		setSelectedStrategies([]);
 		setSelectedStrategiesObject([]);
 	};
+	const stopAllStrategies = async () => {
+		for (let selectedStrategy of tableData.totalRecords) {
+			await httpRequestStartStopStrategy(
+				API.startStopStrategy + selectedStrategy.additionalInfo.StrategyType + `/${selectedStrategy.StrategyName}`,
+				'put',
+				'false',
+			).then(res => {
+				if (res.status === 200) {
+					getCryptoStrategies();
+				}
+			});
+		}
+		setSelectedStrategies([]);
+		setSelectedStrategiesObject([]);
+	};
 	useEffect(() => {
 		if (window.innerWidth < 1000) setLayout('mobile');
 		else setLayout('desktop');
@@ -482,8 +497,7 @@ const CryptoTable = props => {
 					? (newData[strategy].SpreadCalc =
 							fxData.FixedFX > 0
 								? (
-										(newData[strategy].Leg2BidPrice -
-											(newData[strategy].Leg1AskPrice - fxData.FixedFX)) /
+										(newData[strategy].Leg2BidPrice - (newData[strategy].Leg1AskPrice - fxData.FixedFX)) /
 										newData[strategy].Leg2BidPrice
 								  ).toFixed(5)
 								: (
