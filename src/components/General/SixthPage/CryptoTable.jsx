@@ -495,24 +495,28 @@ const CryptoTable = props => {
 				}
 				newData[strategy].Leg1Action === 'BUY'
 					? (newData[strategy].SpreadCalc =
-							fxData.FixedFX > 0
+							fxData.FixedFX !== 0
 								? (
-										(newData[strategy].Leg2BidPrice - (newData[strategy].Leg1AskPrice - fxData.FixedFX)) /
-										newData[strategy].Leg2BidPrice
+										((newData[strategy].Leg2BidPrice - newData[strategy].Leg1AskPrice / fxData.FixedFX) /
+											newData[strategy].Leg2BidPrice) *
+										100
 								  ).toFixed(5)
 								: (
-										(newData[strategy].Leg2BidPrice - (newData[strategy].Leg1AskPrice - fxData.FxSpotBid)) /
-										newData[strategy].Leg2BidPrice
+										((newData[strategy].Leg2BidPrice - newData[strategy].Leg1AskPrice / fxData.FxSpotBid) /
+											newData[strategy].Leg2BidPrice) *
+										100
 								  ).toFixed(5))
 					: (newData[strategy].SpreadCalc =
-							fxData.FixedFX > 0
+							fxData.FixedFX !== 0
 								? (
-										(newData[strategy].Leg1BidPrice / fxData.FixedFX - newData[strategy].Leg2AskPrice) /
-										newData[strategy].Leg2AskPrice
+										((newData[strategy].Leg1BidPrice / fxData.FixedFX - newData[strategy].Leg2AskPrice) /
+											newData[strategy].Leg2AskPrice) *
+										100
 								  ).toFixed(5)
 								: (
-										(newData[strategy].Leg1BidPrice / fxData.FxSpotAsk - newData[strategy].Leg2AskPrice) /
-										newData[strategy].Leg2AskPrice
+										((newData[strategy].Leg1BidPrice / fxData.FxSpotAsk - newData[strategy].Leg2AskPrice) /
+											newData[strategy].Leg2AskPrice) *
+										100
 								  ).toFixed(5));
 			}
 			if (overalAmountArray.length !== 0) {
@@ -549,30 +553,34 @@ const CryptoTable = props => {
 		if (props.diffTickerInput) {
 			let FxSpotBid = (props.diffTickerInput.bid_price - props.diffTickerInput.FixedFX) / 1000;
 			let FxSpotAsk = (props.diffTickerInput.ask_price - props.diffTickerInput.FixedFX) / 1000;
-			setFxData({ FxSpotBid: FxSpotBid, FxSpotAsk: FxSpotAsk, fixedFx: props.diffTickerInput.FixedFX });
+			setFxData({ FxSpotBid: props.diffTickerInput.FxSpotBid, FxSpotAsk: props.diffTickerInput.FxSpotAsk, FixedFX: props.diffTickerInput.FixedFX });
 			setTableData(prevData => {
 				for (let strategy in prevData.displayedRecords) {
 					let singleStrategy = prevData.displayedRecords[strategy];
 					singleStrategy.Leg1Action === 'BUY'
 						? (singleStrategy.SpreadCalc =
-								props.diffTickerInput.FixedFX > 0
+								props.diffTickerInput.FixedFX !== 0
 									? (
-											(singleStrategy.Leg2BidPrice - (singleStrategy.Leg1AskPrice - props.diffTickerInput.FixedFX)) /
-											singleStrategy.Leg2BidPrice
+											((singleStrategy.Leg2BidPrice - singleStrategy.Leg1AskPrice / props.diffTickerInput.FixedFX) /
+												singleStrategy.Leg2BidPrice) *
+											100
 									  ).toFixed(5)
 									: (
-											(singleStrategy.Leg2BidPrice - (singleStrategy.Leg1AskPrice - FxSpotBid)) /
-											singleStrategy.Leg2BidPrice
+											((singleStrategy.Leg2BidPrice - singleStrategy.Leg1AskPrice / props.diffTickerInput.FxSpotBid) /
+												singleStrategy.Leg2BidPrice) *
+											100
 									  ).toFixed(5))
 						: (singleStrategy.SpreadCalc =
-								props.diffTickerInput.FixedFX > 0
+								props.diffTickerInput.FixedFX !== 0
 									? (
-											(singleStrategy.Leg1BidPrice / props.diffTickerInput.FixedFX - singleStrategy.Leg2AskPrice) /
-											singleStrategy.Leg2AskPrice
+											((singleStrategy.Leg1BidPrice / props.diffTickerInput.FixedFX - singleStrategy.Leg2AskPrice) /
+												singleStrategy.Leg2AskPrice) *
+											100
 									  ).toFixed(5)
 									: (
-											(singleStrategy.Leg1BidPrice / FxSpotAsk - singleStrategy.Leg2AskPrice) /
-											singleStrategy.Leg2AskPrice
+											((singleStrategy.Leg1BidPrice / props.diffTickerInput.FxSpotAsk - singleStrategy.Leg2AskPrice) /
+												singleStrategy.Leg2AskPrice) *
+											100
 									  ).toFixed(5));
 				}
 				return { ...prevData };
