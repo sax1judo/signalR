@@ -5,7 +5,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { httpRequest } from '../../scripts/http';
 import { API } from '../../scripts/routes';
 
-const ModifyStrategyModal = props => {
+const ModifyCryptoModal = props => {
 	const [formData, setFormData] = useState({
 		Slippage: '',
 		LimitBuy: '',
@@ -14,8 +14,9 @@ const ModifyStrategyModal = props => {
 		pointsAway: '',
 		Leg1Ratio: '',
 		Leg2Ratio: '',
-		ClipMinimum: 0,
-		ClipMaximum: 0,
+		ClipMin: '',
+		ClipMax: '',
+		Buffer: '',
 	});
 	let history = useHistory();
 	let location = useLocation();
@@ -35,8 +36,9 @@ const ModifyStrategyModal = props => {
 			LimitPerDay,
 			Leg1Ratio,
 			Leg2Ratio,
-			ClipMinimum,
-			ClipMaximum,
+			ClipMin,
+			ClipMax,
+			Buffer,
 		}) => ({
 			spread,
 			pointsAway,
@@ -46,10 +48,15 @@ const ModifyStrategyModal = props => {
 			LimitPerDay,
 			Leg1Ratio,
 			Leg2Ratio,
-			ClipMinimum,
-			ClipMaximum,
+			ClipMin,
+			ClipMax,
+			Buffer,
 		}))(formData);
-		console.log(data);
+
+		data.ClipMin = parseFloat(data.ClipMin.toFixed(8));
+		data.ClipMax = parseFloat(data.ClipMax.toFixed(8));
+		data.Buffer = parseFloat(data.Buffer.toFixed(8));
+
 		httpRequest(
 			API.arbitrageStrategies + '/update' + `/${formData.StrategyType}` + `/${formData.strategyName}`,
 			'put',
@@ -67,7 +74,7 @@ const ModifyStrategyModal = props => {
 			spread: location.strategy[0].Spread,
 			strategyName: location.strategy[0].StrategyName,
 			active: location.strategy[0].StrategyActive,
-			StrategyType: location.strategy[0].StrategyType,
+			StrategyType: location.strategy[0].additionalInfo.StrategyType,
 			LimitBuy: location.strategy[0].additionalInfo.LimitBuy,
 			LimitSell: location.strategy[0].additionalInfo.LimitSell,
 			LimitPerDay: location.strategy[0].additionalInfo.LimitPerDay,
@@ -75,6 +82,11 @@ const ModifyStrategyModal = props => {
 			Slippage: location.strategy[0].additionalInfo.Slippage,
 			Leg1Ratio: location.strategy[0].additionalInfo.Leg1Ratio,
 			Leg2Ratio: location.strategy[0].additionalInfo.Leg2Ratio,
+			Leg1Ratio: location.strategy[0].additionalInfo.Leg1Ratio,
+			Leg2Ratio: location.strategy[0].additionalInfo.Leg2Ratio,
+			ClipMax: location.strategy[0].additionalInfo.ClipMax,
+			ClipMin: location.strategy[0].additionalInfo.ClipMin,
+			Buffer: location.strategy[0].additionalInfo.Buffer,
 		});
 	}, []);
 	useEffect(() => {
@@ -90,6 +102,34 @@ const ModifyStrategyModal = props => {
 							<th colSpan="4">Parameters</th>
 						</tr>
 
+						<tr>
+							<td>Clip Minimum:</td>
+							<td>
+								<input
+									type="number"
+									value={formData.ClipMin}
+									onChange={e =>
+										setFormData({
+											...formData,
+											ClipMin: parseFloat(e.target.value),
+										})
+									}
+								/>
+							</td>
+							<td>Clip Maximum:</td>
+							<td>
+								<input
+									type="number"
+									value={formData.ClipMax}
+									onChange={e =>
+										setFormData({
+											...formData,
+											ClipMax: parseFloat(e.target.value),
+										})
+									}
+								/>
+							</td>
+						</tr>
 						<tr>
 							<td>Slippage:</td>
 							<td>
@@ -203,6 +243,21 @@ const ModifyStrategyModal = props => {
 								/>
 							</td>
 						</tr>
+						<tr>
+							<td>Buffer:</td>
+							<td>
+								<input
+									type="number"
+									value={formData.Buffer}
+									onChange={e =>
+										setFormData({
+											...formData,
+											Buffer: parseFloat(e.target.value),
+										})
+									}
+								/>
+							</td>
+						</tr>
 					</tbody>
 				</table>
 				<div className="modifyStrategyButtonsWrapper">
@@ -217,4 +272,4 @@ const ModifyStrategyModal = props => {
 		</div>
 	);
 };
-export default ModifyStrategyModal;
+export default ModifyCryptoModal;
