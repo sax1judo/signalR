@@ -16,6 +16,7 @@ const ModifyCryptoModal = props => {
 		Leg2Ratio: '',
 		ClipMin: '',
 		ClipMax: '',
+		Buffer: '',
 	});
 	let history = useHistory();
 	let location = useLocation();
@@ -37,6 +38,7 @@ const ModifyCryptoModal = props => {
 			Leg2Ratio,
 			ClipMin,
 			ClipMax,
+			Buffer,
 		}) => ({
 			spread,
 			pointsAway,
@@ -48,10 +50,12 @@ const ModifyCryptoModal = props => {
 			Leg2Ratio,
 			ClipMin,
 			ClipMax,
+			Buffer,
 		}))(formData);
 
-		data.ClipMin = parseFloat((data.ClipMin).toFixed(8));
-		data.ClipMax = parseFloat((data.ClipMax).toFixed(8));
+		data.ClipMin = parseFloat(data.ClipMin.toFixed(8));
+		data.ClipMax = parseFloat(data.ClipMax.toFixed(8));
+		data.Buffer = parseFloat(data.Buffer.toFixed(8));
 
 		httpRequest(
 			API.arbitrageStrategies + '/update' + `/${formData.StrategyType}` + `/${formData.strategyName}`,
@@ -82,6 +86,7 @@ const ModifyCryptoModal = props => {
 			Leg2Ratio: location.strategy[0].additionalInfo.Leg2Ratio,
 			ClipMax: location.strategy[0].additionalInfo.ClipMax,
 			ClipMin: location.strategy[0].additionalInfo.ClipMin,
+			Buffer: location.strategy[0].additionalInfo.Buffer,
 		});
 	}, []);
 	useEffect(() => {
@@ -233,6 +238,21 @@ const ModifyCryptoModal = props => {
 										setFormData({
 											...formData,
 											Leg2Ratio: parseFloat(e.target.value),
+										})
+									}
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>Buffer:</td>
+							<td>
+								<input
+									type="number"
+									value={formData.Buffer}
+									onChange={e =>
+										setFormData({
+											...formData,
+											Buffer: parseFloat(e.target.value),
 										})
 									}
 								/>

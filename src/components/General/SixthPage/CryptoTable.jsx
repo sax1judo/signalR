@@ -215,6 +215,7 @@ const CryptoTable = props => {
 						};
 						//
 						let additionalInfo = (({
+							Buffer,
 							Slippage,
 							LimitBuy,
 							LimitSell,
@@ -227,6 +228,7 @@ const CryptoTable = props => {
 							ClipMax,
 							ClipMin,
 						}) => ({
+							Buffer,
 							Slippage,
 							LimitBuy,
 							LimitSell,
@@ -252,6 +254,7 @@ const CryptoTable = props => {
 						exclObj[strategy] = { StrategyName, ...exclObj[strategy], ...tickersDataObj, additionalInfo };
 						// excluding properties from table row
 						let {
+							Buffer,
 							Slippage,
 							LimitBuy,
 							LimitSell,
