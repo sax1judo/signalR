@@ -12,18 +12,7 @@ const CryptoTickersTable = props => {
 	const [tableData, setTableData] = useState({
 		properties: [],
 		totalRecords: [],
-		displayedRecords: [
-			{
-				ticker: 'DOLJ22',
-				bid_price: 0,
-				ask_price: 0,
-				last_price: 0,
-				Differential: 0,
-				FxSpotAsk: 0,
-				FxSpotBid: 0,
-				FixedFX: 0,
-			},
-		],
+		displayedRecords: [],
 		pageSize: 10,
 		page: 1,
 	});
@@ -161,8 +150,10 @@ const CryptoTickersTable = props => {
 						if (tickerInputField === key) {
 							ticker[tickerInputField] = value;
 						}
-						prevData.displayedRecords[tickers].FxSpotAsk = (prevData.displayedRecords[tickers].ask_price - prevData.displayedRecords[tickers].Differential) / 1000
-						prevData.displayedRecords[tickers].FxSpotBid = (prevData.displayedRecords[tickers].bid_price - prevData.displayedRecords[tickers].Differential) / 1000
+						prevData.displayedRecords[tickers].FxSpotAsk =
+							(prevData.displayedRecords[tickers].ask_price - prevData.displayedRecords[tickers].Differential) / 1000;
+						prevData.displayedRecords[tickers].FxSpotBid =
+							(prevData.displayedRecords[tickers].bid_price - prevData.displayedRecords[tickers].Differential) / 1000;
 					}
 				}
 			}
@@ -243,8 +234,8 @@ const CryptoTickersTable = props => {
 				for (let ticker in prevData.displayedRecords) {
 					getDifferential(prevData.displayedRecords[ticker].ticker).then(res => {
 						prevData.displayedRecords[ticker].Differential = res;
-						prevData.displayedRecords[ticker].FxSpotBid = (ticker.bid_price - res) / 1000;
-						prevData.displayedRecords[ticker].FxSpotAsk = (ticker.ask_price - res) / 1000;
+						prevData.displayedRecords[ticker].FxSpotBid = (prevData.displayedRecords[ticker].bid_price - res) / 1000;
+						prevData.displayedRecords[ticker].FxSpotAsk = (prevData.displayedRecords[ticker].ask_price - res) / 1000;
 					});
 					getFixedFx(prevData.displayedRecords[ticker].ticker).then(res => {
 						prevData.displayedRecords[ticker].FixedFX = res;
@@ -309,7 +300,7 @@ const CryptoTickersTable = props => {
 										{Object.keys(ticker).map((key, id) => {
 											let tableData = ticker[key];
 											return (
-												<td>
+												<td key={key + tableData}>
 													<input
 														style={{ padding: '0.4em' }}
 														type={key !== 'ticker' ? 'number' : 'string'}

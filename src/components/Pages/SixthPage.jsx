@@ -5,22 +5,14 @@ import CryptoTickersTable from '../General/SixthPage/CryptoTickersTable';
 import CryptoTable from '../General/SixthPage/CryptoTable';
 import { useHistory } from 'react-router-dom';
 import LiveOrders from '../General/SecondPage/LiveOrders';
+import { httpRequest } from '../../scripts/http';
 
 const SixthPage = props => {
 	const [connection, setConnection] = useState(null);
 	const [cryptoQuantity, setCryptoQuantity] = useState(null);
 	const [cryptoSpread, setCryptoSpread] = useState(null);
 	const [cryptoTicker, setCryptoTicker] = useState(null);
-	const [diffTicker, setDiffTicker] = useState({
-		ticker: 'DOLJ22',
-		bid_price: 0,
-		ask_price: 0,
-		last_price: 0,
-		Differential: 0,
-		FxSpotAsk: 0,
-		FxSpotBid: 0,
-		FixedFX: 0,
-	});
+	const [diffTicker, setDiffTicker] = useState();
 	const [diffTickerInput, setDiffTickerInput] = useState(null);
 	//problem with updating component, this is custom additional hook which helps to re-render when fixedFx is updated by user
 	const [flag, setFlag] = useState(0);
@@ -33,8 +25,22 @@ const SixthPage = props => {
 		setDiffTickerInput(value);
 		setFlag(flag + 1);
 	};
-
+	const getDol = async () => {
+		await httpRequest(API.dol, 'get').then(res => {
+			setDiffTicker({
+				ticker: res.data,
+				bid_price: 0,
+				ask_price: 0,
+				last_price: 0,
+				Differential: 0,
+				FxSpotAsk: 0,
+				FxSpotBid: 0,
+				FixedFX: 0,
+			});
+		});
+	};
 	useEffect(() => {
+		getDol();
 		const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
 		setConnection(newConnection);
 

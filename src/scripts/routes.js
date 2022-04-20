@@ -12,6 +12,7 @@ export var API = {
 	differential: '/strategies/differential/',
 	fixedFx: '/strategies/fixedFx/',
 	tenminutes: '/strategies/tenminutes/3/',
+	dol:'/products/details/dol'
 };
 
 export const setBaseApi = data => {
