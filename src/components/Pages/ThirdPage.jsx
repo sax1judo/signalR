@@ -17,7 +17,6 @@ const ThirdPage = props => {
 		httpRequest(API.getProductDetails + 'ib', 'get').then(res => {
 			var ibProducts = [];
 			Object.keys(res.data).map(prducts => {
-				let obj = {};
 				ibProducts.push(res.data[prducts]);
 			});
 			setIbProducts(ibProducts);
