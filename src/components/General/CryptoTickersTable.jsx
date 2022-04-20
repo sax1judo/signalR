@@ -1,20 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
-import '../../../style/General/SecondPage/TickersTable.scss';
-import sortIcon from '../../../assets/sortIcon.png';
-import sortAscIcon from '../../../assets/sortIconAsc.png';
-import Pagination from '../Pagination';
-import DropDown from '../DropDown';
-import Loader from '../Loader';
-import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http';
-import { API } from '../../../scripts/routes';
+import { API } from '../../scripts/routes';
+import { httpRequest, httpRequestStartStopStrategy } from '../../scripts/http';
+// components
+import Pagination from './Pagination';
+import DropDown from './DropDown';
+import Loader from './Loader';
+// styles
+import '../../style/General/TickersTable.scss';
+// assets
+import sortIcon from '../../assets/sortIcon.png';
+import sortAscIcon from '../../assets/sortIconAsc.png';
 
-const AuctionTickersTable = props => {
+const CryptoTickersTable = props => {
 	const [tableData, setTableData] = useState({
 		properties: [],
 		totalRecords: [],
-		displayedRecords: [
-			{ ticker: 'none', bidPrice: '-', askPrice: '-', lastPrice: '-', FxSpotAsk: '-', FxSpotBid: '-' },
-		],
+		displayedRecords: [],
 		pageSize: 10,
 		page: 1,
 	});
@@ -100,32 +101,67 @@ const AuctionTickersTable = props => {
 			return mobileData;
 		} else return null;
 	};
-	const handleDlfferentialChange = (ticker, value) => {
+	const handleDlfferentialChange = (ticker, value, field) => {
 		setTableData(prevData => {
 			for (let tickers in prevData.displayedRecords) {
 				if (prevData.displayedRecords[tickers].ticker === ticker.ticker) {
-					prevData.displayedRecords[tickers].Differential = parseFloat(value);
-					prevData.displayedRecords[tickers].FxSpotAsk =
-						(prevData.displayedRecords[tickers].ask_price - parseFloat(value)) / 1000;
-					prevData.displayedRecords[tickers].FxSpotBid =
-						(prevData.displayedRecords[tickers].bid_price - parseFloat(value)) / 1000;
+					if (field === 'differential') {
+						prevData.displayedRecords[tickers].Differential = parseFloat(value);
+						prevData.displayedRecords[tickers].FxSpotAsk =
+							(prevData.displayedRecords[tickers].ask_price - parseFloat(value)) / 1000;
+						prevData.displayedRecords[tickers].FxSpotBid =
+							(prevData.displayedRecords[tickers].bid_price - parseFloat(value)) / 1000;
+					} else {
+						prevData.displayedRecords[tickers].FixedFX = parseFloat(value);
+					}
 				}
 			}
 			return { ...prevData };
 		});
 	};
 	const getDifferential = async tickerName => {
-		const data = await httpRequest(API.differential + '3/' + tickerName, 'get');
+		const data = await httpRequest(API.differential + '4/' + tickerName, 'get');
 		return data.data;
 	};
 	const putDifferential = async (ticker, value) => {
 		let parsedValue = parseFloat(value);
-		const data = await httpRequestStartStopStrategy(API.differential + '3/' + ticker.ticker, 'put', parsedValue);
+		const data = await httpRequestStartStopStrategy(API.differential + '4/' + ticker.ticker, 'put', parsedValue);
 
 		if (data.status === 200) {
-			handleDlfferentialChange(ticker, parsedValue);
-			props.handleDiffTickerInputChange(parseFloat(parsedValue));
+			handleDlfferentialChange(ticker, parsedValue, 'differential');
+			props.handleDiffTickerInputChange(ticker);
 		}
+	};
+	const getFixedFx = async tickerName => {
+		const data = await httpRequest(API.fixedFx + '4/' + tickerName, 'get');
+		return data.data;
+	};
+	const putFixedFx = async (ticker, value) => {
+		let parsedValue = parseFloat(value);
+		const data = await httpRequestStartStopStrategy(API.fixedFx + '4/' + ticker.ticker, 'put', parsedValue);
+
+		if (data.status === 200) {
+			handleDlfferentialChange(ticker, parsedValue, 'fixedFx');
+			props.handleDiffTickerInputChange(ticker);
+		}
+	};
+	const handleInputChange = (ticker, key, value) => {
+		setTableData(prevData => {
+			for (let tickers in prevData.displayedRecords) {
+				if (prevData.displayedRecords[tickers].ticker === ticker.ticker) {
+					for (let tickerInputField in ticker) {
+						if (tickerInputField === key) {
+							ticker[tickerInputField] = value;
+						}
+						prevData.displayedRecords[tickers].FxSpotAsk =
+							(prevData.displayedRecords[tickers].ask_price - prevData.displayedRecords[tickers].Differential) / 1000;
+						prevData.displayedRecords[tickers].FxSpotBid =
+							(prevData.displayedRecords[tickers].bid_price - prevData.displayedRecords[tickers].Differential) / 1000;
+					}
+				}
+			}
+			return { ...prevData };
+		});
 	};
 	//TICKERS DATA
 	useEffect(() => {
@@ -134,7 +170,7 @@ const AuctionTickersTable = props => {
 				let newData = tableData.totalRecords;
 				let { time_stamp, market, trading_app, bid_quantity, ask_quantity, position, amount, ...newMessage } =
 					props.diffTicker;
-				newMessage = { ...newMessage, Differential: 0, FxSpotBid: 0, FxSpotAsk: 0 };
+				newMessage = { ...newMessage, Differential: 0, FxSpotBid: 0, FxSpotAsk: 0, FixedFX: 0 };
 				let swapped = false;
 
 				if (newData.length === 0) {
@@ -195,7 +231,6 @@ const AuctionTickersTable = props => {
 			setTickersData();
 		}
 	}, [props.diffTicker]);
-
 	useEffect(() => {
 		if (tableData.totalRecords.length === ticker.current) {
 			setTableData(prevData => {
@@ -204,7 +239,10 @@ const AuctionTickersTable = props => {
 						prevData.displayedRecords[ticker].Differential = res;
 						prevData.displayedRecords[ticker].FxSpotBid = (ticker.bid_price - res) / 1000;
 						prevData.displayedRecords[ticker].FxSpotAsk = (ticker.ask_price - res) / 1000;
-						props.handleDiffTickerInputChange(res);
+					});
+					getFixedFx(prevData.displayedRecords[ticker].ticker).then(res => {
+						prevData.displayedRecords[ticker].FixedFX = res;
+						props.handleDiffTickerInputChange(prevData.displayedRecords[ticker]);
 					});
 				}
 				return { ...prevData };
@@ -212,11 +250,27 @@ const AuctionTickersTable = props => {
 			ticker.current = ticker.current + 1;
 		}
 	}, [tableData]);
+	useEffect(() => {
+		setTableData(prevData => {
+			for (let ticker in prevData.displayedRecords) {
+				getDifferential(prevData.displayedRecords[ticker].ticker).then(res => {
+					prevData.displayedRecords[ticker].Differential = res;
+					prevData.displayedRecords[ticker].FxSpotBid = (prevData.displayedRecords[ticker].bid_price - res) / 1000;
+					prevData.displayedRecords[ticker].FxSpotAsk = (prevData.displayedRecords[ticker].ask_price - res) / 1000;
+				});
+				getFixedFx(prevData.displayedRecords[ticker].ticker).then(res => {
+					prevData.displayedRecords[ticker].FixedFX = res;
+					props.handleDiffTickerInputChange(prevData.displayedRecords[ticker]);
+				});
+			}
+			return { ...prevData };
+		});
+	}, []);
 	return (
 		<div className="secondPageStrategyTable tickersTableWrapper" style={{ color: 'white' }}>
 			{Object.keys(tableData.displayedRecords).length !== 0 ? (
 				<>
-					<table>
+					<table style={{ tableLayout: 'fixed' }}>
 						<tbody className="tableDateCentered">
 							<tr className="tableHeaderColor">
 								<th colSpan={Object.keys(tableData.displayedRecords[0]).length}>Tickers</th>
@@ -248,15 +302,17 @@ const AuctionTickersTable = props => {
 									<tr key={'tickerData' + id} className="tableData">
 										{Object.keys(ticker).map((key, id) => {
 											let tableData = ticker[key];
-											return key !== 'Differential' ? (
-												<td key={id}>{tableData}</td>
-											) : (
+											return (
 												<td>
 													<input
-														type="number"
+														style={{ padding: '0.4em' }}
+														type={key !== 'ticker' ? 'number' : 'string'}
 														value={tableData}
 														onChange={e => {
-															putDifferential(ticker, e.target.value);
+															if (key === 'Differential') putDifferential(ticker, e.target.value);
+															else if (key === 'FixedFX') putFixedFx(ticker, e.target.value);
+															else if (key === 'FxSpotAsk' || key === 'FxSpotBid') return;
+															else handleInputChange(ticker, key, e.target.value);
 														}}
 													></input>
 												</td>
@@ -286,4 +342,4 @@ const AuctionTickersTable = props => {
 		</div>
 	);
 };
-export default AuctionTickersTable;
+export default CryptoTickersTable;

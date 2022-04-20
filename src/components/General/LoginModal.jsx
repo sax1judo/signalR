@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import '../../style/General/LoginModal.scss';
-import '../../style/General/ModifyStrategyModal.scss';
 import { useHistory } from 'react-router-dom';
-import { httpRequestStartStopStrategy } from '../../scripts/http';
-import { API } from '../../scripts/routes';
+// styles
+import '../../style/General/ModifyCryptoModal.scss';
+import '../../style/General/LoginModal.scss';
 
 const LoginModal = props => {
 	const [formData, setFormData] = useState({
@@ -17,6 +16,7 @@ const LoginModal = props => {
 	}, [formData]);
 
 	const loginAction = () => {
+		// hardcoded , waiting for backend route
 		if (formData.username === 'henrique' && formData.password === 'Henrique1!')
 			setTimeout(() => {
 				props.isLoggedAction(true);

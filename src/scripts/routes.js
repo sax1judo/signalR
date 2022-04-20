@@ -2,7 +2,7 @@ var baseAPI = '';
 export var API = {
 	signalRChannel: '/strategyState',
 	arbitrageStrategies: '/strategies',
-	arbitrageProduct: '/products/',
+	product: '/products/',
 	startStopStrategy: '/strategies/active/',
 	loadStrategy: '/strategies/load/',
 	getProductAliasFunctionNames: '/products/productAliasFunctionNames',

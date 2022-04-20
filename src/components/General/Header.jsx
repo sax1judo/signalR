@@ -1,16 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import '../../style/General/Header.scss';
+import { useHistory } from 'react-router-dom';
+// components
 import { NavLink } from 'react-router-dom';
 import ComponentWrapper from './ComponentWrapper';
-import { useHistory } from 'react-router-dom';
 import hideNavbarIcon from '../../assets/hideNavbar.svg';
 import strategiesIcon from '../../assets/strategies.svg';
-import productsIcon from '../../assets/products.svg';
-import arbitrageMonitoringIcon from '../../assets/arbitrageMonitoring.svg';
-import stockMonitoringIcon from '../../assets/stockMonitoring.svg';
-import auctionMonitoring from '../../assets/auctionMonitoring.svg';
 import logOutIcon from '../../assets/logOut.svg';
 import cryptoIcon from '../../assets/bitCoinMonitoring.svg';
+// styles
+import '../../style/General/Header.scss';
 
 const Header = props => {
 	const [state, setState] = useState('');
@@ -46,69 +44,13 @@ const Header = props => {
 					<ul className="navigationLinks">
 						<li>
 							<NavLink activeClassName="is-active" exact to="/strategies">
-								Strategies
+								Crypto Strategies
 							</NavLink>
 							<div
 								className="navbarIcon"
 								style={{ backgroundImage: `url(${strategiesIcon})` }}
 								onClick={() => {
 									history.push('/strategies');
-								}}
-							>
-								{' '}
-							</div>
-						</li>
-						<li>
-							<NavLink activeClassName="is-active" exact to="/products">
-								Products
-							</NavLink>
-							<div
-								className="navbarIcon"
-								style={{ backgroundImage: `url(${productsIcon})` }}
-								onClick={() => {
-									history.push('/products');
-								}}
-							>
-								{' '}
-							</div>
-						</li>
-						<li>
-							<NavLink activeClassName="is-active" to="/arbitrageMonitoring">
-								Arbitrage Monitoring
-							</NavLink>
-							<div
-								className="navbarIcon"
-								style={{ backgroundImage: `url(${arbitrageMonitoringIcon})` }}
-								onClick={() => {
-									history.push('/arbitrageMonitoring');
-								}}
-							>
-								{' '}
-							</div>
-						</li>
-						<li>
-							<NavLink activeClassName="is-active" to="/stockArbitrage">
-								Stock Monitoring
-							</NavLink>
-							<div
-								className="navbarIcon"
-								style={{ backgroundImage: `url(${stockMonitoringIcon})` }}
-								onClick={() => {
-									history.push('/stockArbitrage');
-								}}
-							>
-								{' '}
-							</div>
-						</li>
-						<li>
-							<NavLink activeClassName="is-active" to="/auctionArbitrage">
-								Auction Monitoring
-							</NavLink>
-							<div
-								className="navbarIcon"
-								style={{ backgroundImage: `url(${auctionMonitoring})` }}
-								onClick={() => {
-									history.push('/auctionArbitrage');
 								}}
 							>
 								{' '}
@@ -169,86 +111,13 @@ const Header = props => {
 									to="/strategies"
 									onClick={() => document.getElementById('mobileNavigationWrapper').classList.toggle('visible')}
 								>
-									Strategies
+								Crypto Strategies
 								</NavLink>
 								<div
 									className="navbarIcon"
 									style={{ backgroundImage: `url(${strategiesIcon})` }}
 									onClick={() => {
 										history.push('/strategies');
-									}}
-								>
-									{' '}
-								</div>
-							</li>
-							<li>
-								<NavLink
-									activeClassName="is-active"
-									exact
-									to="/products"
-									onClick={() => document.getElementById('mobileNavigationWrapper').classList.toggle('visible')}
-								>
-									Products
-								</NavLink>
-								<div
-									className="navbarIcon"
-									style={{ backgroundImage: `url(${productsIcon})` }}
-									onClick={() => {
-										history.push('/products');
-									}}
-								>
-									{' '}
-								</div>
-							</li>
-							<li>
-								<NavLink
-									activeClassName="is-active"
-									to="/arbitrageMonitoring"
-									onClick={() => document.getElementById('mobileNavigationWrapper').classList.toggle('visible')}
-								>
-									Arbitrage Monitoring
-								</NavLink>
-								<div
-									className="navbarIcon"
-									style={{ backgroundImage: `url(${arbitrageMonitoringIcon})` }}
-									onClick={() => {
-										history.push('/arbitrageMonitoring');
-									}}
-								>
-									{' '}
-								</div>
-							</li>
-							<li>
-								<NavLink
-									activeClassName="is-active"
-									to="/stockArbitrage"
-									onClick={() => document.getElementById('mobileNavigationWrapper').classList.toggle('visible')}
-								>
-									Stock Monitoring
-								</NavLink>
-								<div
-									className="navbarIcon"
-									style={{ backgroundImage: `url(${stockMonitoringIcon})` }}
-									onClick={() => {
-										history.push('/stockArbitrage');
-									}}
-								>
-									{' '}
-								</div>
-							</li>
-							<li>
-								<NavLink
-									activeClassName="is-active"
-									to="/auctionArbitrage"
-									onClick={() => document.getElementById('mobileNavigationWrapper').classList.toggle('visible')}
-								>
-									Auction Monitoring
-								</NavLink>
-								<div
-									className="navbarIcon"
-									style={{ backgroundImage: `url(${auctionMonitoring})` }}
-									onClick={() => {
-										history.push('/auctionArbitrage');
 									}}
 								>
 									{' '}
@@ -264,7 +133,7 @@ const Header = props => {
 								</NavLink>
 								<div
 									className="navbarIcon"
-									style={{ backgroundImage: `url(${auctionMonitoring})` }}
+									style={{ backgroundImage: `url(${cryptoIcon})` }}
 									onClick={() => {
 										history.push('/cryptoArbitrage');
 									}}

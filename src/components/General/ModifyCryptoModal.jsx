@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import '../../style/General/ModifyStrategyModal.scss';
-import { NavLink } from 'react-router-dom';
 import { useHistory, useLocation } from 'react-router-dom';
 import { httpRequest } from '../../scripts/http';
 import { API } from '../../scripts/routes';
+// styles
+import '../../style/General/ModifyCryptoModal.scss';
 
 const ModifyCryptoModal = props => {
 	const [formData, setFormData] = useState({

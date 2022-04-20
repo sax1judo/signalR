@@ -1,10 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
-import '../../../style/General/SecondPage/LiveOrders.scss';
 import { HubConnectionBuilder } from '@microsoft/signalr';
-import { API } from '../../../scripts/routes';
-import Loader from '../Loader';
-import sortIcon from '../../../assets/sortIcon.png';
-import sortAscIcon from '../../../assets/sortIconAsc.png';
+import { API } from '../../scripts/routes';
+// components
+import Loader from './Loader';
+// styles
+import '../../style/General/LiveOrders.scss';
+// assets
+import sortIcon from '../../assets/sortIcon.png';
+import sortAscIcon from '../../assets/sortIconAsc.png';
 
 const LiveOrders = props => {
 	const [connection, setConnection] = useState(null);

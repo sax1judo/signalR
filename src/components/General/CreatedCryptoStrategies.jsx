@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import '../../../style/General/FirstPage/StrategiesCreatedTable.scss';
+import { API } from '../../scripts/routes';
+import { httpRequest, httpRequestStartStopStrategy } from '../../scripts/http';
+// components
 import { NavLink } from 'react-router-dom';
-import sortIcon from '../../../assets/sortIcon.png';
-import sortAscIcon from '../../../assets/sortIconAsc.png';
-import { httpRequest, httpRequestStartStopStrategy } from '../../../scripts/http';
-import { API } from '../../../scripts/routes';
-import Pagination from '../Pagination';
-import DropDown from '../DropDown';
-import Loader from '../Loader';
+import Pagination from './Pagination';
+import DropDown from './DropDown';
+import Loader from './Loader';
+// styles
+import '../../style/General/CreatedCryptoStrategies.scss';
+// assets
+import sortAscIcon from '../../assets/sortIconAsc.png';
+import sortIcon from '../../assets/sortIcon.png';
 
-const StrategiesCreatedTable = props => {
+const CreatedCryptoStrategies = props => {
 	const stateTableDataColor = {
 		INACTIVE: { color: '#bca819' },
 		ACTIVE: { color: '#099667' },
@@ -31,7 +34,7 @@ const StrategiesCreatedTable = props => {
 	const [selectedStrategies, setSelectedStrategies] = useState([]);
 	const [selectedStrategiesObject, setSelectedStrategiesObject] = useState([]);
 
-	const getArbitrageStrategies = () => {
+	const getCryptoStrategies = () => {
 		httpRequest(API.arbitrageStrategies + '/read/' + `${props.pageNumber}` + '?onlyLoad=false', 'get').then(res => {
 			var modifyResponse = [];
 			Object.keys(res.data).map(strategyKey => {
@@ -40,6 +43,7 @@ const StrategiesCreatedTable = props => {
 					if (obj[strategy] !== null) {
 						let StrategyName = obj[strategy].Leg1Action + obj[strategy].Leg1Ticker + '_' + obj[strategy].Leg2Ticker;
 						let additionalInfo = (({
+							Buffer,
 							Slippage,
 							LimitBuy,
 							LimitSell,
@@ -48,7 +52,11 @@ const StrategiesCreatedTable = props => {
 							Load,
 							Leg1Ratio,
 							Leg2Ratio,
+							StrategyType,
+							ClipMax,
+							ClipMin,
 						}) => ({
+							Buffer,
 							Slippage,
 							LimitBuy,
 							LimitSell,
@@ -57,6 +65,9 @@ const StrategiesCreatedTable = props => {
 							Load,
 							Leg1Ratio,
 							Leg2Ratio,
+							StrategyType,
+							ClipMax,
+							ClipMin,
 						}))(obj[strategy]);
 
 						obj[strategy] = { StrategyName, additionalInfo, ...obj[strategy] };
@@ -133,7 +144,7 @@ const StrategiesCreatedTable = props => {
 				param,
 			).then(res => {
 				if (res.status === 200) {
-					getArbitrageStrategies();
+					getCryptoStrategies();
 				}
 			});
 		}
@@ -179,12 +190,9 @@ const StrategiesCreatedTable = props => {
 		}
 	};
 	useEffect(() => {
-		getArbitrageStrategies();
+		getCryptoStrategies();
 	}, []);
 
-	useEffect(() => {
-		// console.log(tableData);
-	}, [tableData]);
 	return (
 		<div className="setUpAddStrategyTable">
 			{tableData.displayedRecords.length !== 0 ? (
@@ -270,7 +278,7 @@ const StrategiesCreatedTable = props => {
 						>
 							<NavLink
 								to={{
-									pathname: '/modifyStrategy',
+									pathname: '/modifyCrypto',
 									strategy: selectedStrategiesObject,
 								}}
 							>
@@ -303,4 +311,4 @@ const StrategiesCreatedTable = props => {
 		</div>
 	);
 };
-export default StrategiesCreatedTable;
+export default CreatedCryptoStrategies;

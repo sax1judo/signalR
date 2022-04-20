@@ -1,23 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import StrategiesTable from '../General/SecondPage/Strategies';
-import '../../style/Pages/SecondPage.scss';
-import LiveOrders from '../General/SecondPage/LiveOrders';
-import ArbitrageTickersTable from '../General/SecondPage/ArbitrageTickersTable';
 import { HubConnectionBuilder } from '@microsoft/signalr';
-import { API } from '../../scripts/routes';
 import { useHistory } from 'react-router-dom';
+import { httpRequest } from '../../scripts/http';
+import { API } from '../../scripts/routes';
+// components
+import CryptoTickersTable from '../General/CryptoTickersTable';
+import CryptoTable from '../General/CryptoTable';
+import LiveOrders from '../General/LiveOrders';
+//styles
+import '../../style/Pages/SecondPage.scss'
 
 const SecondPage = props => {
 	const [connection, setConnection] = useState(null);
-	const [arbitrageQuantity, setArbitrageQuantity] = useState(null);
-	const [arbitrageSpread, setArbitrageSpread] = useState(null);
-	const [tickerMessage, setTickerMessage] = useState(null);
+	const [cryptoQuantity, setCryptoQuantity] = useState(null);
+	const [cryptoSpread, setCryptoSpread] = useState(null);
+	const [cryptoTicker, setCryptoTicker] = useState(null);
+	const [diffTicker, setDiffTicker] = useState();
+	const [diffTickerInput, setDiffTickerInput] = useState(null);
+	//problem with updating component, this is custom additional hook which helps to re-render when fixedFx is updated by user
+	const [flag, setFlag] = useState(0);
 
 	//REDIRECT IF IT'S NOT LOGGED
 	const history = useHistory();
 	if (!props.isLogged) history.push('/');
 
+	const handleDiffTickerInputChange = value => {
+		setDiffTickerInput(value);
+		setFlag(flag + 1);
+	};
+	const getDol = async () => {
+		await httpRequest(API.product + 'details/dol', 'get').then(res => {
+			setDiffTicker({
+				ticker: res.data,
+				bid_price: 0,
+				ask_price: 0,
+				last_price: 0,
+				Differential: 0,
+				FxSpotAsk: 0,
+				FxSpotBid: 0,
+				FixedFX: 0,
+			});
+		});
+	};
+
 	useEffect(() => {
+		getDol();
 		const newConnection = new HubConnectionBuilder().withUrl(API.signalRChannel).withAutomaticReconnect().build();
 		setConnection(newConnection);
 
@@ -26,7 +53,6 @@ const SecondPage = props => {
 		};
 	}, []);
 
-	//TICKERS DATA
 	useEffect(() => {
 		if (connection) {
 			connection
@@ -34,14 +60,17 @@ const SecondPage = props => {
 				.then(result => {
 					console.log('Connected!');
 
-					connection.on('ArbitrageQuantity', message => {
-						setArbitrageQuantity(JSON.parse(message));
+					connection.on('CryptoarbitrageQuantity', message => {
+						setCryptoQuantity(JSON.parse(message));
 					});
-					connection.on('ArbitrageSpread', message => {
-						setArbitrageSpread(JSON.parse(message));
+					connection.on('CryptoarbitrageSpread', message => {
+						setCryptoSpread(JSON.parse(message));
 					});
-					connection.on('ArbitragePrices', message => {
-						setTickerMessage(JSON.parse(message));
+					connection.on('CryptoarbitragePrices', message => {
+						setCryptoTicker(JSON.parse(message));
+					});
+					connection.on('DiffPrices', message => {
+						setDiffTicker(JSON.parse(message));
 					});
 				})
 				.catch(e => console.log('Connection failed: ', e));
@@ -50,21 +79,27 @@ const SecondPage = props => {
 			setConnection(null);
 		};
 	}, [connection]);
-	useEffect(() => {}, [arbitrageSpread, arbitrageQuantity]);
+
 	return (
 		<div className="strategiesSecondPageWrapper">
 			<div className="futuresArbitrageStrategies">
-				<h4 style={{ textAlign: 'center' }}>Futures Arbitrage Monitoring</h4>
-				{/* <ConnectionMonitoring /> */}
-				<ArbitrageTickersTable tickerMessage={tickerMessage} />
+				<h4 style={{ textAlign: 'center' }}>Crypto Arbitrage Monitoring</h4>
+				<CryptoTickersTable diffTicker={diffTicker} handleDiffTickerInputChange={handleDiffTickerInputChange} />
 				<div>
-					<StrategiesTable arbitrageSpread={arbitrageSpread} arbitrageQuantity={arbitrageQuantity} />
+					<CryptoTable
+						cryptoSpread={cryptoSpread}
+						cryptoQuantity={cryptoQuantity}
+						cryptoTicker={cryptoTicker}
+						diffTicker={diffTicker}
+						diffTickerInput={diffTickerInput}
+						flag={flag}
+					/>
 				</div>
 			</div>
 			<div className="liveOrdersWrapper">
-				<h4 style={{ textAlign: 'center' }}>Live Orders</h4>
+				<h4 style={{ textAlign: 'center' }}>Crypto Live Orders</h4>
 				<div>
-					<LiveOrders ordersChannel="ArbitrageOrders" tickerMessage={tickerMessage} />
+					<LiveOrders ordersChannel="CryptoarbitrageOrders" />
 				</div>
 			</div>
 		</div>
