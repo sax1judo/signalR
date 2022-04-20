@@ -237,8 +237,8 @@ const CryptoTickersTable = props => {
 				for (let ticker in prevData.displayedRecords) {
 					getDifferential(prevData.displayedRecords[ticker].ticker).then(res => {
 						prevData.displayedRecords[ticker].Differential = res;
-						prevData.displayedRecords[ticker].FxSpotBid = (ticker.bid_price - res) / 1000;
-						prevData.displayedRecords[ticker].FxSpotAsk = (ticker.ask_price - res) / 1000;
+						prevData.displayedRecords[ticker].FxSpotBid = (prevData.displayedRecords[ticker].bid_price - res) / 1000;
+						prevData.displayedRecords[ticker].FxSpotAsk = (prevData.displayedRecords[ticker].ask_price - res) / 1000;
 					});
 					getFixedFx(prevData.displayedRecords[ticker].ticker).then(res => {
 						prevData.displayedRecords[ticker].FixedFX = res;
@@ -303,7 +303,7 @@ const CryptoTickersTable = props => {
 										{Object.keys(ticker).map((key, id) => {
 											let tableData = ticker[key];
 											return (
-												<td>
+												<td key={key + tableData}>
 													<input
 														style={{ padding: '0.4em' }}
 														type={key !== 'ticker' ? 'number' : 'string'}

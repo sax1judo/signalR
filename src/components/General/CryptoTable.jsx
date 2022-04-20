@@ -4,7 +4,6 @@ import { getUnique } from '../../scripts/common';
 import { API } from '../../scripts/routes';
 // components
 import { NavLink } from 'react-router-dom';
-import ComponentWrapper from './ComponentWrapper';
 import Pagination from './Pagination';
 import DropDown from './DropDown';
 import Loader from './Loader';
@@ -317,38 +316,7 @@ const CryptoTable = props => {
 			return mobileData;
 		} else return null;
 	};
-	const handleAdditionalInputFieldChange = (strategyName, sellBuy, inputValue) => {
-		setTableData(prevData => {
-			for (let strategy in prevData.displayedRecords) {
-				if (prevData.displayedRecords[strategy].StrategyName === strategyName) {
-					sellBuy
-						? (prevData.displayedRecords[strategy].additionalInfo.Leg1QuantityBuyInput = parseFloat(inputValue))
-						: (prevData.displayedRecords[strategy].additionalInfo.Leg1QuantitySellInput = parseFloat(inputValue));
-				}
-			}
-			return { ...prevData };
-		});
-	};
-	const handleStartCycle = async strategy => {
-		let data = { leg1Quantity: 0, leg1Price: 0, leg2Quantity: 0, leg2Price: 0 };
-		data.leg1Quantity = strategy.additionalInfo.Leg1QuantityBuyInput;
-		data.leg2Quantity =
-			(strategy.additionalInfo.Leg1QuantityBuyInput * strategy.additionalInfo.Leg2Ratio) /
-			strategy.additionalInfo.Leg1Ratio;
 
-		if (strategy.Leg1Action === 'BUY') {
-			data.leg1Price = strategy.Leg1AskPrice;
-			data.leg2Price = strategy.Leg2BidPrice;
-		} else {
-			data.leg1Price = strategy.Leg1BidPrice;
-			data.leg2Price = strategy.Leg2AskPrice;
-		}
-		await httpRequest(API.startCycle + '2/' + `${strategy.StrategyName}`, 'put', data).then(res => {
-			if (res.status === 200) {
-				getCryptoStrategies();
-			}
-		});
-	};
 	const unloadStrategy = async () => {
 		let totalRecords = [];
 		for (let strategy of tableData.totalRecords) {
@@ -476,14 +444,12 @@ const CryptoTable = props => {
 		if (tableData.displayedRecords.length !== 0) {
 			for (let strategy in newData) {
 				if (newData[strategy].Leg1Ticker === props.cryptoTicker.ticker) {
-					// newData[strategy].Leg1LastPrice = props.cryptoTicker.last_price;
 					newData[strategy].Leg1BidPrice = props.cryptoTicker.bid_price;
 					newData[strategy].Leg1AskPrice = props.cryptoTicker.ask_price;
 					newData[strategy].additionalInfo.Leg1TickerAmount = props.cryptoTicker.amount;
 					newData[strategy].additionalInfo.Leg1TickerPosition = props.cryptoTicker.position;
 					overalAmountArray.push(props.cryptoTicker.amount);
 				} else if (newData[strategy].Leg2Ticker === props.cryptoTicker.ticker) {
-					// newData[strategy].Leg2LastPrice = props.cryptoTicker.last_price;
 					newData[strategy].Leg2BidPrice = props.cryptoTicker.bid_price;
 					newData[strategy].Leg2AskPrice = props.cryptoTicker.ask_price;
 					newData[strategy].additionalInfo.Leg2TickerAmount = props.cryptoTicker.amount;
@@ -547,8 +513,6 @@ const CryptoTable = props => {
 	}, [props.cryptoTicker]);
 	useEffect(() => {
 		if (props.diffTickerInput) {
-			let FxSpotBid = (props.diffTickerInput.bid_price - props.diffTickerInput.FixedFX) / 1000;
-			let FxSpotAsk = (props.diffTickerInput.ask_price - props.diffTickerInput.FixedFX) / 1000;
 			setFxData({
 				FxSpotBid: props.diffTickerInput.FxSpotBid,
 				FxSpotAsk: props.diffTickerInput.FxSpotAsk,
@@ -587,48 +551,11 @@ const CryptoTable = props => {
 			});
 		}
 	}, [props.diffTickerInput, props.flag, props.diffTicker]);
-	// useEffect(() => {
-	// 	if (props.diffTickerInput) {
-	// 		let FxSpotBid = (props.diffTickerInput.bid_price - props.diffTickerInput.FixedFX) / 1000;
-	// 		let FxSpotAsk = (props.diffTickerInput.ask_price - props.diffTickerInput.FixedFX) / 1000;
 
-	// 		setTableData(prevData => {
-	// 			for (let strategy in prevData.displayedRecords) {
-	// 				let singleStrategy = prevData.displayedRecords[strategy];
-	// 				singleStrategy.Leg1Action === 'BUY'
-	// 					? (singleStrategy.SpreadCalc =
-	// 							props.diffTickerInput.FixedFX > 0
-	// 								? (
-	// 										(singleStrategy.Leg2BidPrice - (singleStrategy.Leg1AskPrice - props.diffTickerInput)) /
-	// 										singleStrategy.Leg2BidPrice
-	// 								  ).toFixed(5)
-	// 								: (
-	// 										(singleStrategy.Leg2BidPrice - (singleStrategy.Leg1AskPrice - FxSpotBid)) /
-	// 										singleStrategy.Leg2BidPrice
-	// 								  ).toFixed(5))
-	// 					: (singleStrategy.SpreadCalc =
-	// 							props.diffTickerInput.FixedFX > 0
-	// 								? (
-	// 										(singleStrategy.Leg1BidPrice / props.diffTickerInput - singleStrategy.Leg2AskPrice) /
-	// 										singleStrategy.Leg2AskPrice
-	// 								  ).toFixed(5)
-	// 								: (
-	// 										(singleStrategy.Leg1BidPrice / FxSpotAsk - singleStrategy.Leg2AskPrice) /
-	// 										singleStrategy.Leg2AskPrice
-	// 								  ).toFixed(5));
-	// 			}
-	// 			return { ...prevData };
-	// 		});
-	// 	}
-	// }, [props.diffTicker]);
 	return (
 		<div className="secondPageStrategyTable">
 			{Object.keys(tableData.displayedRecords).length !== 0 ? (
 				<>
-					{/* <div style={{ float: 'right', marginBottom: '0.5rem' }}>
-						Overall Long : {overall.long} $<br></br>
-						Overal Short : {overall.short} $
-					</div> */}
 					<table>
 						<tbody className="tableDateCentered">
 							<tr className="tableHeaderColor">
@@ -641,7 +568,7 @@ const CryptoTable = props => {
 									if (title === 'Spread Buy' || title === 'Spread Sell' || title === 'Spread Calc')
 										title = title + ' (%)';
 									return title === 'Details' ? null : (
-										<td onClick={() => sortBy(strategy)} key={id}>
+										<td onClick={() => sortBy(strategy)} key={'tableHead' + title}>
 											{title}
 											{sortField === strategy ? (
 												<img
@@ -661,9 +588,9 @@ const CryptoTable = props => {
 							</tr>
 							{tableData.displayedRecords.map((strategy, id) => {
 								return (
-									<ComponentWrapper>
+									<>
 										<tr
-											key={strategy.StrategyName}
+											key={'tableRow' + id}
 											className={
 												selectedStrategies.includes(strategy.StrategyName) ? 'tableData activeRow' : 'tableData '
 											}
@@ -683,88 +610,16 @@ const CryptoTable = props => {
 													strategyActiveColor = stateTableDataColor[tableData].color;
 												}
 												return key !== 'additionalInfo' ? (
-													<td key={id} style={{ backgroundColor: strategyActiveColor, wordBreak: 'break-word' }}>
+													<td
+														key={id + tableData + key}
+														style={{ backgroundColor: strategyActiveColor, wordBreak: 'break-word' }}
+													>
 														{tableData}
 													</td>
 												) : null;
-												{
-													/* (
-													<td>
-														<button
-															onClick={e => {
-																e.stopPropagation();
-																showTickerTable(strategy.StrategyName);
-															}}
-															type="button"
-															className="btn addStrategyButton"
-															disabled={strategy.additionalInfo.length === 0 ? true : false}
-														>
-															Details
-														</button>
-													</td>
-												); */
-												}
 											})}
 										</tr>
-										{/* Tickers collapsed table */}
-										{strategy.additionalInfo.length === 0 ? null : (
-											<tr
-												key={strategy.StrategyName + strategy.Leg1Ticker + strategy.Leg2Ticker}
-												className="expandedContainer"
-											>
-												<td colSpan={Object.keys(strategy).length}>
-													<table id={strategy.StrategyName + 'additionalInfo'} className="tickerTableWrapper collapsed">
-														<tbody>
-															<tr>
-																<th colSpan={8} className="tableDateCentered"></th>
-															</tr>
-
-															<tr>
-																<td>Leg 1 Quantity</td>
-																<td>
-																	<input
-																		type="number"
-																		value={strategy.additionalInfo.Leg1QuantityBuyInput}
-																		onChange={e =>
-																			handleAdditionalInputFieldChange(strategy.StrategyName, true, e.target.value)
-																		}
-																	/>
-																</td>
-															</tr>
-															<tr>
-																<td>Leg 2 Quantity</td>
-																<td>
-																	{(strategy.additionalInfo.Leg1QuantityBuyInput * strategy.additionalInfo.Leg2Ratio) /
-																		strategy.additionalInfo.Leg1Ratio}
-																</td>
-															</tr>
-															<tr>
-																<td>Position</td>
-																<td>{strategy.additionalInfo.Leg1TickerPosition}</td>
-															</tr>
-															<tr>
-																<td>Amount ($)</td>
-																<td>{strategy.additionalInfo.Leg1TickerAmount}</td>
-															</tr>
-															<tr>
-																<td></td>
-																<td>
-																	<button
-																		type="button"
-																		className="btn  addStrategyButton"
-																		onClick={() => handleStartCycle(strategy)}
-																	>
-																		Place
-																	</button>
-																</td>
-															</tr>
-														</tbody>
-													</table>
-												</td>
-											</tr>
-										)}
-										{/* Tickers collapsed table */}
-									</ComponentWrapper>
+									</>
 								);
 							})}
 						</tbody>
