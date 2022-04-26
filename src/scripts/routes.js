@@ -11,12 +11,13 @@ export var API = {
 	startCycle: '/strategies/place/',
 	differential: '/strategies/differential/',
 	fixedFx: '/strategies/fixedFx/',
+	forceFixedFx: '/strategies/forceFixed/',
 	tenminutes: '/strategies/tenminutes/3/',
 };
 
 export const setBaseApi = data => {
 	baseAPI = data;
 	for (let route in API) {
-		API[route] =  data + API[route];
+		API[route] = data + API[route];
 	}
 };

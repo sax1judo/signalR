@@ -8,7 +8,7 @@ import CryptoTickersTable from '../General/CryptoTickersTable';
 import CryptoTable from '../General/CryptoTable';
 import LiveOrders from '../General/LiveOrders';
 //styles
-import '../../style/Pages/SecondPage.scss'
+import '../../style/Pages/SecondPage.scss';
 
 const SecondPage = props => {
 	const [connection, setConnection] = useState(null);
@@ -39,6 +39,7 @@ const SecondPage = props => {
 				FxSpotAsk: 0,
 				FxSpotBid: 0,
 				FixedFX: 0,
+				ForceFixed: false,
 			});
 		});
 	};
