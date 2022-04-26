@@ -11,6 +11,7 @@ export var API = {
 	startCycle: '/strategies/place/',
 	differential: '/strategies/differential/',
 	fixedFx: '/strategies/fixedFx/',
+	forceFixedFx: '/strategies/forceFixed/',
 	tenminutes: '/strategies/tenminutes/3/',
 	dol:'/products/details/dol'
 };

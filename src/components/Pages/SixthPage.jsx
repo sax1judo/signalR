@@ -36,6 +36,7 @@ const SixthPage = props => {
 				FxSpotAsk: 0,
 				FxSpotBid: 0,
 				FixedFX: 0,
+				ForceFixed: false
 			});
 		});
 	};

@@ -142,6 +142,13 @@ const CryptoTickersTable = props => {
 			props.handleDiffTickerInputChange(ticker);
 		}
 	};
+	const getForceFixed = async tickerName => {
+		const data = await httpRequest(API.forceFixedFx + '4/' + tickerName, 'get');
+		return data.data;
+	};
+	const putForceFixed = async (ticker, value) => {
+		const data = await httpRequestStartStopStrategy(API.forceFixedFx + '4/' + ticker.ticker, 'put', value.checked);
+	};
 	const handleInputChange = (ticker, key, value) => {
 		setTableData(prevData => {
 			for (let tickers in prevData.displayedRecords) {
@@ -241,6 +248,9 @@ const CryptoTickersTable = props => {
 						prevData.displayedRecords[ticker].FixedFX = res;
 						props.handleDiffTickerInputChange(prevData.displayedRecords[ticker]);
 					});
+					getForceFixed(prevData.displayedRecords[ticker].ticker).then(res => {
+						prevData.displayedRecords[ticker].ForceFixed = res;
+					});
 				}
 				return { ...prevData };
 			});
@@ -301,17 +311,26 @@ const CryptoTickersTable = props => {
 											let tableData = ticker[key];
 											return (
 												<td key={key + tableData}>
-													<input
-														style={{ padding: '0.4em' }}
-														type={key !== 'ticker' ? 'number' : 'string'}
-														value={tableData}
-														onChange={e => {
-															if (key === 'Differential') putDifferential(ticker, e.target.value);
-															else if (key === 'FixedFX') putFixedFx(ticker, e.target.value);
-															else if (key === 'FxSpotAsk' || key === 'FxSpotBid') return;
-															else handleInputChange(ticker, key, e.target.value);
-														}}
-													></input>
+													{key !== 'ForceFixed' ? (
+														<input
+															style={{ padding: '0.4em' }}
+															type={key !== 'ticker' ? 'number' : 'string'}
+															value={tableData}
+															onChange={e => {
+																if (key === 'Differential') putDifferential(ticker, e.target.value);
+																else if (key === 'FixedFX') putFixedFx(ticker, e.target.value);
+																else if (key === 'FxSpotAsk' || key === 'FxSpotBid') return;
+																else handleInputChange(ticker, key, e.target.value);
+															}}
+														></input>
+													) : (
+														<input
+															style={{ height: '1.6rem' }}
+															type="checkbox"
+															defaultChecked={tableData}
+															onChange={e => putForceFixed(ticker, e.target)}
+														></input>
+													)}
 												</td>
 											);
 										})}
