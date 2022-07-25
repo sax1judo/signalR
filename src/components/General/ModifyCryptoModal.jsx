@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import '../../style/General/ModifyStrategyModal.scss';
-import { NavLink } from 'react-router-dom';
 import { useHistory, useLocation } from 'react-router-dom';
 import { httpRequest } from '../../scripts/http';
 import { API } from '../../scripts/routes';
@@ -17,6 +16,7 @@ const ModifyCryptoModal = props => {
 		ClipMin: '',
 		ClipMax: '',
 		Buffer: '',
+		DecimalPlaces: '',
 	});
 	let history = useHistory();
 	let location = useLocation();
@@ -39,6 +39,7 @@ const ModifyCryptoModal = props => {
 			ClipMin,
 			ClipMax,
 			Buffer,
+			DecimalPlaces,
 		}) => ({
 			spread,
 			pointsAway,
@@ -51,21 +52,22 @@ const ModifyCryptoModal = props => {
 			ClipMin,
 			ClipMax,
 			Buffer,
+			DecimalPlaces,
 		}))(formData);
 
 		data.ClipMin = parseFloat(data.ClipMin.toFixed(8));
 		data.ClipMax = parseFloat(data.ClipMax.toFixed(8));
 		data.Buffer = parseFloat(data.Buffer.toFixed(8));
 
-		httpRequest(
-			API.arbitrageStrategies + '/update' + `/${formData.StrategyType}` + `/${formData.strategyName}`,
-			'put',
-			data,
-		).then(res => {
-			if (res.status === 200) {
-				goToPreviousPath();
-			}
-		});
+		httpRequest(API.arbitrageStrategies + '/update/4' + `/${formData.strategyName}`, 'put', data)
+			.then(res => {
+				if (res.status === 200) {
+					goToPreviousPath();
+				}
+			})
+			.catch(err => {
+				console.log(err);
+			});
 	};
 
 	useEffect(() => {
@@ -84,9 +86,10 @@ const ModifyCryptoModal = props => {
 			Leg2Ratio: location.strategy[0].additionalInfo.Leg2Ratio,
 			Leg1Ratio: location.strategy[0].additionalInfo.Leg1Ratio,
 			Leg2Ratio: location.strategy[0].additionalInfo.Leg2Ratio,
-			ClipMax: location.strategy[0].additionalInfo.ClipMax,
-			ClipMin: location.strategy[0].additionalInfo.ClipMin,
-			Buffer: location.strategy[0].additionalInfo.Buffer,
+			ClipMax: location.strategy[0].ClipMax,
+			ClipMin: location.strategy[0].ClipMin,
+			Buffer: location.strategy[0].Buffer,
+			DecimalPlaces: location.strategy[0].DecimalPlaces,
 		});
 	}, []);
 	useEffect(() => {
@@ -253,6 +256,19 @@ const ModifyCryptoModal = props => {
 										setFormData({
 											...formData,
 											Buffer: parseFloat(e.target.value),
+										})
+									}
+								/>
+							</td>
+							<td>Decimal Places:</td>
+							<td>
+								<input
+									type="number"
+									value={formData.DecimalPlaces}
+									onChange={e =>
+										setFormData({
+											...formData,
+											DecimalPlaces: parseFloat(e.target.value),
 										})
 									}
 								/>

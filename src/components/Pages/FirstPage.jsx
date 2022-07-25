@@ -19,7 +19,7 @@ const FirstPage = props => {
 			<div className="createdStrategiesWrapper">
 				<h4 style={{ textAlign: 'center' }}>Created Strategies</h4>
 				{loadActionPages.map((page, key) => {
-					return <StrategiesCreatedTable key={key} pageName={page.pageName} pageNumber={page.pageNumber} />;
+					return <StrategiesCreatedTable key={key} pageName={page.pageName} pageNumber={page.pageNumber} strategyType={page.strategyType}/>;
 				})}
 			</div>
 		</>

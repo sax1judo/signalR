@@ -270,7 +270,7 @@ const StrategiesCreatedTable = props => {
 						>
 							<NavLink
 								to={{
-									pathname: '/modifyStrategy',
+									pathname: props.strategyType === 'Crypto' ? 'modifyCrypto' : '/modifyStrategy',
 									strategy: selectedStrategiesObject,
 								}}
 							>

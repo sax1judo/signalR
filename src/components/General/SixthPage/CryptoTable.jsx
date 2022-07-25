@@ -254,7 +254,7 @@ const CryptoTable = props => {
 						exclObj[strategy] = { StrategyName, ...exclObj[strategy], ...tickersDataObj, additionalInfo };
 						// excluding properties from table row
 						let {
-							Buffer,
+							// Buffer,
 							Slippage,
 							LimitBuy,
 							LimitSell,
@@ -263,8 +263,6 @@ const CryptoTable = props => {
 							Load,
 							Leg1Ratio,
 							Leg2Ratio,
-							// Leg1Quantity,
-							// Leg2Quantity,
 							StrategyType,
 							...obj
 						} = exclObj[strategy];
@@ -556,7 +554,11 @@ const CryptoTable = props => {
 		if (props.diffTickerInput) {
 			let FxSpotBid = (props.diffTickerInput.bid_price - props.diffTickerInput.FixedFX) / 1000;
 			let FxSpotAsk = (props.diffTickerInput.ask_price - props.diffTickerInput.FixedFX) / 1000;
-			setFxData({ FxSpotBid: props.diffTickerInput.FxSpotBid, FxSpotAsk: props.diffTickerInput.FxSpotAsk, FixedFX: props.diffTickerInput.FixedFX });
+			setFxData({
+				FxSpotBid: props.diffTickerInput.FxSpotBid,
+				FxSpotAsk: props.diffTickerInput.FxSpotAsk,
+				FixedFX: props.diffTickerInput.FixedFX,
+			});
 			setTableData(prevData => {
 				for (let strategy in prevData.displayedRecords) {
 					let singleStrategy = prevData.displayedRecords[strategy];
