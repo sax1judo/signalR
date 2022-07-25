@@ -1,5 +1,6 @@
 var baseAPI = '';
 export var API = {
+	login:'/login',
 	signalRChannel: '/strategyState',
 	arbitrageStrategies: '/strategies',
 	arbitrageProduct: '/products/',

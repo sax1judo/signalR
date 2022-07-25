@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import '../../style/General/LoginModal.scss';
 import '../../style/General/ModifyStrategyModal.scss';
 import { useHistory } from 'react-router-dom';
-import { httpRequestStartStopStrategy } from '../../scripts/http';
+import { httpRequest } from '../../scripts/http';
+import { compress } from '../../scripts/common';
 import { API } from '../../scripts/routes';
 
 const LoginModal = props => {
+	const valdiationText = useRef(null);
 	const [formData, setFormData] = useState({
 		username: '',
 		password: '',
@@ -17,11 +19,20 @@ const LoginModal = props => {
 	}, [formData]);
 
 	const loginAction = () => {
-		if (formData.username === 'henrique' && formData.password === 'ArbiAlgo@21')
-			setTimeout(() => {
-				props.isLoggedAction(true);
-				history.push('/strategies');
-			}, 500);
+		let data = {
+			userName: formData.username,
+			passwordHash: compress(formData.password),
+		};
+		httpRequest(API.login, 'put', data)
+			.then(res => {
+				if (res.status === 200) {
+					props.isLoggedAction(true);
+					history.push('/strategies');
+				}
+			})
+			.catch(err => {
+				valdiationText.current.style.visibility = 'visible';
+			});
 	};
 	const onKeyUp = event => {
 		if (event.charCode === 13) {
@@ -54,10 +65,11 @@ const LoginModal = props => {
 				}
 				onKeyPress={e => onKeyUp(e)}
 			/>
-			<a id="login-forgot-password" href="#">
-				Forgot password? Reset here!
-			</a>
-			<div className="modifyStrategyButtonsWrapper">
+			<p ref={valdiationText} style={{ color: 'red', visibility: 'hidden', textAlign: 'right' }}>
+				Invalid credentials
+			</p>
+
+			<div className="modifyStrategyButtonsWrapper" style={{  marginTop: '0' }}>
 				<button
 					style={{ minWidth: '47%' }}
 					type="button"
